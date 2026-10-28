@@ -20,5 +20,5 @@ entities=${3:-10000}
 
 mkdir -p "$(dirname "$map")"
 cargo run --release -p hp-vmf --example big_map -- "$map" "$solids" "$entities"
-cargo build --release -p hammerpro
-target/release/hammerpro --bench-open "$map"
+cargo build --release -p hammerpro-medallium
+target/release/hammerpro-medallium --bench-open "$map"

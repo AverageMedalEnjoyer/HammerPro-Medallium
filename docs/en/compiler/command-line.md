@@ -2,7 +2,7 @@
 
 # Compiler command line
 
-The compiler is part of `hammerpro.exe`. `hammerpro --bspc` builds the geometry, portals, leak test and visibility of a VMF; `hammerpro --rad` lights the BSP. Both take Valve's option names (VBSP and VVIS for `--bspc`, VRAD for `--rad`), so scripts and Hammer command sequences translate directly. The other arguments of `hammerpro.exe` are in the [command line reference](../reference/command-line.md).
+The compiler is part of `hammerpro-medallium.exe`. `hammerpro --bspc` builds the geometry, portals, leak test and visibility of a VMF; `hammerpro --rad` lights the BSP. Both take Valve's option names (VBSP and VVIS for `--bspc`, VRAD for `--rad`), so scripts and Hammer command sequences translate directly. The other arguments of `hammerpro-medallium.exe` are in the [command line reference](../reference/command-line.md).
 
 ## Usage
 

@@ -1,7 +1,7 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
-default-members = ["crates/hammerpro"]
+default-members = ["crates/hammerpro-medallium"]
 
 [workspace.package]
 version = "1.0.0"

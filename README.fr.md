@@ -36,7 +36,7 @@ Chaque fonctionnalité a sa propre page dans la [documentation](docs/fr/README.m
 
 ## Téléchargement et installation
 
-1. Téléchargez `hammerpro.exe` depuis la page Releases de ce dépôt, ou [compilez-le depuis les sources](docs/fr/development/building.md).
+1. Téléchargez `hammerpro-medallium.exe` depuis la page Releases de ce dépôt, ou [compilez-le depuis les sources](docs/fr/development/building.md).
 2. Placez-le dans le dossier de votre choix et lancez-le. Il n'y a pas d'installateur.
 3. Au premier lancement, l'assistant de configuration vous demande votre langue, l'éditeur dont vous venez (Hammer, Hammer++ ou les réglages de Hammer Pro) et le contenu de votre jeu.
 
@@ -69,10 +69,10 @@ Tous les raccourcis sont listés dans [Actions et raccourcis clavier](docs/fr/re
 ```bash
 git clone <ce dépôt>
 cd HammerPro
-cargo build --release -p hammerpro
+cargo build --release -p hammerpro-medallium
 ```
 
-L'exécutable est `target/release/hammerpro.exe`. Il faut Rust 1.95 ou plus récent. Lancez les tests avec `cargo test --workspace` (les tests qui ont besoin de Garry's Mod se désactivent s'il n'est pas installé). Voir [Compiler depuis les sources](docs/fr/development/building.md) pour les profils de compilation et [Architecture](docs/fr/development/architecture.md) pour les crates.
+L'exécutable est `target/release/hammerpro-medallium.exe`. Il faut Rust 1.95 ou plus récent. Lancez les tests avec `cargo test --workspace` (les tests qui ont besoin de Garry's Mod se désactivent s'il n'est pas installé). Voir [Compiler depuis les sources](docs/fr/development/building.md) pour les profils de compilation et [Architecture](docs/fr/development/architecture.md) pour les crates.
 
 ## Documentation
 

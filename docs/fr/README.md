@@ -140,7 +140,7 @@ Vous découvrez Hammer Pro ? Lisez [Installation](getting-started/installation.m
 | --- | --- |
 | [Référence des paramètres](reference/settings.md) | Chaque clé de `settings.toml` avec sa valeur par défaut. |
 | [Actions et raccourcis clavier](reference/actions-shortcuts.md) | Chaque commande, son menu, son id et son raccourci dans chaque jeu de raccourcis. |
-| [Ligne de commande](reference/command-line.md) | Chaque argument de `hammerpro.exe`. |
+| [Ligne de commande](reference/command-line.md) | Chaque argument de `hammerpro-medallium.exe`. |
 | [Commandes de script](reference/script-commands.md) | Les commandes des fichiers `--script`. |
 | [Serveur MCP](reference/mcp-server.md) | Connecter un assistant IA (Claude, Codex, Gemini). |
 | [Référence des outils MCP](../MCP.md) | Chaque outil MCP (générée, en anglais). |

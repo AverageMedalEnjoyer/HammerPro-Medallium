@@ -2,7 +2,7 @@
 
 # Script commands
 
-`hammerpro.exe --script file.txt` plays a text file of commands in the editor: mouse moves and clicks, keys, actions, tool options, screenshots and checks. It is made for automated end-to-end tests and for reproducing a bug step by step. A script run is an automated run: default settings, nothing written to your settings, logs or game (see [Command line](command-line.md)).
+`hammerpro-medallium.exe --script file.txt` plays a text file of commands in the editor: mouse moves and clicks, keys, actions, tool options, screenshots and checks. It is made for automated end-to-end tests and for reproducing a bug step by step. A script run is an automated run: default settings, nothing written to your settings, logs or game (see [Command line](command-line.md)).
 
 ## File format
 

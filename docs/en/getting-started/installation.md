@@ -2,7 +2,7 @@
 
 # Installation
 
-Hammer Pro 1.0.0 is a single program, `hammerpro.exe`, with no installer. It brings its own map compiler, so you do not need Valve's VBSP, VVIS or VRAD.
+Hammer Pro 1.0.0 is a single program, `hammerpro-medallium.exe`, with no installer. It brings its own map compiler, so you do not need Valve's VBSP, VVIS or VRAD.
 
 ## Requirements
 
@@ -14,8 +14,8 @@ Hammer Pro 1.0.0 is a single program, `hammerpro.exe`, with no installer. It bri
 
 ## Download and install
 
-1. Download the release of Hammer Pro (it contains `hammerpro.exe`), or build it yourself (see [Building from source](../development/building.md)).
-2. Put `hammerpro.exe` in any folder you like, for example `C:\Tools\HammerPro\`. Nothing else has to be copied.
+1. Download the release of Hammer Pro (it contains `hammerpro-medallium.exe`), or build it yourself (see [Building from source](../development/building.md)).
+2. Put `hammerpro-medallium.exe` in any folder you like, for example `C:\Tools\HammerPro\`. Nothing else has to be copied.
 3. Run it. A shortcut on the desktop or in the Start menu is optional.
 
 ## First start
@@ -27,7 +27,7 @@ Hammer Pro 1.0.0 is a single program, `hammerpro.exe`, with no installer. It bri
 
 ## Updating
 
-Replace `hammerpro.exe` with the new one. Your settings, autosaves and per map data stay where they are: unknown or missing settings keys are tolerated, so old and new versions can share one settings file.
+Replace `hammerpro-medallium.exe` with the new one. Your settings, autosaves and per map data stay where they are: unknown or missing settings keys are tolerated, so old and new versions can share one settings file.
 
 ## Where files go
 
@@ -43,7 +43,7 @@ Hammer Pro may also write into the game: compiled maps go to `garrysmod/maps` (o
 
 ## Uninstalling
 
-1. Delete `hammerpro.exe`.
+1. Delete `hammerpro-medallium.exe`.
 2. To remove your settings and data too, delete the `HammerPro` folders in `%APPDATA%` and `%LOCALAPPDATA%`.
 3. If you used them, delete `garrysmod/addons/hammerpro_dev` and `garrysmod/addons/hammerpro_bridge` (the bridge can also be removed with **Remove** in **Settings > Game**).
 

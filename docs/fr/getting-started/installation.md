@@ -2,7 +2,7 @@
 
 # Installation
 
-Hammer Pro 1.0.0 tient en un seul programme, `hammerpro.exe`, sans installateur. Il embarque son propre compilateur de maps : VBSP, VVIS et VRAD de Valve ne sont pas nécessaires.
+Hammer Pro 1.0.0 tient en un seul programme, `hammerpro-medallium.exe`, sans installateur. Il embarque son propre compilateur de maps : VBSP, VVIS et VRAD de Valve ne sont pas nécessaires.
 
 ## Configuration requise
 
@@ -14,8 +14,8 @@ Hammer Pro 1.0.0 tient en un seul programme, `hammerpro.exe`, sans installateur.
 
 ## Téléchargement et installation
 
-1. Téléchargez la version de Hammer Pro (elle contient `hammerpro.exe`), ou compilez-la vous-même (voir [Compiler depuis les sources](../development/building.md)).
-2. Placez `hammerpro.exe` dans le dossier de votre choix, par exemple `C:\Outils\HammerPro\`. Rien d'autre n'est à copier.
+1. Téléchargez la version de Hammer Pro (elle contient `hammerpro-medallium.exe`), ou compilez-la vous-même (voir [Compiler depuis les sources](../development/building.md)).
+2. Placez `hammerpro-medallium.exe` dans le dossier de votre choix, par exemple `C:\Outils\HammerPro\`. Rien d'autre n'est à copier.
 3. Lancez-le. Un raccourci sur le bureau ou dans le menu Démarrer est facultatif.
 
 ## Premier lancement
@@ -27,7 +27,7 @@ Hammer Pro 1.0.0 tient en un seul programme, `hammerpro.exe`, sans installateur.
 
 ## Mise à jour
 
-Remplacez `hammerpro.exe` par le nouveau. Vos paramètres, sauvegardes automatiques et données par map restent en place : les clés de paramètres inconnues ou absentes sont tolérées, donc les anciennes et nouvelles versions peuvent partager le même fichier de paramètres.
+Remplacez `hammerpro-medallium.exe` par le nouveau. Vos paramètres, sauvegardes automatiques et données par map restent en place : les clés de paramètres inconnues ou absentes sont tolérées, donc les anciennes et nouvelles versions peuvent partager le même fichier de paramètres.
 
 ## Emplacement des fichiers
 
@@ -43,7 +43,7 @@ Hammer Pro peut aussi écrire dans le jeu : les maps compilées vont dans `garry
 
 ## Désinstallation
 
-1. Supprimez `hammerpro.exe`.
+1. Supprimez `hammerpro-medallium.exe`.
 2. Pour effacer aussi vos paramètres et données, supprimez les dossiers `HammerPro` de `%APPDATA%` et de `%LOCALAPPDATA%`.
 3. Si vous les avez utilisés, supprimez `garrysmod/addons/hammerpro_dev` et `garrysmod/addons/hammerpro_bridge` (le pont peut aussi être retiré avec **Supprimer** dans **Paramètres > Jeu**).
 

@@ -140,7 +140,7 @@ New to Hammer Pro? Read [Installation](getting-started/installation.md), [Game s
 | --- | --- |
 | [Settings reference](reference/settings.md) | Every key of `settings.toml` with its default. |
 | [Actions and keyboard shortcuts](reference/actions-shortcuts.md) | Every command, its menu, its id and its shortcut in each shortcut set. |
-| [Command line](reference/command-line.md) | Every argument of `hammerpro.exe`. |
+| [Command line](reference/command-line.md) | Every argument of `hammerpro-medallium.exe`. |
 | [Script commands](reference/script-commands.md) | The commands of `--script` files. |
 | [MCP server](reference/mcp-server.md) | Connecting an AI assistant (Claude, Codex, Gemini). |
 | [MCP tool reference](../MCP.md) | Every MCP tool (generated). |

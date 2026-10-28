@@ -25,7 +25,6 @@ Every feature has its own page in the [documentation](docs/en/README.md).
 - **Map health.** Live problem checks, an instant leak check with the leak path, engine limits per game, portal files and visibility. See [Leaks and pointfiles](docs/en/features/leaks-pointfiles.md).
 - **Ship it.** [Map assets](docs/en/features/map-assets.md) lists and collects every file the map uses, [Build and save as content](docs/en/features/build-content-release.md) makes a ready to share addon with a release checklist and Workshop publishing, [BSP Protection Pro](docs/en/features/bsp-protection.md) ships a protected copy of the map.
 - **Gameplay helpers.** [Navigation mesh generation](docs/en/features/nav-mesh.md), [several 3D skyboxes and a skybox switch entity](docs/en/features/sky-cameras.md), [soundscapes](docs/en/features/soundscapes.md), [particle preview](docs/en/features/particles.md), [game launch and reload](docs/en/features/game-launch.md).
-- **AI assistants.** A built in [MCP server](docs/en/reference/mcp-server.md) lets Claude, Codex or Gemini read and edit the open map, check it, compile it and take screenshots, every edit being one undo step.
 - **Your editor.** Black and white interface (dark or light), [English and French](docs/en/features/themes-languages.md), [Hammer and Hammer++ shortcut sets](docs/en/features/keyboard-shortcuts.md), [Discord Rich Presence](docs/en/features/discord.md).
 
 ## Requirements
@@ -36,7 +35,7 @@ Every feature has its own page in the [documentation](docs/en/README.md).
 
 ## Download and install
 
-1. Download `hammerpro.exe` from the Releases page of this repository, or [build it from source](docs/en/development/building.md).
+1. Download `hammerpro-medallium.exe` from the Releases page of this repository, or [build it from source](docs/en/development/building.md).
 2. Put it in any folder and run it. There is no installer.
 3. On the first start, the setup assistant asks for your language, the editor you come from (Hammer, Hammer++ or the Hammer Pro defaults) and your game content.
 
@@ -69,16 +68,16 @@ All shortcuts are listed in [Actions and keyboard shortcuts](docs/en/reference/a
 ```bash
 git clone <this repository>
 cd HammerPro
-cargo build --release -p hammerpro
+cargo build --release -p hammerpro-medallium
 ```
 
-The executable is `target/release/hammerpro.exe`. Rust 1.95 or newer is required. Run the tests with `cargo test --workspace` (tests that need Garry's Mod skip themselves when it is not installed). See [Building from source](docs/en/development/building.md) for build profiles and tips, and [Architecture](docs/en/development/architecture.md) for the crates.
+The executable is `target/release/hammerpro-medallium.exe`. Rust 1.95 or newer is required. Run the tests with `cargo test --workspace` (tests that need Garry's Mod skip themselves when it is not installed). See [Building from source](docs/en/development/building.md) for build profiles and tips, and [Architecture](docs/en/development/architecture.md) for the crates.
 
 ## Documentation
 
-- [English documentation](docs/en/README.md): getting started, one page per feature, the compiler, references (settings, shortcuts, command line, scripts, MCP), guides, troubleshooting and development.
+- [English documentation](docs/en/README.md): getting started, one page per feature, the compiler, references (settings, shortcuts, command line, scripts), guides, troubleshooting and development.
 - [Documentation en français](docs/fr/README.md).
-- [MCP tool reference](docs/MCP.md) (generated) and [developer guide to extending Hammer Pro](docs/EXTENDING.md).
+- [Developer guide to extending Hammer Pro](docs/EXTENDING.md).
 
 ## Community and contact
 

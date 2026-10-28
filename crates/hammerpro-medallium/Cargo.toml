@@ -1,5 +1,5 @@
 [package]
-name = "hammerpro"
+name = "hammerpro-medallium"
 description = "Hammer Pro: a modern, fast level editor for Source engine maps (Garry's Mod first)."
 version.workspace = true
 edition.workspace = true
@@ -8,7 +8,7 @@ authors.workspace = true
 default-run = "hammerpro"
 
 [[bin]]
-name = "hammerpro"
+name = "hammerpro-medallium"
 path = "src/main.rs"
 
 [dependencies]
@@ -26,7 +26,6 @@ hp-ui-mapping = { path = "../hp-ui-mapping" }
 hp-light = { path = "../hp-light" }
 hp-ui-lab = { path = "../hp-ui-lab" }
 hp-decompile = { path = "../hp-decompile" }
-hp-mcp = { path = "../hp-mcp" }
 hp-pcf = { path = "../hp-pcf" }
 hp-discord = { path = "../hp-discord" }
 hp-editor.workspace = true

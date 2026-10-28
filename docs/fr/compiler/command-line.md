@@ -2,7 +2,7 @@
 
 # Ligne de commande du compilateur
 
-Le compilateur fait partie de `hammerpro.exe`. `hammerpro --bspc` construit la géométrie, les portails, la recherche de fuites et la visibilité d'un VMF ; `hammerpro --rad` éclaire le BSP. Les deux reprennent les noms d'options de Valve (VBSP et VVIS pour `--bspc`, VRAD pour `--rad`), donc les scripts et les séquences de commandes de Hammer se transposent directement. Les autres arguments de `hammerpro.exe` sont dans la [référence de la ligne de commande](../reference/command-line.md).
+Le compilateur fait partie de `hammerpro-medallium.exe`. `hammerpro --bspc` construit la géométrie, les portails, la recherche de fuites et la visibilité d'un VMF ; `hammerpro --rad` éclaire le BSP. Les deux reprennent les noms d'options de Valve (VBSP et VVIS pour `--bspc`, VRAD pour `--rad`), donc les scripts et les séquences de commandes de Hammer se transposent directement. Les autres arguments de `hammerpro-medallium.exe` sont dans la [référence de la ligne de commande](../reference/command-line.md).
 
 ## Utilisation
 

@@ -51,7 +51,7 @@ Le changement s'applique tout de suite, sans redémarrer, et il est enregistré 
 Lancez Hammer Pro avec `--lang fr` ou `--lang en` pour utiliser une langue le temps de la session sans changer le choix enregistré :
 
 ```text
-hammerpro.exe --lang fr
+hammerpro-medallium.exe --lang fr
 ```
 
 Voir [Ligne de commande](../reference/command-line.md).

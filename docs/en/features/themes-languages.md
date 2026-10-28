@@ -51,7 +51,7 @@ The change applies at once, without a restart, and is saved in settings.toml (`l
 Start Hammer Pro with `--lang fr` or `--lang en` to use a language for this run without changing the saved choice:
 
 ```text
-hammerpro.exe --lang fr
+hammerpro-medallium.exe --lang fr
 ```
 
 See [Command line](../reference/command-line.md).

@@ -2,7 +2,7 @@
 
 # Command line
 
-`hammerpro.exe` is the editor, the map compiler and the MCP bridge in one program. This page lists every argument it accepts.
+`hammerpro-medallium.exe` is the editor, the map compiler and the MCP bridge in one program. This page lists every argument it accepts.
 
 ## Usage
 
@@ -66,14 +66,14 @@ Exit codes: `0` normal end, `2` the script file cannot be read or a line cannot 
 
 ```bat
 rem Open a map in French
-hammerpro.exe "C:\maps\gm_mymap.vmf" --lang fr
+hammerpro-medallium.exe "C:\maps\gm_mymap.vmf" --lang fr
 
 rem Screenshot of the editor with the block tool, 3D view maximized
-hammerpro.exe gm_mymap.vmf --tool block --maximize-view 0 --screenshot shot.png --frames 120
+hammerpro-medallium.exe gm_mymap.vmf --tool block --maximize-view 0 --screenshot shot.png --frames 120
 
 rem Compile a map from a batch file
-hammerpro.exe --bspc -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mymap.vmf"
-hammerpro.exe --rad -both -final -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mymap.bsp"
+hammerpro-medallium.exe --bspc -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mymap.vmf"
+hammerpro-medallium.exe --rad -both -final -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mymap.bsp"
 ```
 
 ## Related pages

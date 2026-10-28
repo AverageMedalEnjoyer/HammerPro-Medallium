@@ -17,10 +17,10 @@ Le compilateur de maps fait partie du workspace : les outils de Valve ne sont n�
 ```bash
 git clone <URL du dépôt>
 cd HammerPro
-cargo build --release -p hammerpro
+cargo build --release -p hammerpro-medallium
 ```
 
-L'exécutable est `target/release/hammerpro.exe` (`target/release/hammerpro` sous Linux). `hammerpro` est le membre par défaut du workspace, donc `cargo build --release` seul produit la même chose.
+L'exécutable est `target/release/hammerpro-medallium.exe` (`target/release/hammerpro-medallium` sous Linux). `hammerpro` est le membre par défaut du workspace, donc `cargo build --release` seul produit la même chose.
 
 Pour le lancer depuis les sources :
 
@@ -62,7 +62,7 @@ Un dossier de compilation complet pèse plusieurs gigaoctets. Pour le placer sur
 
 ```bat
 set CARGO_TARGET_DIR=E:\builds\hammerpro
-cargo build --release -p hammerpro
+cargo build --release -p hammerpro-medallium
 ```
 
 L'exécutable se trouve alors dans `E:\builds\hammerpro\release\`. Chaque profil a son propre dossier (`debug`, `release`, `fast`), donc passer de l'un à l'autre ne recompile pas tout.
@@ -73,7 +73,7 @@ Le workspace se compile aussi sous Linux (la CI fait ses vérifications sous Win
 
 ## FAQ
 
-**Quelle crate compiler pour obtenir l'éditeur ?** `hammerpro` (`crates/hammerpro`), le membre par défaut.
+**Quelle crate compiler pour obtenir l'éditeur ?** `hammerpro` (`crates/hammerpro-medallium`), le membre par défaut.
 
 **La compilation est lente.** Utilisez le profil `fast` pendant que vous itérez, et `--release` seulement pour les versions que vous partagez.
 

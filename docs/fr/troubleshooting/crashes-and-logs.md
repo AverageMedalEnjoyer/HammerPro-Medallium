@@ -51,7 +51,7 @@ Pour forcer une API, définissez la variable d'environnement `WGPU_BACKEND` avan
 
 ```bat
 set WGPU_BACKEND=vulkan
-hammerpro.exe
+hammerpro-medallium.exe
 ```
 
 Valeurs : `vulkan`, `dx12`, `metal`, `gl` (plusieurs valeurs séparées par des virgules). Essayez une autre valeur quand la fenêtre reste noire, scintille ou que le pilote plante au démarrage.

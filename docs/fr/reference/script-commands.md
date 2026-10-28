@@ -2,7 +2,7 @@
 
 # Commandes de script
 
-`hammerpro.exe --script fichier.txt` joue dans l'éditeur un fichier texte de commandes : mouvements et clics de souris, touches, actions, options d'outil, captures d'écran et vérifications. C'est fait pour les tests automatisés de bout en bout et pour reproduire un bug pas à pas. Une exécution de script est une exécution automatisée : paramètres par défaut, rien n'est écrit dans vos paramètres, vos logs ou votre jeu (voir [Ligne de commande](command-line.md)).
+`hammerpro-medallium.exe --script fichier.txt` joue dans l'éditeur un fichier texte de commandes : mouvements et clics de souris, touches, actions, options d'outil, captures d'écran et vérifications. C'est fait pour les tests automatisés de bout en bout et pour reproduire un bug pas à pas. Une exécution de script est une exécution automatisée : paramètres par défaut, rien n'est écrit dans vos paramètres, vos logs ou votre jeu (voir [Ligne de commande](command-line.md)).
 
 ## Format du fichier
 

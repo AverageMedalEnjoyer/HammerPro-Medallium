@@ -657,7 +657,7 @@ pub(super) fn enabled(state: &AppState, action: Action) -> Option<bool> {
 }
 ```
 
-then handle it in `crates/hammerpro/src/dispatch/selection.rs` (see
+then handle it in `crates/hammerpro-medallium/src/dispatch/selection.rs` (see
 [Dispatch](#dispatch)). An action missing from the backlog: add its line
 below the `// Package N: add new actions below this line.` marker of your
 file and its label to your `TR`; nothing else changes.
@@ -680,7 +680,7 @@ where a package edits `shell.rs`; the core test then needs the same update.
 Tests: `cargo test -p hp-app` (ids unique and translated, shortcuts unique,
 core ids, shortcuts and order unchanged, one menu per group, planned
 shortcuts inactive), `cargo test -p hp-ui-shell` (menu layout, glyphs),
-`cargo test -p hammerpro` (every ready action has exactly one handler).
+`cargo test -p hammerpro-medallium` (every ready action has exactly one handler).
 
 ## Settings
 
@@ -759,7 +759,7 @@ pub struct CompileRuntime {
 
 The binary runs the requested actions (`state.request(action)` from any
 crate) at the end of the frame. One module per package in
-`crates/hammerpro/src/dispatch/` holds that package's handlers and the other
+`crates/hammerpro-medallium/src/dispatch/` holds that package's handlers and the other
 application hooks.
 
 | File | Content / owner |
@@ -806,7 +806,7 @@ handlers: `app.selected()`, `app.selected_solids()`,
 `Err`), `app.entity_bounds_fn()`, `dispatch::edit_error_text`.
 
 ```rust
-// crates/hammerpro/src/dispatch/placement.rs (illustration: `PrefabTab`,
+// crates/hammerpro-medallium/src/dispatch/placement.rs (illustration: `PrefabTab`,
 // `prefabs.tab` and `runtime.placement.create_open` come with package 11)
 use hp_app::{Action, t};
 use hp_app::state::RightTab;
@@ -894,7 +894,7 @@ menu, section and order like a group. Register it from your package's
 column and shortcut layout as the actions) and `hp_ui_shell::menu::submenu`:
 
 ```rust
-// crates/hammerpro/src/dispatch/workflow.rs (illustration: the layout
+// crates/hammerpro-medallium/src/dispatch/workflow.rs (illustration: the layout
 // fields and keys come with package 3)
 fn init(&self, app: &mut HammerProApp) {
     use hp_app::actions::Category;
@@ -1067,7 +1067,7 @@ a sidecar file: `crates/hp-app/src/sidecar.rs`.
   (`"health_ignored"`); `"sidecar"` is reserved (format version and map
   path).
 - `state.sidecar` is the sidecar of the open map. The binary
-  (`crates/hammerpro/src/files.rs`) loads it when a map is opened or
+  (`crates/hammerpro-medallium/src/files.rs`) loads it when a map is opened or
   created, writes it atomically (temporary file then rename) when the map is
   saved (Save as moves the sections to the new name) and when it is closed
   (new map, open another, exit). Maps without a path keep it in memory
@@ -1098,7 +1098,7 @@ impl hp_app::sidecar::SidecarSection for IgnoredProblems {
     const NAME: &'static str = "health_ignored";
 }
 
-// crates/hammerpro/src/dispatch/health.rs
+// crates/hammerpro-medallium/src/dispatch/health.rs
 fn map_loaded(&self, app: &mut HammerProApp) {
     let ignored: IgnoredProblems = app.state.sidecar.get();
     app.state.runtime.health.ignored = ignored.keys;
@@ -1113,7 +1113,7 @@ Tests: `hp_app::sidecar::tests` (round trip, corrupt files, save as) and
 
 ## Several open maps (tabs)
 
-Several maps can be open at once (`crates/hammerpro/src/tabs.rs`). Every
+Several maps can be open at once (`crates/hammerpro-medallium/src/tabs.rs`). Every
 crate keeps working on `state.doc`, the map shown; the binary parks the
 others with their cameras, sidecar, pointfile and pivot, and swaps them
 when the user switches tabs (Ctrl+Tab, a click in the tab bar above the
@@ -1211,7 +1211,7 @@ every setting (`get_settings`, `set_setting`), so a new feature needs MCP
 work only for operations that deserve a semantic tool. To add one:
 
 1. Describe it in the `SPECS` of an area file
-   `crates/hammerpro/src/dispatch/mcp/tools_<area>.rs` (name, title,
+   `crates/hammerpro-medallium/src/dispatch/mcp/tools_<area>.rs` (name, title,
    description for the model, `ToolKind`, JSON input schema in the subset
    every client reads: no `oneOf`, no type lists; `schema.rs` has helpers),
    and register the file's `DOMAIN` (category, specs, `run`) in `DOMAINS`
@@ -1225,7 +1225,7 @@ work only for operations that deserve a semantic tool. To add one:
    screenshots) returns `Outcome::Ui` (`automation.rs`).
 3. Edits: add `shell.undo.mcp_<tool>` to `crates/hp-app/src/actions/mcp.rs`.
 4. Regenerate the tool list of docs/MCP.md:
-   `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro docs_list_every_tool`.
+   `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro-medallium docs_list_every_tool`.
 
 Tests check every tool has a schema and an implementation, that failing
 calls leave no undo step, that undo labels are translated, and
@@ -1242,7 +1242,7 @@ for MCP (`read_only` in `tools_settings.rs`, by name).
 ## Lighting preview and lightmaps
 
 The baked lighting preview (package 10) lives in
-`crates/hammerpro/src/dispatch/lighting/`: it compiles the map in memory
+`crates/hammerpro-medallium/src/dispatch/lighting/`: it compiles the map in memory
 with the Hammer Pro compiler (`hp_bspc::compile`), lights it with the
 compiler's lighting step (`hp_bspc::rad`) in a child process
 (`hammerpro --light-preview`, killed when a bake stops), and draws the

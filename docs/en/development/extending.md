@@ -14,7 +14,7 @@ Work in your own files. When a host file belongs to another package, plug in thr
 | --- | --- | --- |
 | Actions | Every command (menus, toolbar, shortcuts, command palette, `F1` reference, keyboard settings, scripts, MCP). One enum, declared in one file per package with `action_list!`: id, menu, menu group, default shortcut, status. | `crates/hp-app/src/actions/<package>.rs` |
 | Menus | Placement of an action in a menu or submenu (`MenuGroup`), sorted by section and order. | `crates/hp-app/src/actions/groups.rs` |
-| Dispatch | The code that runs an action. | `crates/hammerpro/src/dispatch/<package>.rs` |
+| Dispatch | The code that runs an action. | `crates/hammerpro-medallium/src/dispatch/<package>.rs` |
 | Settings | One struct per package, stored as its own TOML table, every field with a default. | `crates/hp-app/src/settings/<package>.rs` |
 | Settings pages | Pages of the settings window. | `crates/hp-ui-shell/src/settings_dialog/<package>.rs` |
 | Status bar | Segments of the status bar. | `crates/hp-ui-shell/src/status/` |
@@ -25,7 +25,7 @@ Work in your own files. When a host file belongs to another package, plug in thr
 | Editor extension | Extra VMF blocks (Hammer++ `*_plus` blocks are kept this way). | `crates/hp-editor` |
 | Compile and launch | Steps of the compile pipeline, launch arguments. | `crates/hp-compile`, `crates/hp-ui-mapping/src/compile/` |
 | Translations | Every UI text as `(key, English, French)` rows of a `TR` table. | each crate |
-| MCP tools | Semantic tools of the MCP server. Every action and setting is already reachable through `run_action` and `set_setting`. | `crates/hammerpro/src/dispatch/mcp/tools_<area>.rs` |
+| MCP tools | Semantic tools of the MCP server. Every action and setting is already reachable through `run_action` and `set_setting`. | `crates/hammerpro-medallium/src/dispatch/mcp/tools_<area>.rs` |
 
 ## Translations
 
@@ -37,10 +37,10 @@ The interface is black and white: every UI color comes from the `hp_app::theme` 
 
 ## Adding an MCP tool
 
-1. Describe the tool in the `SPECS` of an area file `crates/hammerpro/src/dispatch/mcp/tools_<area>.rs`.
+1. Describe the tool in the `SPECS` of an area file `crates/hammerpro-medallium/src/dispatch/mcp/tools_<area>.rs`.
 2. Implement it in that file's `run`, with every edit made through one undo step named "MCP: <tool>".
 3. Add the undo label `shell.undo.mcp_<tool>` to `crates/hp-app/src/actions/mcp.rs`.
-4. Regenerate the tool list of `docs/MCP.md` with `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro docs_list_every_tool`.
+4. Regenerate the tool list of `docs/MCP.md` with `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro-medallium docs_list_every_tool`.
 
 ## Note
 

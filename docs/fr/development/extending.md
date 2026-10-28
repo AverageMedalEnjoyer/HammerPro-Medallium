@@ -14,7 +14,7 @@ Travaillez dans vos propres fichiers. Quand un fichier hôte appartient à un au
 | --- | --- | --- |
 | Actions | Toutes les commandes (menus, barre d'outils, raccourcis, palette de commandes, référence `F1`, paramètres du clavier, scripts, MCP). Un seul enum, déclaré dans un fichier par paquet avec `action_list!` : id, menu, groupe de menu, raccourci par défaut, statut. | `crates/hp-app/src/actions/<paquet>.rs` |
 | Menus | Place d'une action dans un menu ou un sous-menu (`MenuGroup`), triée par section et par ordre. | `crates/hp-app/src/actions/groups.rs` |
-| Dispatch | Le code qui exécute une action. | `crates/hammerpro/src/dispatch/<paquet>.rs` |
+| Dispatch | Le code qui exécute une action. | `crates/hammerpro-medallium/src/dispatch/<paquet>.rs` |
 | Paramètres | Une structure par paquet, enregistrée dans sa propre table TOML, chaque champ avec une valeur par défaut. | `crates/hp-app/src/settings/<paquet>.rs` |
 | Pages de paramètres | Pages de la fenêtre des paramètres. | `crates/hp-ui-shell/src/settings_dialog/<paquet>.rs` |
 | Barre d'état | Segments de la barre d'état. | `crates/hp-ui-shell/src/status/` |
@@ -25,7 +25,7 @@ Travaillez dans vos propres fichiers. Quand un fichier hôte appartient à un au
 | Extension de l'éditeur | Blocs VMF supplémentaires (les blocs Hammer++ `*_plus` sont conservés ainsi). | `crates/hp-editor` |
 | Compilation et lancement | Étapes de la chaîne de compilation, arguments de lancement. | `crates/hp-compile`, `crates/hp-ui-mapping/src/compile/` |
 | Traductions | Chaque texte de l'interface sous forme de lignes `(clé, anglais, français)` d'une table `TR`. | chaque crate |
-| Outils MCP | Outils sémantiques du serveur MCP. Chaque action et chaque paramètre sont déjà accessibles par `run_action` et `set_setting`. | `crates/hammerpro/src/dispatch/mcp/tools_<domaine>.rs` |
+| Outils MCP | Outils sémantiques du serveur MCP. Chaque action et chaque paramètre sont déjà accessibles par `run_action` et `set_setting`. | `crates/hammerpro-medallium/src/dispatch/mcp/tools_<domaine>.rs` |
 
 ## Traductions
 
@@ -37,10 +37,10 @@ L'interface est en noir et blanc : chaque couleur de l'interface vient des jeton
 
 ## Ajouter un outil MCP
 
-1. Décrivez l'outil dans les `SPECS` d'un fichier de domaine `crates/hammerpro/src/dispatch/mcp/tools_<domaine>.rs`.
+1. Décrivez l'outil dans les `SPECS` d'un fichier de domaine `crates/hammerpro-medallium/src/dispatch/mcp/tools_<domaine>.rs`.
 2. Implémentez-le dans la fonction `run` de ce fichier ; chaque modification passe par une étape d'annulation nommée « MCP: <outil> ».
 3. Ajoutez le libellé d'annulation `shell.undo.mcp_<outil>` dans `crates/hp-app/src/actions/mcp.rs`.
-4. Régénérez la liste des outils de `docs/MCP.md` avec `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro docs_list_every_tool`.
+4. Régénérez la liste des outils de `docs/MCP.md` avec `HP_UPDATE_MCP_DOCS=1 cargo test -p hammerpro-medallium docs_list_every_tool`.
 
 ## Remarque
 

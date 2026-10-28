@@ -51,7 +51,7 @@ To force an API, set the `WGPU_BACKEND` environment variable before starting Ham
 
 ```bat
 set WGPU_BACKEND=vulkan
-hammerpro.exe
+hammerpro-medallium.exe
 ```
 
 Values: `vulkan`, `dx12`, `metal`, `gl` (several can be separated by commas). Try another value when the window stays black, flickers or the driver crashes at start.

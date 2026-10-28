@@ -1,7 +1,7 @@
 """Drive the generic MCP tools of a running Hammer Pro through the stdio bridge.
 
 Usage:
-    python scripts/mcp_ui_check.py <hammerpro.exe> <out folder> [instances folder]
+    python scripts/mcp_ui_check.py <hammerpro-medallium.exe> <out folder> [instances folder]
 
 Like scripts/mcp_check.py (same client), for the generic tools: help
 (get_capabilities), every action (list_actions, run_action), settings,

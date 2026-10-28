@@ -1,9 +1,9 @@
 """Drive a running Hammer Pro window through the MCP stdio bridge.
 
 Usage:
-    python scripts/mcp_check.py <hammerpro.exe> <out folder> [instances folder]
+    python scripts/mcp_check.py <hammerpro-medallium.exe> <out folder> [instances folder]
 
-Starts `<hammerpro.exe> --mcp` (the bridge an AI app starts), speaks MCP on
+Starts `<hammerpro-medallium.exe> --mcp` (the bridge an AI app starts), speaks MCP on
 its stdin and stdout like a client, and calls get_map_info, create_brush,
 screenshot_view (saved as <out>/mcp_view.png), undo and get_map_info again.
 A Hammer Pro window must have MCP on (the pill of the top bar, or a script

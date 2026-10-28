@@ -2,7 +2,7 @@
 
 # Ligne de commande
 
-`hammerpro.exe` regroupe l'éditeur, le compilateur de maps et le pont MCP dans un seul programme. Cette page liste tous les arguments qu'il accepte.
+`hammerpro-medallium.exe` regroupe l'éditeur, le compilateur de maps et le pont MCP dans un seul programme. Cette page liste tous les arguments qu'il accepte.
 
 ## Syntaxe
 
@@ -66,14 +66,14 @@ Codes de sortie : `0` fin normale, `2` le fichier script est illisible ou une li
 
 ```bat
 rem Ouvrir une map en français
-hammerpro.exe "C:\maps\gm_mamap.vmf" --lang fr
+hammerpro-medallium.exe "C:\maps\gm_mamap.vmf" --lang fr
 
 rem Capture de l'éditeur avec l'outil bloc, vue 3D agrandie
-hammerpro.exe gm_mamap.vmf --tool block --maximize-view 0 --screenshot capture.png --frames 120
+hammerpro-medallium.exe gm_mamap.vmf --tool block --maximize-view 0 --screenshot capture.png --frames 120
 
 rem Compiler une map depuis un fichier batch
-hammerpro.exe --bspc -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mamap.vmf"
-hammerpro.exe --rad -both -final -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mamap.bsp"
+hammerpro-medallium.exe --bspc -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mamap.vmf"
+hammerpro-medallium.exe --rad -both -final -game "C:\...\GarrysMod\garrysmod" "C:\maps\gm_mamap.bsp"
 ```
 
 ## Pages liées
