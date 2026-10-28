@@ -28,30 +28,6 @@ impl Tool for NullTool {
     }
 }
 
-#[cfg(windows)]
-pub fn pid_alive(pid: u32) -> bool {
-    use windows_sys::Win32::Foundation::CloseHandle;
-    use windows_sys::Win32::System::Threading::{
-        GetExitCodeProcess, OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION,
-    };
-    const STILL_ACTIVE: u32 = 259;
-    unsafe {
-        let handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
-        if handle.is_null() {
-            return false;
-        }
-        let mut code = 0u32;
-        let ok = GetExitCodeProcess(handle, &mut code) != 0;
-        CloseHandle(handle);
-        ok && code == STILL_ACTIVE
-    }
-}
-
-#[cfg(not(windows))]
-pub fn pid_alive(pid: u32) -> bool {
-    std::path::Path::new(&format!("/proc/{pid}")).exists()
-}
-
 struct ScreenshotJob {
     path: PathBuf,
     frames: u64,

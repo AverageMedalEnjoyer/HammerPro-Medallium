@@ -174,6 +174,30 @@ pub fn end_session(dir: &Path, pid: u32) {
     let _ = std::fs::remove_file(dir.join(marker_name(pid)));
 }
 
+#[cfg(windows)]
+pub fn pid_alive(pid: u32) -> bool {
+    use windows_sys::Win32::Foundation::CloseHandle;
+    use windows_sys::Win32::System::Threading::{
+        GetExitCodeProcess, OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION,
+    };
+    const STILL_ACTIVE: u32 = 259;
+    unsafe {
+        let handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+        if handle.is_null() {
+            return false;
+        }
+        let mut code = 0u32;
+        let ok = GetExitCodeProcess(handle, &mut code) != 0;
+        CloseHandle(handle);
+        ok && code == STILL_ACTIVE
+    }
+}
+
+#[cfg(not(windows))]
+pub fn pid_alive(pid: u32) -> bool {
+    std::path::Path::new(&format!("/proc/{pid}")).exists()
+}
+
 pub fn write_device_lost_report(dir: &Path, reason: &str) -> std::io::Result<PathBuf> {
     let message = format!("the graphics device was lost: {reason}");
     let text = report_text(&message, "", "main", "(none: a driver reset, not a panic)", &crate::logger::recent_lines());
