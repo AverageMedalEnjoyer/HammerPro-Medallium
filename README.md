@@ -4,7 +4,7 @@
 
 **A modern, fast level editor for Source engine maps, built for Garry's Mod first.**
 
-[Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md)
+[Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md) | [Discord](https://discord.gg/eAEWWKRNAe)
 
 Hammer Pro opens and saves standard `.vmf` files, so you can use it side by side with Hammer and Hammer++. It is written in Rust, renders with the GPU through wgpu, stays smooth on huge maps and compiles maps with its own built in compiler: no VBSP, VVIS or VRAD needed.
 
@@ -79,6 +79,11 @@ The executable is `target/release/hammerpro.exe`. Rust 1.95 or newer is required
 - [English documentation](docs/en/README.md): getting started, one page per feature, the compiler, references (settings, shortcuts, command line, scripts, MCP), guides, troubleshooting and development.
 - [Documentation en français](docs/fr/README.md).
 - [MCP tool reference](docs/MCP.md) (generated) and [developer guide to extending Hammer Pro](docs/EXTENDING.md).
+
+## Community and contact
+
+- Discord server: [discord.gg/eAEWWKRNAe](https://discord.gg/eAEWWKRNAe) (help, feedback, bug reports, news)
+- Author on Discord: `oracleidt`
 
 ## Contributing
 
