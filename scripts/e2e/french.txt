@@ -1,0 +1,7 @@
+# French UI with the settings dialog open.
+wait 60
+action settings
+wait 20
+screenshot target/e2e/french_settings.png
+wait 5
+exit

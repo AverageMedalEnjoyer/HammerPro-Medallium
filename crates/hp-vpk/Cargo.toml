@@ -1,0 +1,18 @@
+[package]
+name = "hp-vpk"
+description = "Fast, thread safe reader for Valve VPK archives (v1 and v2)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+memmap2.workspace = true
+memchr.workspace = true
+crc32fast = "1.5"
+hashbrown = { version = "0.16", default-features = false, features = ["default-hasher", "inline-more"] }
+
+[dev-dependencies]
+rayon.workspace = true
+hp-kv.workspace = true

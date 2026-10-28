@@ -1,0 +1,11 @@
+[package]
+name = "hp-kv"
+description = "Fast, lenient Valve KeyValues parser and writer (VMF, VMT, gameinfo, VDF)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+memchr.workspace = true
+thiserror.workspace = true

@@ -1,0 +1,10 @@
+[package]
+name = "hp-pcf"
+description = "Particle systems of Source engine particle files (.pcf, binary DMX): definitions, operators and a small simulation for previews."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+thiserror.workspace = true

@@ -1,0 +1,510 @@
+[Documentation](../README.md) > Référence > Paramètres | [English](../../en/reference/settings.md)
+
+# Référence des paramètres
+
+Toutes les options de Hammer Pro 1.0.0 sont rangées dans un seul fichier TOML, `settings.toml`, dans `%APPDATA%\HammerPro` sous Windows (le dossier de configuration de l'utilisateur sur les autres systèmes). Cette page liste chaque table et chaque clé de ce fichier, sa valeur par défaut, son effet et l'endroit de l'interface où on la règle.
+
+En temps normal, vous n'ouvrez jamais ce fichier : la [fenêtre des paramètres](../features/settings-dialog.md) (**Outils > Options...**, `Ctrl+,`) et les menus le modifient, et chaque changement est enregistré tout de suite. Le modifier à la main reste sans danger :
+
+- Chaque clé a une valeur par défaut. Une clé absente prend sa valeur par défaut, une clé inconnue est ignorée : une ancienne et une nouvelle version de Hammer Pro peuvent partager le même fichier.
+- Une table n'est écrite que si l'une de ses valeurs diffère des valeurs par défaut : un fichier neuf est court.
+- Si le fichier est illisible (une faute de syntaxe TOML), Hammer Pro démarre avec les valeurs par défaut et écrit un avertissement dans le journal. Fermez Hammer Pro avant de modifier le fichier, sinon le prochain enregistrement écrase votre modification.
+- Le fichier est écrit de façon atomique (un fichier temporaire, puis un renommage).
+- Les outils MCP `get_settings` et `set_setting` lisent et modifient ces clés par leur chemin pointé (`render.water_preview`, `edit.grid_size`).
+
+Les valeurs suivent la syntaxe TOML : `true`, `16.0`, `"Dark"`. Les énumérations s'écrivent avec le nom de variante indiqué dans les tableaux (en anglais, c'est le format du fichier).
+
+## Clés de premier niveau
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `language` | langue du système | `"En"` ou `"Fr"`. Langue de l'interface. Au premier lancement, elle vient de la langue du système. **Paramètres > Général**, ou l'argument `--lang` pour un seul lancement. |
+| `language_chosen` | `false` | Passe à `true` une fois la langue choisie la première fois. |
+| `recent_files` | `[]` | Les maps de **Fichier > Maps récentes**, la plus récente en premier, 12 au plus. **Paramètres > Général** permet de vider la liste. |
+| `keybindings` | `{}` | Vos raccourcis modifiés : id de l'action = texte du raccourci (`undo = "Ctrl+Alt+Z"`, `""` pour aucun raccourci). Les noms de touches sont en anglais (`Shift`, pas `Maj`). Seules les actions modifiées sont écrites. Les ids sont listés dans [Actions et raccourcis clavier](actions-shortcuts.md). **Paramètres > Clavier**. |
+
+## `[view]` : vues et caméra
+
+Surtout sur **Paramètres > Vues** ; les clés `show_*` sont aussi dans le menu **Affichage**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `render_mode` | `"Textured"` | Mode de rendu 3D : `Textured`, `Flat`, `Wireframe`, `TexturedWire`, `Lit`, `Unshaded`, `SmoothingGroups`, `Baked`, `LightmapGrid`. **Affichage > Mode de rendu 3D**. |
+| `fov_deg` | `75.0` | Champ de vision de la vue 3D, en degrés. |
+| `camera_speed` | `1000.0` | Vitesse de vol de la caméra 3D, en unités par seconde. |
+| `camera_fast_multiplier` | `3.0` | Multiplicateur de vitesse quand `Maj` est enfoncée. |
+| `mouse_sensitivity` | `0.15` | Sensibilité de la souris pour regarder autour. |
+| `invert_mouse_y` | `false` | Inverse l'axe vertical de la souris. |
+| `far_plane` | `32768.0` | Distance d'affichage de la vue 3D. **Affichage > Distance d'affichage plus courte / plus longue** la modifient aussi. |
+| `msaa` | `true` | Anticrénelage des vues. |
+| `show_models` | `true` | Affiche les props avec leurs modèles. **Affichage > Afficher les modèles**. |
+| `show_helpers` | `true` | Affiche les aides des entités et les sprites. **Affichage > Afficher les aides et sprites**. |
+| `show_tool_textures` | `true` | Affiche les faces en textures outils. **Affichage > Afficher les textures outils**. |
+| `show_fps` | `false` | Affiche les images par seconde. **Paramètres > Général**. |
+| `show_3d_grid` | `false` | Grille dans la vue 3D (page Vues). |
+| `grid_highlight_every` | `8` | Une ligne de grille 2D sur N est mise en valeur. |
+| `show_1024_grid` | `true` | Lignes toutes les 1024 unités dans les vues 2D. |
+| `background_2d` | `[20, 20, 22]` | Couleur de fond des vues 2D (RVB). |
+| `background_3d` | `[36, 38, 44]` | Couleur de fond de la vue 3D (RVB). |
+| `selection_color` | `[255, 70, 70]` | Couleur de la sélection (RVB). |
+| `zoom_to_cursor` | `true` | La molette zoome vers le curseur (désactivé : vers le centre de la vue). |
+| `hover_outline` | `false` | L'outil de sélection entoure les objets sous la souris dans la vue 3D. |
+| `keyboard_layout` | `"Auto"` | Touches de vol : `Auto` (par position : ZQSD en AZERTY, WASD en QWERTY), `Azerty` (par étiquette : Z Q S D, A descend, E monte), `Qwerty` (par étiquette : W A S D, Q descend, E monte). |
+
+## `[edit]` : édition
+
+**Paramètres > Édition**, les touches de grille et les menus **Map** et **Outils**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `grid_size` | `16.0` | Taille de la grille globale, de 0,01 à 4096. Champ de la barre d'outils, `[` et `]`. |
+| `snap_to_grid` | `true` | Magnétisme de la grille. **Map > Magnétisme de grille** (`Maj+W`). |
+| `show_grid` | `true` | Affiche la grille 2D. **Map > Afficher la grille** (`Maj+G`). |
+| `texture_lock` | `true` | Les textures suivent les brushes déplacés et tournés. **Outils > Verrouillage des textures** (`Maj+L`). |
+| `texture_scale_lock` | `false` | Les textures suivent la mise à l'échelle des brushes. **Outils > Verrouillage de l'échelle des textures** (`Maj+K`). |
+| `select_mode` | `"Groups"` | Ce qu'un clic sélectionne : `Groups`, `Objects`, `Solids`. **Édition > Mode de sélection**. |
+| `default_material` | `"dev/dev_measuregeneric01b"` | Matériau des nouveaux brushes. |
+| `default_texture_scale` | `0.25` | Échelle de texture des nouvelles faces. |
+| `default_lightmap_scale` | `16` | Échelle de lightmap des nouvelles faces. |
+| `default_point_entity` | `"info_player_start"` | Classe de l'outil entité quand rien d'autre n'a été choisi. |
+| `default_brush_entity` | `"func_detail"` | Classe utilisée par **Lier à une entité**. |
+| `undo_levels` | `500` | Nombre d'étapes d'annulation conservées. |
+| `autosave_minutes` | `5` | Intervalle de la sauvegarde automatique en minutes (**Paramètres > Général > Sauvegarde automatique** ; 0 la désactive). |
+| `autosave_keep` | `10` | Copies de sauvegarde automatique conservées par map. |
+| `arrow_key_nudge` | `true` | Les flèches décalent la sélection dans les vues 2D. |
+| `paste_offset` | `true` | Les objets collés sont décalés pour ne pas recouvrir les originaux. |
+| `undo_restores_selection` | `true` | Les changements de sélection sont des étapes d'annulation : `Ctrl+Z` rétablit la sélection précédente (faces comprises). Ils ne marquent jamais la map comme modifiée. |
+
+## `[ui]` : interface
+
+**Paramètres > Général**, le menu **Affichage > Panneaux** et la disposition elle-même.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `theme` | `"Dark"` | `Dark` (sombre) ou `Light` (clair). |
+| `ui_scale` | `1.0` | Échelle de l'interface. |
+| `accent_color` | absente | Couleur d'accent (RVB) des mises en valeur, de l'outil actif et de la sélection ; absente pour le style noir et blanc. |
+| `show_texture_browser` | `true` | Onglet Textures du dock de droite. |
+| `show_entity_properties` | `true` | Onglet Entité. |
+| `show_visgroups` | `true` | Onglet Visgroups. |
+| `show_outliner` | `false` | Onglet Arborescence. |
+| `show_model_browser` | `false` | Onglet Modèles. |
+| `show_console` | `true` | Panneau de la console. |
+| `thumbnail_size` | `96.0` | Taille des vignettes du navigateur de textures. |
+| `split_x`, `split_y` | `0.5`, `0.5` | Position des séparateurs de la grille 2x2 des vues (0 à 1). |
+| `quadrants` | `[0, 1, 2, 3]` | Vue de chaque quart : 0 = 3D, 1 = Dessus, 2 = Face, 3 = Côté, 4 = logique 2D. |
+| `background_image` | `""` | Image dessinée sur toute la fenêtre (vide : aucune). |
+| `background_opacity` | `0.15` | Son opacité, de 0 à 1. |
+| `background_offset` | `[0.0, 0.0]` | Son décalage par rapport à la position centrée, en points. |
+| `background_zoom` | `1.0` | Son zoom par rapport à la taille qui couvre juste la fenêtre. |
+| `background_hide_3d` | `true` | Ne pas la dessiner sur les vues 3D. |
+| `native_frames` | `false` | Utilise les barres de titre et les cadres du système au lieu de ceux de Hammer Pro (bureau à distance, certains gestionnaires de fenêtres). Appliqué tout de suite. |
+| `uv_window`, `portals_window` | absentes | Dernière position de l'éditeur d'UV et de la fenêtre des portails quand ce sont des fenêtres séparées (écrites par Hammer Pro). |
+
+## `[game]` : jeu, contenu et définitions d'entités
+
+**Paramètres > Jeu**. Les changements s'appliquent avec **Appliquer et recharger le contenu** ou à la fermeture de la fenêtre. Voir [Configurer le jeu](../getting-started/game-setup.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `game` | `"gmod"` | Le jeu pour lequel vous faites vos maps : un id du catalogue (`gmod`, `tf`, `portal2`...), `mod:<dossier>` pour un mod de `steamapps/sourcemods`, `dir:<chemin>` pour un autre dossier de jeu. Son contenu est monté, son FGD chargé et les maps sont compilées dans son format. Voir [Jeux cibles](../compiler/target-games.md). |
+| `game_dirs` | `{}` | Dossiers de jeu choisis par vous (id du jeu = dossier qui contient `gameinfo.txt`), utilisés à la place de ceux trouvés dans Steam. |
+| `gmod_root` | absente | Dossier de Garry's Mod (celui qui contient `garrysmod` et `bin`). Absente : détecté au démarrage. |
+| `mount_addons` | `true` | Monte `garrysmod/addons` (dossiers et `.gma`). |
+| `mount_workshop` | `false` | Monte les addons du Workshop (y compris les anciens `.bin`). |
+| `mount_cfg` | `true` | Monte les jeux de `mount.cfg`. |
+| `mount_server_content` | `true` | Monte le contenu téléchargé depuis les serveurs (`garrysmod/download`, `garrysmod/cache/workshop`). |
+| `extra_game_dirs` | `[]` | Autres dossiers de jeu à monter. |
+| `custom_texture_dirs` | `[]` | Dossiers de textures personnalisés : tables avec `path`, `prefix` (préfixe des noms de matériaux quand le dossier n'est pas dans une arborescence `materials`) et `enabled`. Voir [Dossiers de textures personnalisés](../features/custom-texture-folders.md). |
+| `extra_fgds` | `[]` | Fichiers FGD supplémentaires, chargés après celui du jeu. |
+| `fgd_override` | absente | Remplace le FGD principal du jeu. |
+| `map_dir` | absente | Dossier par défaut des nouvelles maps et de la fenêtre d'ouverture. |
+
+## `[compile]` : compilation
+
+**Paramètres > Compilation** et la [fenêtre de compilation](../compiler/compile-window.md). Les clés d'anciens réglages supprimés (chemins des compilateurs externes) sont ignorées.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `preset` | `"Normal"` | `Draft` (brouillon), `Normal`, `Final` ou `Custom` (les modes d'étape ci-dessous). |
+| `lighting` | `"Ldr"` | `Ldr`, `Hdr` ou `Both`. |
+| `run_bsp`, `run_vis`, `run_rad` | `true` | Étapes du préréglage Custom : géométrie, visibilité, éclairage. |
+| `bsp_mode` | `"Normal"` | Géométrie du préréglage Custom : `Normal`, `OnlyEnts`, `OnlyProps`. |
+| `vis_mode` | `"Normal"` | Visibilité du préréglage Custom : `Fast` ou `Normal`. |
+| `rad_mode` | `"Normal"` | Éclairage du préréglage Custom : `Draft`, `Normal`, `Final`. |
+| `pack_custom_content` | `true` | Intègre le contenu personnalisé au BSP (voir `pack_policy`). |
+| `pack_policy` | `"ReleaseOnly"` | `ReleaseOnly` (seules les compilations Final et les publications intègrent le contenu ; les compilations d'itération utilisent l'addon de développement) ou `Always`. |
+| `dev_addon` | `true` | Les compilations d'itération copient le contenu personnalisé dans `garrysmod/addons/hammerpro_dev` au lieu de l'intégrer. |
+| `export_custom_materials` | `false` | Exporte les matériaux personnalisés. |
+| `copy_to_maps` | `true` | Copie le BSP dans le dossier `maps` du jeu. |
+| `maps_dir_override` | absente | Dossier où copier le BSP (absente : `garrysmod/maps`). |
+| `launch_game` | `true` | Lance le jeu après la compilation. |
+| `launch_via_steam` | `false` | Lance le jeu par Steam. |
+| `game_exe_path` | absente | Exécutable du jeu (absente : détecté). |
+| `game_args` | `"-console -dev"` | Arguments du jeu ; les options de démarrage rapide du menu de lancement les modifient. |
+| `threads` | absente | Threads du compilateur (absente : automatique, un cœur gardé pour l'éditeur avec `low_priority`). |
+| `low_priority` | `true` | Garde un cœur pour l'éditeur. |
+| `extra_bsp_args` | `""` | Arguments supplémentaires de `hammerpro --bspc`. |
+| `extra_rad_args` | `""` | Arguments supplémentaires de `hammerpro --rad`. |
+| `bsp_flag_choices`, `rad_flag_choices` | `{}` | Options forcées dans les menus d'options : option = `{ on = true, value = "4" }`. Voir [Options de compilation](../compiler/compile-options.md). |
+| `save_before_compile` | `false` | Enregistre la map avant de compiler (la compilation utilise toujours un instantané et ne touche jamais au fichier). |
+| `load_pointfile_on_leak` | `true` | Charge le chemin de la fuite quand la map fuit. |
+| `stop_on_leak` | `true` | S'arrête après la géométrie quand la map fuit. |
+| `compile_hidden` | `false` | Compile aussi les objets masqués dans l'éditeur. |
+| `compile_cordon_only` | `true` | Avec un cordon actif, ne compile que la zone du cordon (sous le nom `<map>_cordon`). |
+| `cordon_material` | `"TOOLS/TOOLSSKYBOX"` | N'est plus lue : le matériau de fermeture est `visibility.cordon_material`. |
+| `smart_recompile` | `true` | Choisit la chaîne la moins coûteuse d'après ce qui a changé (Draft et Normal). |
+| `background_precompile` | `true` à partir de 8 cœurs | Compile en arrière-plan quand l'éditeur est inactif. |
+| `progressive` | `false` | Jouer tout de suite : compilation Draft, lancement, puis éclairage terminé en arrière-plan et map remplacée. |
+| `progressive_preset` | `"Normal"` | Qualité de cet éclairage en arrière-plan (aucun réglage dans la fenêtre). |
+| `history` | `true` | Garde un historique des durées par map. |
+| `static_prop_lighting` | `true` | Autorise `-StaticPropLighting` quand la qualité le demande. |
+| `static_prop_shadows` | `true` | Les props statiques projettent des ombres (désactivé : ajoute `-nostaticpropshadows`). |
+| `expert` | `false` | Mode expert : exécute le profil choisi au lieu du préréglage. |
+| `profiles` | `[]` | Profils experts : `name` et `steps` (`enabled`, `action`, `program`, `args`, `continue_on_error`). |
+| `active_profile` | `0` | Index du profil choisi. |
+| `separate_window` | `true` | La fenêtre Compiler et lancer est une fenêtre indépendante. |
+| `window` | absente | Dernière position de cette fenêtre. |
+
+## `[browser]` : navigateurs de ressources
+
+Navigateurs de textures, de modèles, de sons et de particules, et **Paramètres > Entités et navigateurs**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `favorites` | `[]` | Matériaux favoris. |
+| `recent_materials` | `[]` | Matériaux utilisés récemment (64 au plus). |
+| `hide_tool_textures` | `false` | Masque les textures outils dans le navigateur de textures. |
+| `hidden_shaders` | `[]` | Shaders dont les matériaux sont masqués (`vertexlitgeneric` masque les matériaux des modèles). |
+| `only_used_in_map` | `false` | N'affiche que les matériaux utilisés dans la map. |
+| `last_filter` | `""` | Dernier texte de recherche. |
+| `excluded_folders` | `[]` | Dossiers de matériaux masqués dans le navigateur (`dossier` ou `dossier/sous`). |
+| `fgd_exclusions` | `true` | Masque aussi les dossiers exclus par le FGD (`@MaterialExclusion`). |
+| `show_alpha` | `false` | Vignettes des matériaux avec alpha sur un damier. |
+| `show_sound_browser` | `false` | Onglet du navigateur de sons. |
+| `show_particle_browser` | `false` | Onglet du navigateur de particules. |
+| `model_grid_view` | `true` | Navigateur de modèles en grille de rendus (désactivé : une liste). |
+| `tile_size` | `96.0` | Taille des tuiles de modèles et de particules, de 48 à 256 points. |
+| `gmod_only` | `false` | Les navigateurs de modèles, de sons et de particules ne listent que le contenu de base de Garry's Mod. |
+| `sound_volume` | `0.8` | Volume des aperçus sonores, de 0 à 1. |
+| `sound_autoplay` | `true` | Sélectionner un son le joue. |
+
+## `[selection]`
+
+**Paramètres > Sélection**. Voir [Outil de sélection](../features/selection-tool.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `clone_keeps_visgroups` | `true` | Les copies faites en glissant restent dans les visgroups des originaux. |
+| `rotation_snap_deg` | `15.0` | Pas de rotation des poignées et des anneaux du gizmo, de 1 à 180 degrés. |
+| `free_rotation_with_alt` | `false` | `Alt` (au lieu de `Ctrl`) tourne librement, sans le pas. |
+| `handle_size` | `7.0` | Taille des poignées 2D, de 4 à 16 points. |
+| `shift_arrow_clones` | `true` | `Maj` + flèches clone la sélection à un pas de grille ; le décalage d'une unité passe alors sur `Alt` + flèches. |
+| `gizmo_local` | `false` | Le gizmo d'une seule entité ponctuelle suit ses angles (`Ctrl+J`). |
+| `click_to_zoom` | `false` | L'outil caméra zoome les vues 2D au clic (`Ctrl` + clic dézoome). |
+| `stretch_handles` | `true` | Des flèches sur les faces de la sélection, dans la vue 3D, l'étirent. |
+
+## `[brush]`
+
+**Paramètres > Brushes**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `reorient_primitives` | `true` | Les primitives dessinées dans la vue Face ou Côté suivent l'axe de profondeur de cette vue. |
+| `clip_measurements` | `true` | L'outil de découpe affiche la longueur et l'angle de la ligne de coupe. |
+| `clip_current_material` | `false` | Les faces coupées reçoivent le matériau actuel (désactivé : elles copient la face la plus proche). |
+
+## `[workflow]`
+
+**Paramètres > Vues** (contrôles), **Paramètres > Général** (maps), **Paramètres > Clavier** (jeu de raccourcis), menus **Affichage** et **Fenêtre**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `keymap_preset` | `"HammerPro"` | Jeu de raccourcis : `HammerPro`, `Hammer`, `HammerPlusPlus`. Vos propres raccourcis restent prioritaires. |
+| `nav_scheme` | `"HammerPro"` | Contrôles de la caméra : `HammerPro` (clic droit glissé pour regarder, ZQSD/WASD pour voler, clic molette glissé pour faire défiler), `Hammer` (en plus : Espace + clic gauche glissé regarde, Espace + clic droit glissé fait défiler, clics gauche et droit glissés déplacent, les flèches regardent), `HammerPlusPlus` (les contrôles de Hammer, le clic molette regarde en 3D). |
+| `invert_mouse_x` | `false` | Inverse l'axe horizontal de la souris. |
+| `fly_response` | `0.07` | Secondes que met la caméra pour atteindre sa vitesse, de 0 à 0,5 (0 : immédiat). |
+| `grid_step_factor` | `2.0` | Facteur de `[` et `]`, de 1,25 à 10. Avec 2, les puissances de deux de 1/8 à 4096. |
+| `ctrl_wheel` | `"GridSize"` | `Ctrl` + molette dans une vue 2D : `GridSize` (taille de grille) ou `ZoomAll2d` (zoom de toutes les vues 2D). |
+| `link_2d_zoom` | `false` | Zoomer une vue 2D zoome les autres. |
+| `units` | `"Units"` | Longueurs de la barre d'état : `Units`, `Inches`, `FeetInches`, `Meters` (une unité = 2,54 cm). |
+| `show_view_info` | `false` | Images par seconde, position et angles de la caméra dans la vue 3D (`O`). |
+| `show_bounds` | `false` | Boîtes englobantes des objets visibles (`I`). |
+| `show_toolbar`, `show_tool_palette`, `show_status_bar` | `true` | **Affichage > Panneaux**. |
+| `show_history` | `false` | Onglet de l'historique des modifications. |
+| `layouts` | `{}` | Dispositions enregistrées (**Fenêtre > Disposition > Enregistrer la disposition...**), 32 au plus : `quadrants`, `split_x`, `split_y`, `maximized`, `panels`. |
+| `open_in_new_tab` | `true` | Les maps ouvertes ont leur propre onglet (désactivé : elles remplacent la map actuelle). |
+
+## `[instances]`
+
+**Paramètres > Instances** et **Outils > Instances**. Voir [Instances](../features/instances.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `display` | `"Tinted"` | Contenu des `func_instance` : `Hidden` (masqué), `Tinted` (teinté), `Normal`. |
+| `folder` | `"instances"` | Dossier des nouvelles instances, relatif au dossier de la map (ou absolu). |
+| `collapse_skips_hidden` | `true` | La fusion laisse de côté les objets masqués dans les fichiers d'instance. |
+| `outline_selected` | `true` | Entoure le contenu des instances sélectionnées et affiche leur fichier. |
+| `show_context` | `true` | Dessine la map autour d'une instance en cours de modification, teintée et en lecture seule. |
+
+## `[visibility]`
+
+**Paramètres > Cordons et visgroups**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `cordon_material` | `"tools/toolsskybox"` | Matériau des brushes qui ferment une compilation de cordon. |
+| `shade_outside_2d` | `true` | Assombrit la zone hors des cordons dans les vues 2D. |
+| `shade_opacity` | `0.45` | Opacité de cet assombrissement, de 0 à 1. |
+| `show_cordon_names` | `true` | Noms des cordons dans les vues 2D. |
+| `move_remove_others` | `true` | **Déplacer vers un visgroup** retire les objets de leurs autres visgroups. |
+| `move_hide` | `false` | **Déplacer vers un visgroup** masque ensuite le visgroup. |
+
+## `[helpers]`
+
+**Paramètres > Aides** et **Affichage > Options d'affichage**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `helper_scope` | `"Selected"` | Aides (rayons, cônes, lignes vers les cibles) des entités sélectionnées (`Selected`) ou de toutes (`All`). |
+| `connections` | `"Selected"` | Lignes d'entrées/sorties : `Off`, `Selected`, `All`. |
+| `show_overlays` | `true` | Dessine les `info_overlay` sur leurs faces. |
+| `show_editor_objects` | `true` | Icônes des entités et géométrie des aides. |
+| `show_entity_names` | `true` | Noms des entités ponctuelles dans les vues 2D. |
+| `show_ropes` | `true` | Dessine les cordes comme elles pendent en jeu. |
+| `simulate_ropes` | `false` | Anime les cordes pendant qu'elles se stabilisent. |
+
+## `[mesh]`
+
+**Paramètres > Sommets et displacements**.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `uv_lock` | `false` | Outil vertex : les textures suivent les sommets déplacés. |
+| `live_preview` | `true` | Outil vertex : les solides montrent leur nouvelle forme pendant le glisser. |
+| `four_way_blends` | `true` | La peinture d'alpha peut peindre les 4 textures des matériaux à mélange 4 voies. |
+| `noise_min`, `noise_max` | `-4.0`, `4.0` | Plage de hauteur de **Ajouter du bruit aux displacements...**. |
+| `disp_tool` | `{}` | Toutes les options du panneau de l'outil displacement, par nom (écrites par l'outil). |
+
+## `[entities]`
+
+**Paramètres > Entités et navigateurs** ; `[entities.path]` vient des options de l'outil chemin.
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `io_esc_delimiter` | `true` | Les nouvelles sorties utilisent le séparateur ESC (les paramètres peuvent contenir des virgules). |
+| `paste_targetname` | `false` | **Coller les keyvalues** colle aussi le nom. |
+| `texture_decimals` | `4` | Décimales des champs de l'édition de faces, de 0 à 6. |
+| `texture_shift_step` | `1.0` | Pas de glisser des champs de décalage. |
+| `texture_scale_step` | `0.005` | Pas de glisser des champs d'échelle. |
+| `crowbar_exe` | absente | Exécutable Crowbar choisi dans l'inspecteur de modèles. |
+| `path.class` | `"path_corner"` | Classe des nouveaux points de chemin. |
+| `path.base_name` | `"path"` | Nom de base des points (`path_1`, `path_2`...). |
+| `path.close_loop` | `false` | Terminer un chemin relie le dernier point au premier. |
+| `path.relink_on_delete` | `true` | Supprimer des points relie leurs voisins. |
+| `path.surface_offset` | `0.0` | Hauteur au-dessus de la surface des points posés en 3D, de -1024 à 1024. |
+
+## `[render]`
+
+**Paramètres > Rendu** et **Affichage > Options d'affichage**. Voir [Modes de rendu et affichage](../features/render-modes-display.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `grid_3d` | `false` | Grille 3D sur les faces des brushes (`P`). |
+| `grid_3d_opacity` | `0.45` | Son opacité. |
+| `grid_3d_fade_cells` | `64.0` | Elle s'estompe au-delà de ce nombre de cases. |
+| `near_plane` | `1.0` | Distance de découpe proche, de 0,5 à 16 unités. |
+| `model_distance` | `0.0` | Les modèles plus loin que cette distance sont des boîtes (0 : sans limite). |
+| `lod_distances` | `[0.0, 0.0]` | Distances des LOD 1 et 2 pour les modèles lourds (0 : toujours le modèle complet). Aucun réglage dans la fenêtre. |
+| `models_in_2d` | `"SelectedOnly"` | `Boxes`, `Wireframe`, `SelectedOnly`. |
+| `collision_models` | `false` | Modèles de collision par-dessus les modèles. **Affichage > Options d'affichage > Modèles de collision**. |
+| `collision_only` | `false` | N'affiche que les modèles de collision. |
+| `fill_selected_2d` | `true` | Remplit les faces sélectionnées dans les vues 2D. |
+| `fill_selected_2d_opacity` | `0.2` | Opacité de ce remplissage. |
+| `camera_in_2d` | `true` | Dessine la caméra 3D dans les vues 2D. |
+| `vertex_dots_2d` | `true` | Sommets des brushes en points quand on zoome. |
+| `icons_in_2d` | `true` | Icônes des entités dans les vues 2D. |
+| `icons_in_2d_px` | `16.0` | Leur taille en pixels. |
+| `use_visgroup_colors` | `false` | Les couleurs filaires 2D viennent des visgroups. |
+| `highlight_invalid` | `true` | Brushes invalides en rouge. |
+| `render_effects` | `true` | Aperçu de render amount, mode, couleur, groupes de corps, animation et échelle. |
+| `sky_preview` | `true` | Skybox 2D derrière la vue 3D. |
+| `skybox_3d` | `true` | Skybox 3D autour de `sky_camera` (`Alt+V`). |
+| `sky_see_through` | `false` | Laisse de côté les faces `toolsskybox` pour voir le ciel au travers. |
+| `water_preview` | `true` | Eau dessinée comme en jeu. |
+| `fog_preview` | `false` | Aperçu du brouillard d'`env_fog_controller`. |
+| `normal_maps` | `true` | Les normal maps donnent leur relief aux surfaces. |
+| `player_compiled_lighting` | `true` | La vue joueur utilise les lightmaps de la map compilée. |
+| `cubemaps` | `true` | Les matériaux `$envmap` reflètent leur cubemap. |
+| `cubemaps_auto` | `true` | Les cubemaps sont redessinées après les modifications de la map. |
+| `light_shadows` | `4` | Lumières ponctuelles et spots avec ombres en mode éclairé, de 0 à 16. |
+| `animate_materials` | `true` | Matériaux animés et sprites en mouvement. |
+| `model_fade` | `false` | Les props disparaissent progressivement entre leurs distances de fondu. |
+| `force_opaque` | `false` | Matériaux translucides dessinés opaques. |
+| `walkable` | `false` | Teinte les surfaces trop pentues pour marcher. |
+| `radius_culling` | `false` | Masque ce qui est au-delà de `cull_radius`. |
+| `cull_radius` | `4096.0` | Rayon de la limite de distance. |
+| `show_displacements` | `true` | Affiche les displacements. |
+| `displacements_in_2d` | `true` | Dessine les displacements dans les vues 2D. |
+| `displacements_only` | `false` | N'affiche que les displacements. |
+| `displacements_2d` | `"Mesh"` | `Mesh`, `SelectedMesh`, `Outline`. |
+| `displacements_2d_views` | `["Global", ...]` | Réglage propre à chaque quart, à la place de `displacements_2d`. |
+| `disp_source_2d` | `true` | Contour léger du brush d'origine des displacements en 2D. |
+| `disp_walkable` | `false` | Colore les triangles des displacements selon leur praticabilité. |
+| `occlusion_culling` | `true` | Saute les blocs cachés derrière une géométrie plus proche. |
+| `selection_outline` | `false` | Contour de la sélection à travers les murs. |
+| `grid_dotted` | `false` | Grille 2D en points. |
+| `grid_highlight_64` | `false` | Lignes plus claires toutes les 64 unités. |
+| `grid_min_px` | `4.0` | Masque les niveaux de grille 2D plus serrés que ce nombre de pixels. |
+| `hide_nodraw`, `hide_clips`, `hide_triggers`, `hide_hints` | `false` | Groupes de textures outils masqués dans la vue 3D. |
+| `max_fps` | `0` | Limite d'images par seconde (0 : aucune). |
+| `unfocused_fps` | `30` | Images par seconde quand la fenêtre n'a pas le focus (0 : sans limite). |
+| `vsync` | `true` | Attend le rafraîchissement de l'écran (après un redémarrage). |
+
+## `[lighting]`
+
+**Paramètres > Éclairage** et l'onglet Éclairage. Les options du précalcul lui-même (échantillons, rebonds...) appartiennent à chaque map (son bloc Hammer++ `light_plus`). Voir [Aperçu de l'éclairage](../features/lighting-preview.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `auto_bake` | `true` | Lance un précalcul quand l'aperçu précalculé est activé et que rien n'est encore calculé. |
+| `threads` | `0` | Threads du précalcul (0 : tous les cœurs sauf deux), jusqu'à 256. |
+| `max_luxels_millions` | `16` | Luxels calculés en pleine résolution, de 1 à 64 millions. |
+| `tiny_scale` | `4` | Échelle de lightmap à partir de laquelle (ou en dessous) une face est jugée minuscule, de 1 à 64. |
+| `budget_styles` | `1` | Styles de lumière comptés par le budget de lightmap, de 1 à 4. |
+| `show_budget` | `true` | Jauge du budget de lightmap dans la barre d'état. |
+| `quality` | `"Draft"` | `Draft`, `Normal` ou `Final`. |
+
+## `[placement]`
+
+**Paramètres > Prefabs**. `[placement.sprinkle]` vient des options de l'outil sprinkle. Voir [Prefabs](../features/prefabs.md) et [Outil sprinkle](../features/sprinkle-tool.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `show_prefabs` | `true` | Onglet Prefabs. |
+| `prefab_library` | absente | Dossier des nouveaux prefabs (absente : `prefabs` dans le dossier des paramètres). |
+| `prefab_dirs` | `[]` | Autres dossiers de prefabs (lecture seule). |
+| `game_prefabs` | `true` | Liste aussi les prefabs de l'installation du jeu. |
+| `prefab_tile` | `96.0` | Tuiles des prefabs, de 56 à 192 points. |
+| `group_prefabs` | `true` | Groupe les objets d'un prefab inséré. |
+| `sprinkle.kind` | `""` | Type de sprinkle choisi. |
+| `sprinkle.mode` | `"Add"` | `Add`, `Subtract`, `Replace`, `Overwrite`. |
+| `sprinkle.density` | `50.0` | Probabilité en pourcentage par case. |
+| `sprinkle.radius` | `128.0` | Rayon du pinceau, de 8 à 4096. |
+| `sprinkle.use_grid` | `false` | Utilise la grille de l'éditeur au lieu de celle de la définition. |
+| `sprinkle.random_yaw` | `true` | Lacet aléatoire. |
+| `sprinkle.random_offset` | `50.0` | Déplacement aléatoire en pourcentage d'une demi-case. |
+| `sprinkle.z_offset` | `0.0` | Distance le long de la normale de la surface. |
+| `sprinkle.align_to_normal` | `false` | Incline les entités selon la surface. |
+| `sprinkle.extra_dirs` | `[]` | Autres dossiers de définitions de sprinkle. |
+
+## `[launch]`
+
+Menu de lancement de la fenêtre de compilation et **Paramètres > Jeu > Tests en jeu**. Les options de démarrage rapide sont des options de `compile.game_args`. Voir [Lancer le jeu](../features/game-launch.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `timing` | `"AtEnd"` | Lance le jeu à la fin de la compilation (`AtEnd`) ou dès son début (`AtStart`). |
+| `reuse_running` | `true` | Charge la map dans le jeu déjà lancé. |
+| `skip_unused_content` | `false` | Ne monte pas le Workshop et les addons si la map n'en utilise rien. |
+| `load_report` | `false` | Indique le temps de chargement de la map par le jeu (`-condebug`). |
+| `spawn_at_camera` | `false` | Place le joueur à la caméra de l'éditeur (nécessite l'addon passerelle). |
+| `args_version` | `0` | Interne : version de la mise à jour unique des arguments du jeu. |
+
+## `[content]`
+
+La fenêtre **Construire et enregistrer en contenu** et l'onglet Ressources de la map. Voir [Construire et publier](../features/build-content-release.md) et [BSP Protection Pro](../features/bsp-protection.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `mode` | `"WorkshopAddon"` | `WorkshopAddon` (BSP, arborescence de contenu et `.gma`), `SelfContained` (tout dans le BSP), `ServerKit` (BSP autonome et arborescence FastDL). |
+| `compile_first` | `true` | Lance d'abord une compilation Final. |
+| `compress_pakfile` | `false` | Compresse le pakfile en LZMA (Garry's Mod affiche alors un avertissement par entrée). |
+| `lzma_level` | `6` | Niveau LZMA, de 0 à 9. |
+| `pack_workshop` | `true` | Livre le contenu venant d'éléments du Workshop (sinon ils sont listés comme éléments requis). |
+| `pack_mounted` | `false` | Livre le contenu des jeux de `mount.cfg`. |
+| `keep_cubemaps` | `true` | Recopie les cubemaps construites du BSP précédent. |
+| `game_session` | `false` | Construit les cubemaps et le nav mesh en jeu. |
+| `write_gma` | `true` | Écrit le `.gma`. |
+| `open_folder` | `false` | Ouvre le dossier de sortie à la fin. |
+| `protect` | `false` | BSP Protection Pro. |
+| `protect_watermark` | `""` | Filigrane de la copie protégée. |
+| `protect_strip_original_faces` | `true` | Vide le lump des faces d'origine. |
+| `protect_lock` | `false` | Verrou serveur. |
+| `protect_lock_key` | `""` | Clé secrète du verrou serveur (seule son empreinte va dans la map). |
+| `protect_lock_block` | `false` | Bloque le jeu sur un serveur non autorisé. |
+| `protect_randomize` | `true` | Brouillage des matériaux. |
+| `show_map_assets` | `false` | Onglet Ressources de la map. |
+| `collect_folder` | `""` | Dernier dossier de sortie de **Collecter**. |
+
+## `[health]`
+
+**Paramètres > Santé de la map**. Voir [Vérifier les problèmes](../features/check-problems.md) et [Fuites et pointfiles](../features/leaks-pointfiles.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `live_checks` | `true` | Vérifie les problèmes de la map en arrière-plan. |
+| `live_leak_check` | `true` | Vérification instantanée des fuites en arrière-plan. |
+| `show_leak_path` | `true` | Dessine le chemin de cette fuite. |
+| `limit_profile` | `"auto"` | Limites des estimations : `auto` (le jeu de la map) ou l'id d'un profil. |
+| `visible_only` | `false` | Ne liste que les problèmes des objets visibles. |
+| `portal_width` | `1.0` | Épaisseur des lignes de portails, de 1 à 6 pixels. |
+| `leaf_grid` | `false` | Dessine la grille de 1024 unités sur laquelle les leafs sont découpées. |
+| `leaf_width` | `1.0` | Épaisseur de ses lignes, de 1 à 6. |
+| `offer_portals` | `true` | Propose de charger le nouveau fichier de portails après une compilation. |
+| `portal_heat` | `false` | Colore les portails selon le coût de rendu. |
+| `portal_xray` | `true` | Montre les portails à travers les murs en 3D. |
+
+## `[lab]`
+
+**Paramètres > Nav mesh et particules** et les options de Propper et de la conversion inverse. Voir [Nav mesh](../features/nav-mesh.md), [Particules](../features/particles.md), [Propper](../features/propper.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `show_nav_mesh` | `false` | Dessine le nav mesh. |
+| `nav_connections` | `true` | Dessine les connexions entre zones. |
+| `nav_fill` | `true` | Remplit les zones en 3D. |
+| `show_particles` | `true` | Joue les effets des `info_particle_system`. |
+| `particles_selected_only` | `false` | Seulement les systèmes sélectionnés. |
+| `unprop_detail` | `true` | **Convertir le prop en brushes...** range les brushes dans un `func_detail`. |
+| `unprop_keep_prop` | `false` | Garde le prop. |
+| `unprop_shape` | `"auto"` | `auto`, `collision` ou `render`. |
+| `model_lod.enabled` | `true` | Crée des niveaux de détail pour les modèles générés. |
+| `model_lod.levels` | `4` | Niveaux sous le modèle complet, de 3 à 6. |
+| `model_lod.reduction` | `0.5` | Part des triangles gardée à chaque niveau, de 0,2 à 0,9. |
+
+## `[grid]`
+
+**Map > Grilles**, le menu de grille de la barre d'outils et le gestionnaire de grilles. Voir [Grilles](../features/grids.md).
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `mode` | `"Global"` | `Global`, `PerView`, `Custom`, `Selection`. |
+| `custom` | `""` | Nom de la grille personnalisée du mode Custom. |
+| `per_view` | 16 partout | `perspective`, `top`, `front`, `side` : chacune avec `size`, `origin`, `major_every`. |
+| `presets` | `[]` | Grilles personnalisées proposées dans toutes les maps (64 au plus) : `name`, `step` (par axe), `origin`, `angles`, `major_every`, `bounds` et `color` facultatifs. |
+| `object_grids` | `true` | Modifier un objet qui porte une grille s'aligne sur cette grille. |
+| `plane_3d` | `true` | Dessine le plan d'une grille personnalisée ou par vue en 3D. |
+
+## `[mcp]` et `[discord]`
+
+| Clé | Défaut | Effet |
+| --- | --- | --- |
+| `mcp.start_with_app` | `false` | Active le serveur MCP au démarrage de Hammer Pro. **Paramètres > MCP**. Voir [Serveur MCP](mcp-server.md). |
+| `discord.enabled` | `true` | Affiche l'activité sur Discord (nécessite un id d'application). |
+| `discord.show_map` | `true` | Affiche le nom de la map. |
+| `discord.show_elapsed` | `true` | Affiche le temps passé. |
+| `discord.show_tool` | `true` | Affiche l'outil actif. |
+| `discord.application_id` | `""` | Id de l'application Discord. |
+| `discord.project_url` | `""` | Lien du bouton (pas de bouton si vide). |
+
+Voir [Discord Rich Presence](../features/discord.md).
+
+## Pages liées
+
+- [Fenêtre des paramètres](../features/settings-dialog.md)
+- [Fichiers et dossiers](files-and-folders.md)
+- [Actions et raccourcis clavier](actions-shortcuts.md)
+
+---
+[Retour à l'index de la documentation](../README.md)

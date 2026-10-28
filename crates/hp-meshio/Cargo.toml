@@ -1,0 +1,16 @@
+[package]
+name = "hp-meshio"
+description = "Readers for 3D model files (OBJ, glTF/GLB, FBX) and a built-in compiler to Source models (MDL, VVD, VTX, PHY), for importing models without Crowbar nor studiomdl."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+glam.workspace = true
+thiserror.workspace = true
+flate2 = "1"
+serde_json = "1"
+
+[dev-dependencies]
+hp-mdl.workspace = true

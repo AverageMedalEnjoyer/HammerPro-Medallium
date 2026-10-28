@@ -1,0 +1,65 @@
+use hp_app::i18n::TrTable;
+
+pub const TR: TrTable = &[
+    ("instancing.create_title", "Create instance from selection", "Créer une instance depuis la sélection"),
+    ("instancing.name", "File name:", "Nom du fichier :"),
+    ("instancing.folder", "Folder:", "Dossier :"),
+    ("instancing.browse", "Browse...", "Parcourir..."),
+    ("instancing.browse_title", "Folder of the new instance", "Dossier de la nouvelle instance"),
+    ("instancing.origin", "Origin:", "Origine :"),
+    (
+        "instancing.origin_tip",
+        "The selection is saved around this point, which becomes the origin of the func_instance.",
+        "La sélection est enregistrée autour de ce point, qui devient l'origine de la func_instance.",
+    ),
+    ("instancing.key", "Instance file key: {0}", "Clé du fichier de l'instance : {0}"),
+    ("instancing.overwrite", "Replace the existing file", "Remplacer le fichier existant"),
+    (
+        "instancing.unsaved",
+        "The map is not saved yet: choose a full folder path.",
+        "La map n'est pas encore enregistrée : choisissez un chemin de dossier complet.",
+    ),
+    ("instancing.create", "Create", "Créer"),
+    ("instancing.cancel", "Cancel", "Annuler"),
+    ("instancing.writing", "Saving...", "Enregistrement..."),
+    (
+        "instancing.bad_name",
+        "Invalid file name (no folder separator, no : * ? \" < > |).",
+        "Nom de fichier invalide (pas de séparateur de dossier, ni : * ? \" < > |).",
+    ),
+    ("instancing.no_folder", "Choose the folder of the instance.", "Choisissez le dossier de l'instance."),
+    ("instancing.exists", "A file with this name already exists.", "Un fichier de ce nom existe déjà."),
+    (
+        "instancing.sandboxed",
+        "Automated runs never write into the game folder.",
+        "Les exécutions automatisées n'écrivent jamais dans le dossier du jeu.",
+    ),
+    ("instancing.failed", "Cannot create the instance: {0}", "Impossible de créer l'instance : {0}"),
+    ("instancing.write_failed", "Cannot write {0}: {1}", "Impossible d'écrire {0} : {1}"),
+    ("instancing.write_stopped", "the write stopped", "l'écriture s'est arrêtée"),
+    (
+        "instancing.replace_failed",
+        "{0} was written but the selection could not be replaced: {1}",
+        "{0} a été écrit mais la sélection n'a pas pu être remplacée : {1}",
+    ),
+    ("instancing.created", "Instance created: {0}", "Instance créée : {0}"),
+    (
+        "instancing.nothing",
+        "Select the objects of the new instance first.",
+        "Sélectionnez d'abord les objets de la nouvelle instance.",
+    ),
+    ("instancing.none", "The map has no visible instance.", "La map n'a aucune instance visible."),
+    ("instancing.collapse_title", "Collapse all instances", "Fusionner toutes les instances"),
+    (
+        "instancing.collapse_question",
+        "Replace the {0} visible instances of the map with their contents?",
+        "Remplacer les {0} instances visibles de la map par leur contenu ?",
+    ),
+    ("instancing.collapse_note", "Undo restores them.", "Annuler les rétablit."),
+    (
+        "instancing.collapse_hidden",
+        "Objects hidden in the instance files are left out.",
+        "Les objets masqués dans les fichiers des instances sont ignorés.",
+    ),
+    ("instancing.collapse_yes", "Collapse all", "Tout fusionner"),
+];

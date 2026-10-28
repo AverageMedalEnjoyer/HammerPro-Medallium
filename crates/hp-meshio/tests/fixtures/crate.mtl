@@ -1,0 +1,6 @@
+# Crate materials
+newmtl wood planks
+Kd 0.8 0.8 0.8
+map_Kd -s 1 1 1 -bm 0.5 C:\Users\artist\Documents\crate_wood.png
+newmtl metal
+Kd 0.2 0.3 0.4

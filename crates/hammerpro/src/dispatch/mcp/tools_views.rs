@@ -1,0 +1,831 @@
+use glam::{DVec2, DVec3};
+use hp_app::settings::{Disp2dSetting, Disp2dViewSetting, RenderModeSetting};
+use hp_app::view::Camera2d;
+use hp_app::{Action, AppState, QuadrantView, ViewKind};
+use hp_editor::limits::world_light::LightMode;
+use hp_mcp::protocol::ToolResult;
+use hp_mcp::tools::{ToolKind, ToolSpec};
+use serde_json::{Value, json};
+
+use super::automation::{UiOp, quadrant_view_name, view_name};
+use super::schema::{boolean, empty, integer, number, object, one_of, string, vec3};
+use super::tools::{Args, Domain, Outcome, R, args, v3};
+
+pub(crate) const DOMAIN: Domain = Domain { category: "views", specs: SPECS, run };
+
+const KINDS: &[&str] = &["3d", "top", "front", "side", "logical"];
+const VIEWS_2D: &[&str] = &["top", "front", "side", "all"];
+const MAXIMIZE: &[&str] = &["0", "1", "2", "3", "none"];
+const DISP_2D: &[&str] = &["global", "mesh", "selected_mesh", "outline"];
+const MODES: &[(&str, Action, RenderModeSetting)] = &[
+    ("textured", Action::RenderTextured, RenderModeSetting::Textured),
+    ("flat", Action::RenderFlat, RenderModeSetting::Flat),
+    ("wireframe", Action::RenderWireframe, RenderModeSetting::Wireframe),
+    ("textured_wire", Action::RenderTexturedWire, RenderModeSetting::TexturedWire),
+    ("lit", Action::RenderLit, RenderModeSetting::Lit),
+    ("unshaded", Action::RenderUnshaded, RenderModeSetting::Unshaded),
+    ("smoothing_groups", Action::RenderSmoothingGroups, RenderModeSetting::SmoothingGroups),
+    ("baked", Action::RenderBaked, RenderModeSetting::Baked),
+    ("lightmap_grid", Action::RenderLightmapGrid, RenderModeSetting::LightmapGrid),
+];
+const MODE_NAMES: &[&str] = &[
+    "textured",
+    "flat",
+    "wireframe",
+    "textured_wire",
+    "lit",
+    "unshaded",
+    "smoothing_groups",
+    "baked",
+    "lightmap_grid",
+];
+
+const SPECS: &[ToolSpec] = &[
+    ToolSpec {
+        name: "get_views",
+        title: "The views and cameras",
+        description: "The four views (kind: 3d, top, front, side or logical, the 2D logical view showing the \
+            entities and their outputs as a schematic; rectangle in window points, maximized, focused), the 3D \
+            camera, the 2D cameras (center, zoom), the 3D render mode, how the 2D views draw displacements (mesh \
+            or outline, per view) and whether walkability colours are on, the grid (mode and the grid of each \
+            view; list_grids has the details) and the saved layouts.",
+        kind: ToolKind::Read,
+        schema: empty,
+    },
+    ToolSpec {
+        name: "set_view_layout",
+        title: "Arrange the views",
+        description: "Choose what each quadrant shows (quadrants: 4 of 3d, top, front, side, logical; top-left, \
+            top-right, bottom-left, bottom-right; logical is Hammer's \"2D Logical\" view: the entities and their \
+            outputs as a schematic, its selection shared with the other views; drive it with ui_click, ui_drag \
+            and ui_scroll with view \"logical\" and look at it with screenshot_window), the split positions, \
+            maximize one view (or none), how each 2D view draws displacements (displacements_2d: 4 of global, \
+            mesh, selected_mesh, outline; like the view menu) and whether 2D views draw the brushes displacements were built from as a faint outline \
+            (disp_source_brushes), or apply a saved layout by name (\"default\": the layout of a new installation).",
+        kind: ToolKind::Editor,
+        schema: || {
+            object(
+                json!({
+                    "quadrants": { "type": "array", "items": { "type": "string", "enum": KINDS }, "minItems": 4, "maxItems": 4, "description": "What each quadrant shows: a view kind, or logical for the 2D logical view." },
+                    "displacements_2d": { "type": "array", "items": { "type": "string", "enum": DISP_2D }, "minItems": 4, "maxItems": 4, "description": "Per quadrant, how a 2D view draws displacements: global (the render.displacements_2d setting), mesh (the triangle grid), selected_mesh (grid of the selected ones, outline of the others) or outline." },
+                    "disp_source_brushes": { "type": "boolean", "description": "2D views draw the brush each displacement was built from as a faint outline (render.disp_source_2d)." },
+                    "split_x": number("Vertical split, fraction of the width.", 0.1, 0.9),
+                    "split_y": number("Horizontal split, fraction of the height.", 0.1, 0.9),
+                    "maximize": one_of("Quadrant to show alone, or none.", MAXIMIZE),
+                    "layout": string("A saved layout name (get_views lists them) or \"default\"."),
+                }),
+                &[],
+            )
+        },
+    },
+    ToolSpec {
+        name: "set_render_mode",
+        title: "3D render mode",
+        description: "How the 3D view draws the map: textured (with the editor's shading), flat, wireframe, \
+            textured_wire, lit (lighting preview: the light entities with VRAD's falloff and spot cones, \
+            light_dynamic, the sun with its shadows through the sky faces, props included; the point and spot lights nearest the camera cast shadows too, how many set by the setting render.light_shadows (0 to 16, 0: the sun only; disableshadows props cast none); lights inside an opaque \
+            brush light nothing like in game; $selfillum glows by the base alpha, $selfillummask or the $envmapmask alpha of $selfillum_envmapmask_alpha, times $selfillumtint, also in baked and the player view), unshaded (textured without shading), smoothing_groups, baked \
+            (the baked lighting preview, see bake_lighting; props lit by the bake like the game: ambient cubes, \
+            world lights, static prop vertex lighting) or lightmap_grid (luxel grid colored by lightmap scale). In the textured modes water surfaces are drawn like in game (refraction, water fog, reflection, moving waves) while the setting render.water_preview is on (set_setting, or run_action toggle_water_preview); off, they show their tool texture. \
+            The normal maps of the materials ($bumpmap, $bumpmap2 of WorldVertexTransition and of \
+            Lightmapped_4WayBlend, mixed by the same blend weights as the base textures, its \
+            $textureN_bumpblendfactor choosing the map of each texture; $ssbump) give the surfaces their relief \
+            in textured (the editor shading), lit (the preview lights), baked (the bumped lightmaps of the \
+            preview bake, like the game), the player view (the compiled bumped lightmaps like the game), on the \
+            props and in the model browser (preview and thumbnails) while the setting render.normal_maps is on \
+            (the default; set_setting); off, surfaces are flat and no normal map is loaded. \
+            The materials with $envmap reflect their cubemap (like the SDK 2013 shaders: along the bumped normal, \
+            times $envmapmask or the base or normal map alpha, $envmaptint, $envmapcontrast, $envmapsaturation, \
+            $fresnelreflection, $envmapfresnel with $phongfresnelranges on phong props, $envmaplightscale) in \
+            textured, lit and baked and in the player view while the setting render.cubemaps is on (the default; \
+            run_action toggle_cubemaps): the editor draws a cubemap at every env_cubemap (cubemapsize, the sky \
+            without any), each brush face reflects the nearest env_cubemap in front of it like the compiler (or \
+            the one whose sides key lists it), props the nearest one. Parallax corrected cubemaps (Mapbase): \
+            an env_cubemap whose parallaxobb key names a parallax_obb brush entity (in the player view, the \
+            keys of the materials the compiler patched) makes the LightmappedGeneric and WorldVertexTransition \
+            faces reflecting it look the cubemap up corrected to that box. The cubemaps are drawn like the first 3D \
+            view (its mode, the player view's compiled lighting), a few faces a frame, again a moment after the \
+            map changes while render.cubemaps_auto is on, or with run_action rebuild_cubemaps. In the player view \
+            the cubemaps built in game are used when the compiled map has them (see player_view); \
+            run_action write_cubemaps (from the player view) writes the drawn ones into the compiled map like \
+            buildcubemaps.",
+        kind: ToolKind::Editor,
+        schema: || object(json!({ "mode": one_of("Render mode.", MODE_NAMES) }), &["mode"]),
+    },
+    ToolSpec {
+        name: "player_view",
+        title: "The player view and its mat_wireframe",
+        description: "Start or leave the player view (walk the map like in game, F6) and choose its wireframe,             Garry's Mod's mat_wireframe (X in the view): 0 off; 1 the triangles of the world surfaces in pink             seen through everything; 2 the same in green on the visible surfaces only; 3 the outlines of the             world polygons in pink seen through everything. In 1 to 3 the props are drawn only as the triangles             of the LOD the game picks (cyan, seen through), detail sprites as green lines, displacements are not             drawn, the world keeps its textures, like in game. Without arguments it only reports. The answer             gives the state and, with a compiled map, what the game draws through the area portals from the             camera: the area of the eye, the areas drawn, the area portals open and looked through (closed             doors hide what is behind them, an open one shows only what is seen through its opening).             compiled_lighting turns on or off (L in the view, setting render.player_compiled_lighting) the             lighting of the game: the compiled world drawn with the lightmaps of the compiled map (HDR when it             has them, else LDR, fullbright when it was compiled without VRAD) and the props lit by their baked             vertex lighting (static props) or the ambient cube and world lights at their lighting origin; the             answer tells whether the compiled lightmaps are used and which range (lighting), and where the \
+            reflections come from (cubemaps: the samples of the map, how many reflect the cubemap built in game \
+            and how many the one the editor draws there because the map holds VBSP's placeholders only). Light styles play like the engine (ten pattern letters a second: the built-in styles 1 to 12 such as             1 flicker or 10 fluorescent flicker, the patterns of named lights, style 63 dark): the lightmaps with             styles, the styled world lights on the models and the detail props follow them; light_styles reports             the time, every style the lights use with its string and value now, and the named (switchable)             lights with their state. light (a named light) with on (true or false; missing: toggle) switches it             in the preview at the next frame of the player view, like the inputs TurnOn, TurnOff and Toggle             (the keys 1 to 9 in the view do the same, the I/O simulation too); the map does not change.",
+        kind: ToolKind::Editor,
+        schema: || {
+            object(
+                json!({
+                    "active": boolean("Start (true) or leave (false) the player view."),
+                    "wireframe": integer("mat_wireframe: 0 off, 1, 2 or 3.", 0, 3),
+                    "compiled_lighting": boolean("Light the player view like the game with the compiled lightmaps (true, the default) or keep the editor shading (false)."),
+                    "light": string("A named (switchable) light of the compiled map to switch in the preview (its targetname)."),
+                    "on": boolean("With light: turn it on (true) or off (false); missing: toggle."),
+                }),
+                &[],
+            )
+        },
+    },
+    ToolSpec {
+        name: "zoom_2d",
+        title: "Zoom a 2D view",
+        description: "Zoom the top, front or side view (or all): an absolute zoom in points per unit, or a factor \
+            (2 zooms in twice), optionally keeping a world point in place.",
+        kind: ToolKind::Editor,
+        schema: || {
+            object(
+                json!({
+                    "view": one_of("Default all.", VIEWS_2D),
+                    "zoom": number("Screen points per world unit.", Camera2d::MIN_ZOOM, Camera2d::MAX_ZOOM),
+                    "factor": number("Multiply the zoom by this.", 0.01, 100.0),
+                    "anchor": vec3("World point that stays in place [x, y, z] (default the view center)."),
+                }),
+                &[],
+            )
+        },
+    },
+    ToolSpec {
+        name: "pan_2d",
+        title: "Pan a 2D view",
+        description: "Move the top, front or side view (or all): center it on a world point, or move it by [right, \
+            up] world units of that view.",
+        kind: ToolKind::Editor,
+        schema: || {
+            object(
+                json!({
+                    "view": one_of("Default all.", VIEWS_2D),
+                    "center": vec3("World point to center on [x, y, z]."),
+                    "by": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2, "description": "[right, up] in world units of the view." },
+                }),
+                &[],
+            )
+        },
+    },
+];
+
+fn run(state: &mut AppState, name: &str, v: &Value) -> Option<Outcome> {
+    let result = match name {
+        "get_views" => super::tools::no_args(v).map(|()| Outcome::Ui(UiOp::Views)),
+        "set_view_layout" => set_view_layout(state, v).map(Outcome::Done),
+        "set_render_mode" => set_render_mode(v),
+        "zoom_2d" => zoom_2d(state, v).map(Outcome::Done),
+        "player_view" => player_view(state, v).map(Outcome::Done),
+        "pan_2d" => pan_2d(state, v).map(Outcome::Done),
+        _ => return None,
+    };
+    Some(result.unwrap_or_else(|e| Outcome::Done(ToolResult::error(format!("{name}: {e}")))))
+}
+
+fn view_of(name: &str) -> Option<QuadrantView> {
+    Some(match name {
+        "3d" => QuadrantView::View(ViewKind::Perspective),
+        "top" => QuadrantView::View(ViewKind::Top),
+        "front" => QuadrantView::View(ViewKind::Front),
+        "side" => QuadrantView::View(ViewKind::Side),
+        "logical" | "2d_logical" => QuadrantView::Logical,
+        _ => return None,
+    })
+}
+
+fn disp_2d_name(m: Disp2dSetting) -> &'static str {
+    match m {
+        Disp2dSetting::Mesh => "mesh",
+        Disp2dSetting::SelectedMesh => "selected_mesh",
+        Disp2dSetting::Outline => "outline",
+    }
+}
+
+fn disp_2d_json(state: &AppState) -> Value {
+    let r = &state.settings.render;
+    let views: Vec<Value> = (0..4)
+        .map(|i| {
+            let own = match r.displacements_2d_views[i] {
+                Disp2dViewSetting::Global => "global",
+                Disp2dViewSetting::Own(m) => disp_2d_name(m),
+            };
+            json!({ "choice": own, "drawn": disp_2d_name(r.displacements_2d_of(i)) })
+        })
+        .collect();
+    json!({
+        "global": disp_2d_name(r.displacements_2d),
+        "views": views,
+        "walkability": r.disp_walkable,
+        "source_brushes": r.disp_source_2d,
+    })
+}
+
+fn cam2d_json(c: Camera2d) -> Value {
+    json!({ "center": [c.center.x, c.center.y], "zoom": c.zoom })
+}
+
+pub(crate) fn views_json(
+    state: &AppState,
+    rects: [Option<(ViewKind, egui::Rect)>; 4],
+    logical: [Option<egui::Rect>; 4],
+) -> Value {
+    let ui = &state.settings.ui;
+    let views: Vec<Value> = (0..4)
+        .map(|i| {
+            let view = hp_ui_viewports::layout::quadrant_view(&ui.quadrants, i);
+            let shown = match view {
+                QuadrantView::Logical => logical[i],
+                QuadrantView::View(_) => rects[i].map(|(_, r)| r),
+            };
+            let rect = shown.map(|r| json!([r.left().round(), r.top().round(), r.width().round(), r.height().round()]));
+            json!({
+                "index": i,
+                "kind": quadrant_view_name(view),
+                "visible": shown.is_some(),
+                "rect": rect,
+                "maximized": state.ui.maximized_view == Some(i),
+                "focused": state.ui.focused_view == Some(i),
+            })
+        })
+        .collect();
+    let c = &state.cameras.cam3d;
+    let mode = MODES.iter().find(|(_, _, m)| *m == state.settings.view.render_mode).map_or("textured", |(n, _, _)| n);
+    let kinds =
+        [("3d", ViewKind::Perspective), ("top", ViewKind::Top), ("front", ViewKind::Front), ("side", ViewKind::Side)];
+    let grids: Vec<Value> = kinds
+        .iter()
+        .map(|(n, k)| {
+            let f = state.grid_frame(*k);
+            json!({ "view": n, "size": f.nominal(), "step": v3(f.step), "origin": v3(f.origin), "rotated": f.is_rotated() })
+        })
+        .collect();
+    json!({
+        "views": views,
+        "split": [ui.split_x, ui.split_y],
+        "camera_3d": { "position": v3(c.pos), "yaw": c.yaw_deg, "pitch": c.pitch_deg, "fov": state.settings.view.fov_deg },
+        "cameras_2d": {
+            "top": cam2d_json(state.cameras.top),
+            "front": cam2d_json(state.cameras.front),
+            "side": cam2d_json(state.cameras.side),
+        },
+        "render_mode": mode,
+        "displacements_2d": disp_2d_json(state),
+        "grid": {
+            "size": state.grid_size(),
+            "snap": state.settings.edit.snap_to_grid,
+            "shown": state.settings.edit.show_grid,
+            "mode": state.settings.grid.mode.name(),
+            "per_view": grids,
+        },
+        "layouts": state.settings.workflow.layouts.keys().collect::<Vec<_>>(),
+    })
+}
+
+fn set_view_layout(state: &mut AppState, v: &Value) -> R<ToolResult> {
+    let a =
+        args(v, &["quadrants", "split_x", "split_y", "maximize", "layout", "displacements_2d", "disp_source_brushes"])?;
+    if a.map.is_empty() {
+        return Err(
+            "give quadrants, split_x, split_y, maximize, displacements_2d, disp_source_brushes or layout".to_owned()
+        );
+    }
+    let source = a.opt_bool("disp_source_brushes")?;
+    let disp_2d = match a.get("displacements_2d") {
+        None => None,
+        Some(d) => {
+            let bad =
+                || "displacements_2d must be 4 of \"global\", \"mesh\", \"selected_mesh\", \"outline\"".to_owned();
+            let list = d.as_array().filter(|l| l.len() == 4).ok_or_else(bad)?;
+            let mut out = [Disp2dViewSetting::Global; 4];
+            for (o, x) in out.iter_mut().zip(list) {
+                *o = match x.as_str().map(str::to_ascii_lowercase).as_deref() {
+                    Some("global") => Disp2dViewSetting::Global,
+                    Some("mesh") => Disp2dViewSetting::Own(Disp2dSetting::Mesh),
+                    Some("selected_mesh") => Disp2dViewSetting::Own(Disp2dSetting::SelectedMesh),
+                    Some("outline") => Disp2dViewSetting::Own(Disp2dSetting::Outline),
+                    _ => return Err(bad()),
+                };
+            }
+            Some(out)
+        }
+    };
+    let layout = a.opt_str("layout", 128)?;
+    if layout.is_some() && a.map.len() > 1 {
+        return Err("layout applies a whole saved layout: give it alone".to_owned());
+    }
+    let quadrants = match a.get("quadrants") {
+        None => None,
+        Some(q) => {
+            let bad = || "quadrants must be 4 of \"3d\", \"top\", \"front\", \"side\", \"logical\"".to_owned();
+            let list = q.as_array().filter(|l| l.len() == 4).ok_or_else(bad)?;
+            let mut out = [0u8; 4];
+            for (o, x) in out.iter_mut().zip(list) {
+                let view = x.as_str().map(str::to_ascii_lowercase).and_then(|s| view_of(s.trim())).ok_or_else(bad)?;
+                *o = view.index();
+            }
+            Some(out)
+        }
+    };
+    let (smin, smax) = (f64::from(hp_ui_viewports::layout::SPLIT_MIN), f64::from(hp_ui_viewports::layout::SPLIT_MAX));
+    let split_x = a.opt_f64("split_x", smin, smax)?;
+    let split_y = a.opt_f64("split_y", smin, smax)?;
+    let maximize = a.opt_enum("maximize", MAXIMIZE)?;
+    if let Some(name) = layout {
+        let saved = if name.eq_ignore_ascii_case("default") {
+            hp_app::settings::SavedLayout::default()
+        } else {
+            let layouts = &state.settings.workflow.layouts;
+            layouts.get(name).cloned().ok_or_else(|| {
+                let names: Vec<&str> = layouts.keys().map(String::as_str).collect();
+                format!("no saved layout \"{name}\" (saved: {}; or \"default\")", names.join(", "))
+            })?
+        };
+        crate::dispatch::workflow::apply_layout(state, &saved);
+    }
+    let ui = &mut state.settings.ui;
+    if let Some(q) = quadrants {
+        ui.quadrants = q;
+    }
+    if let Some(x) = split_x {
+        ui.split_x = x as f32;
+    }
+    if let Some(y) = split_y {
+        ui.split_y = y as f32;
+    }
+    if let Some(m) = maximize {
+        state.ui.maximized_view = m.parse::<usize>().ok();
+    }
+    if let Some(d) = disp_2d {
+        state.settings.render.displacements_2d_views = d;
+    }
+    if let Some(on) = source {
+        state.settings.render.disp_source_2d = on;
+    }
+    state.settings_dirty = true;
+    let ui = &state.settings.ui;
+    let kinds: Vec<&str> =
+        (0..4).map(|i| quadrant_view_name(hp_ui_viewports::layout::quadrant_view(&ui.quadrants, i))).collect();
+    Ok(ToolResult::json(json!({
+        "quadrants": kinds,
+        "split": [ui.split_x, ui.split_y],
+        "maximized": state.ui.maximized_view,
+        "displacements_2d": disp_2d_json(state),
+    })))
+}
+
+fn set_render_mode(v: &Value) -> R<Outcome> {
+    let a = args(v, &["mode"])?;
+    let mode = a.opt_enum("mode", MODE_NAMES)?.ok_or("mode is required")?;
+    let (_, action, _) = MODES.iter().find(|(n, _, _)| *n == mode).ok_or("mode is required")?;
+    Ok(Outcome::Ui(UiOp::RunAction(*action)))
+}
+
+const WIREFRAME_LEVELS: [&str; 4] = [
+    "off",
+    "world triangles seen through, models in wireframe",
+    "world triangles on the visible surfaces, models in wireframe",
+    "world polygon outlines seen through, models in wireframe",
+];
+
+fn player_view(state: &mut AppState, v: &Value) -> R<ToolResult> {
+    let a = args(v, &["active", "wireframe", "compiled_lighting", "light", "on"])?;
+    let on = a.opt_bool("on")?;
+    match a.opt_str("light", 256)?.map(str::trim) {
+        Some(name) => {
+            let table = state.runtime.health.world.as_ref().map(|w| &w.light.styles);
+            let Some(i) = table.and_then(|t| t.find(name)) else {
+                let names: Vec<&str> =
+                    table.map(|t| t.lights.iter().map(|l| l.name.as_str()).collect()).unwrap_or_default();
+                return Err(if names.is_empty() {
+                    "the compiled map has no named (switchable) light".to_owned()
+                } else {
+                    format!("no named light {name:?}; the named lights are: {}", names.join(", "))
+                });
+            };
+            let name = table.map(|t| t.lights[i].name.clone()).unwrap_or_default();
+            state.runtime.lab.player.light_requests.push((name, on));
+        }
+        None if on.is_some() => return Err("on needs light".into()),
+        None => {}
+    }
+    if let Some(on) = a.opt_bool("compiled_lighting")? {
+        state.settings.render.player_compiled_lighting = on;
+        state.settings_dirty = true;
+    }
+    let level = a.opt_f64("wireframe", 0.0, 3.0)?;
+    if let Some(level) = level {
+        if level.fract() != 0.0 {
+            return Err("wireframe must be 0, 1, 2 or 3".into());
+        }
+        state.runtime.lab.player.wireframe = level as u8;
+        if level > 0.0 {
+            state.assets.set_model_lods(true);
+        }
+    }
+    match a.opt_bool("active")? {
+        Some(true) if !state.runtime.lab.player.active => state.runtime.lab.player.start_request = true,
+        Some(false) => state.runtime.lab.player.active = false,
+        _ => {}
+    }
+    let p = &state.runtime.lab.player;
+    let rt = &state.runtime.health;
+    let areas = rt.play_flow.as_deref().map(|f| {
+        json!({
+            "area": f.own_area,
+            "areas_drawn": f.visible_areas(),
+            "areas": f.visible.len(),
+            "portals": f.portals,
+            "portals_open": f.portals_open,
+            "portals_looked_through": f.portals_seen,
+        })
+    });
+    let level = usize::from(p.wireframe.min(3));
+    let compiled_world = rt.world.is_some() && !p.editor_world;
+    let setting = state.settings.render.player_compiled_lighting;
+    let stats = state.gfx.as_ref().and_then(|g| g.renderer.compiled_lighting());
+    let mode = rt.world.as_ref().map(|w| w.light.mode);
+    let lighting = json!({
+        "setting": setting,
+        "compiled_lightmaps_used": setting && compiled_world && mode.is_some_and(|m| m != LightMode::Fullbright),
+        "range": mode.map(LightMode::name),
+        "fullbright": mode == Some(LightMode::Fullbright),
+        "lightmaps": stats.map(|s| s.lightmaps),
+        "atlas": stats.map(|s| json!({ "size": s.atlas_size, "layers": s.atlas_layers, "bytes": s.bytes })),
+        "static_props_vertex_lit": rt.world.as_ref().map(|w| w.light.props.static_props.iter().filter(|p| p.colors.is_some()).count()),
+        "world_lights": rt.world.as_ref().map(|w| w.light.props.lights.len()),
+        "animated_lightmaps": stats.map(|s| s.animated),
+    });
+    let cube_stats = state.gfx.as_ref().map(|g| g.renderer.cubemap_stats());
+    let sources = state.assets.play_cubemap_sources();
+    let cubemaps = json!({
+        "setting": state.settings.render.cubemaps,
+        "samples": rt.world.as_ref().map(|w| w.cubemaps.len()),
+        "built_in_game": sources.map(|s| s.0),
+        "drawn_by_editor": sources.map(|s| s.1),
+        "drawn_like_game": state.gfx.as_ref().is_some_and(|g| g.renderer.cubemap_lighting().is_some()),
+        "faces_waiting": cube_stats.map(|s| s.pending_faces),
+        "resolution": cube_stats.map(|s| s.resolution),
+    });
+    let light_styles = rt.world.as_ref().map(|w| light_styles_json(&w.light.styles, p));
+    let out = json!({
+        "active": p.active || p.start_request,
+        "wireframe": level,
+        "wireframe_draws": WIREFRAME_LEVELS[level],
+        "compiled_world": compiled_world,
+        "lighting": lighting,
+        "cubemaps": cubemaps,
+        "light_styles": light_styles,
+        "area_portals": areas,
+    });
+    Ok(ToolResult::json(out))
+}
+
+fn light_styles_json(table: &hp_editor::limits::world_light::StyleTable, p: &hp_app::runtime::PlayerState) -> Value {
+    let running = p.active && !p.light_styles.styles.is_empty();
+    let (time, styles, lights) = if running {
+        let r = &p.light_styles;
+        (r.time, r.styles.clone(), r.lights.clone())
+    } else {
+        let initial = table.initial();
+        let values = table.values(0.0, &initial);
+        let styles = table
+            .used
+            .iter()
+            .map(|&s| {
+                (s, table.pattern(usize::from(s), &initial).unwrap_or_default().to_owned(), values[usize::from(s)])
+            })
+            .collect();
+        let lights = table
+            .lights
+            .iter()
+            .map(|l| (l.name.clone(), l.style, l.start_on, l.pattern.clone().unwrap_or_else(|| "m".to_owned())))
+            .collect();
+        (0.0, styles, lights)
+    };
+    let switchable: Vec<u8> = table.lights.iter().map(|l| l.style).collect();
+    json!({
+        "time": time,
+        "frames_per_second": hp_editor::limits::world_light::STYLE_FPS,
+        "styles": styles.iter().map(|(s, pattern, value)| json!({
+            "style": s,
+            "pattern": pattern,
+            "value": value,
+            "switchable": switchable.contains(s),
+        })).collect::<Vec<_>>(),
+        "named_lights": lights.iter().map(|(name, style, on, pattern)| json!({
+            "name": name,
+            "style": style,
+            "on": on,
+            "pattern": pattern,
+        })).collect::<Vec<_>>(),
+        "pending_switches": p.light_requests.iter().map(|(name, on)| json!({ "name": name, "on": on })).collect::<Vec<_>>(),
+    })
+}
+
+fn views_2d(a: &Args<'_>) -> R<Vec<ViewKind>> {
+    Ok(match a.opt_enum("view", VIEWS_2D)?.as_deref() {
+        Some("top") => vec![ViewKind::Top],
+        Some("front") => vec![ViewKind::Front],
+        Some("side") => vec![ViewKind::Side],
+        _ => vec![ViewKind::Top, ViewKind::Front, ViewKind::Side],
+    })
+}
+
+fn cams_json(state: &AppState, kinds: &[ViewKind]) -> Value {
+    let mut out = serde_json::Map::new();
+    for k in kinds {
+        out.insert(view_name(*k).to_owned(), cam2d_json(state.cameras.cam2d(*k)));
+    }
+    Value::Object(out)
+}
+
+fn zoom_2d(state: &mut AppState, v: &Value) -> R<ToolResult> {
+    let a = args(v, &["view", "zoom", "factor", "anchor"])?;
+    let kinds = views_2d(&a)?;
+    let zoom = a.opt_f64("zoom", Camera2d::MIN_ZOOM, Camera2d::MAX_ZOOM)?;
+    let factor = a.opt_f64("factor", 0.01, 100.0)?;
+    let anchor = a.opt_vec3("anchor")?;
+    let factor_of = |cam: &Camera2d| match (zoom, factor) {
+        (Some(z), None) => Ok(z / cam.zoom),
+        (None, Some(f)) => Ok(f),
+        _ => Err("give zoom or factor".to_owned()),
+    };
+    for k in &kinds {
+        let cam = state.cameras.cam2d_mut(*k);
+        let f = factor_of(cam)?;
+        let at: DVec2 = anchor.map_or(cam.center, |p| k.to_2d(p));
+        cam.zoom_at(f, at);
+    }
+    Ok(ToolResult::json(cams_json(state, &kinds)))
+}
+
+fn pan_2d(state: &mut AppState, v: &Value) -> R<ToolResult> {
+    let a = args(v, &["view", "center", "by"])?;
+    let kinds = views_2d(&a)?;
+    let center: Option<DVec3> = a.opt_vec3("center")?;
+    let by = match a.get("by") {
+        None => None,
+        Some(b) => {
+            let bad = || "by must be [right, up] in world units (at most 131072)".to_owned();
+            let l = b.as_array().filter(|l| l.len() == 2).ok_or_else(bad)?;
+            let x = l[0].as_f64().filter(|x| super::tools::coord_ok(*x)).ok_or_else(bad)?;
+            let y = l[1].as_f64().filter(|y| super::tools::coord_ok(*y)).ok_or_else(bad)?;
+            Some(DVec2::new(x, y))
+        }
+    };
+    match (center, by) {
+        (Some(_), Some(_)) | (None, None) => return Err("give center or by".to_owned()),
+        _ => {}
+    }
+    for k in &kinds {
+        let cam = state.cameras.cam2d_mut(*k);
+        if let Some(c) = center {
+            cam.center = k.to_2d(c);
+        }
+        if let Some(d) = by {
+            let limit = super::tools::MAX_COORD;
+            cam.center = (cam.center + d).clamp(DVec2::splat(-limit), DVec2::splat(limit));
+        }
+    }
+    Ok(ToolResult::json(cams_json(state, &kinds)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn call(state: &mut AppState, name: &str, v: Value) -> Outcome {
+        run(state, name, &v).expect("a views tool")
+    }
+
+    fn ok(state: &mut AppState, name: &str, v: Value) -> Value {
+        match call(state, name, v) {
+            Outcome::Done(r) if !r.is_error => r.structured.unwrap(),
+            other => panic!("{name}: {other:?}"),
+        }
+    }
+
+    fn err(state: &mut AppState, name: &str, v: Value) -> String {
+        match call(state, name, v) {
+            Outcome::Done(r) if r.is_error => r.first_text().to_owned(),
+            other => panic!("{name} should fail: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn player_view_wireframe() {
+        let mut state = hp_app::testing::test_state();
+        let r = ok(&mut state, "player_view", json!({}));
+        assert_eq!((r["active"].clone(), r["wireframe"].clone()), (json!(false), json!(0)));
+        let r = ok(&mut state, "player_view", json!({ "active": true, "wireframe": 3 }));
+        assert_eq!(r["wireframe"], 3);
+        assert_eq!(r["active"], true);
+        assert!(r["wireframe_draws"].as_str().unwrap().contains("outlines"));
+        assert!(state.runtime.lab.player.start_request);
+        assert_eq!(state.runtime.lab.player.wireframe, 3);
+        assert!(err(&mut state, "player_view", json!({ "wireframe": 4 })).contains("wireframe"));
+        assert!(err(&mut state, "player_view", json!({ "wireframe": 1.5 })).contains("wireframe"));
+        state.runtime.lab.player.active = true;
+        ok(&mut state, "player_view", json!({ "active": false }));
+        assert!(!state.runtime.lab.player.active);
+    }
+
+    #[test]
+    fn player_view_compiled_lighting() {
+        use hp_editor::limits::world::BspWorld;
+        let mut state = hp_app::testing::test_state();
+        let r = ok(&mut state, "player_view", json!({}));
+        assert_eq!(r["lighting"]["setting"], true);
+        assert_eq!(r["lighting"]["compiled_lightmaps_used"], false);
+        assert!(r["lighting"]["range"].is_null());
+        let mut world = BspWorld::default();
+        world.light.mode = LightMode::Hdr;
+        state.runtime.health.world = Some(std::sync::Arc::new(world));
+        let r = ok(&mut state, "player_view", json!({}));
+        assert_eq!(r["lighting"]["compiled_lightmaps_used"], true);
+        assert_eq!(r["lighting"]["range"], "hdr");
+        let r = ok(&mut state, "player_view", json!({ "compiled_lighting": false }));
+        assert!(!state.settings.render.player_compiled_lighting);
+        assert_eq!(r["lighting"]["compiled_lightmaps_used"], false);
+        let mut world = BspWorld::default();
+        world.light.mode = LightMode::Fullbright;
+        state.runtime.health.world = Some(std::sync::Arc::new(world));
+        let r = ok(&mut state, "player_view", json!({ "compiled_lighting": true }));
+        assert_eq!(r["lighting"]["fullbright"], true);
+        assert_eq!(r["lighting"]["compiled_lightmaps_used"], false);
+        assert!(err(&mut state, "player_view", json!({ "compiled_lighting": 1 })).contains("compiled_lighting"));
+    }
+
+    #[test]
+    fn player_view_light_styles() {
+        use hp_editor::limits::world::BspWorld;
+        use hp_editor::limits::world_light::{LightEntity, StyleTable};
+        let mut state = hp_app::testing::test_state();
+        assert!(err(&mut state, "player_view", json!({ "light": "lamp" })).contains("no named"));
+        let mut world = BspWorld::default();
+        world.light.mode = LightMode::Hdr;
+        world.light.styles = StyleTable::from_entities([
+            LightEntity { name: "", style: 10, ..Default::default() },
+            LightEntity { name: "Lamp", style: 32, pattern: "aaazzz", ..Default::default() },
+        ]);
+        state.runtime.health.world = Some(std::sync::Arc::new(world));
+        let r = ok(&mut state, "player_view", json!({}));
+        let styles = &r["light_styles"];
+        assert_eq!(styles["styles"][0]["style"], 10);
+        assert_eq!(styles["styles"][0]["pattern"], "mmamammmmammamamaaamammma");
+        assert_eq!(styles["styles"][0]["value"], 1.0);
+        assert_eq!(styles["styles"][1]["switchable"], true);
+        assert_eq!(styles["named_lights"][0], json!({ "name": "Lamp", "style": 32, "on": true, "pattern": "aaazzz" }));
+        let r = ok(&mut state, "player_view", json!({ "light": "lamp", "on": false }));
+        assert_eq!(r["light_styles"]["pending_switches"][0], json!({ "name": "Lamp", "on": false }));
+        ok(&mut state, "player_view", json!({ "light": "LAMP" }));
+        assert_eq!(
+            state.runtime.lab.player.light_requests,
+            [("Lamp".to_owned(), Some(false)), ("Lamp".to_owned(), None)]
+        );
+        assert!(err(&mut state, "player_view", json!({ "light": "nobody" })).contains("Lamp"));
+        assert!(err(&mut state, "player_view", json!({ "on": true })).contains("light"));
+        state.runtime.lab.player.active = true;
+        state.runtime.lab.player.light_styles = hp_app::runtime::LightStyleReport {
+            time: 2.5,
+            styles: vec![(10, "mmamammmmammamamaaamammma".into(), 0.0), (32, "a".into(), 0.0)],
+            lights: vec![("Lamp".into(), 32, false, "aaazzz".into())],
+        };
+        let r = ok(&mut state, "player_view", json!({}));
+        assert_eq!(r["light_styles"]["time"], 2.5);
+        assert_eq!(r["light_styles"]["named_lights"][0]["on"], false);
+        assert_eq!(r["light_styles"]["styles"][1]["pattern"], "a");
+    }
+
+    #[test]
+    fn layout_render_mode_zoom_and_pan() {
+        let mut state = hp_app::testing::test_state();
+        assert!(matches!(call(&mut state, "get_views", json!({})), Outcome::Ui(UiOp::Views)));
+        let r = ok(
+            &mut state,
+            "set_view_layout",
+            json!({ "quadrants": ["top", "3d", "SIDE", "front"], "split_x": 0.3, "maximize": "1" }),
+        );
+        assert_eq!(r["quadrants"], json!(["top", "3d", "side", "front"]));
+        assert_eq!(state.ui.maximized_view, Some(1));
+        assert!((state.settings.ui.split_x - 0.3).abs() < 1e-6);
+        let r = ok(&mut state, "set_view_layout", json!({ "maximize": "none" }));
+        assert!(r["maximized"].is_null());
+        ok(&mut state, "set_view_layout", json!({ "layout": "default" }));
+        assert_eq!(state.settings.ui.quadrants, hp_app::settings::UiSettings::default().quadrants);
+        assert!(err(&mut state, "set_view_layout", json!({})).contains("give"));
+        assert!(err(&mut state, "set_view_layout", json!({ "layout": "nope" })).contains("no saved layout"));
+        assert!(err(&mut state, "set_view_layout", json!({ "layout": "default", "split_x": 0.5 })).contains("alone"));
+        assert!(err(&mut state, "set_view_layout", json!({ "quadrants": ["top"] })).contains("quadrants must be"));
+        let r = ok(&mut state, "set_view_layout", json!({ "quadrants": ["3d", "LOGICAL", "front", "logical"] }));
+        assert_eq!(r["quadrants"], json!(["3d", "logical", "front", "logical"]));
+        let logical = QuadrantView::LOGICAL_INDEX;
+        assert_eq!(state.settings.ui.quadrants, [0, logical, 2, logical]);
+        let rect = egui::Rect::from_min_size(egui::pos2(10.0, 20.0), egui::vec2(300.0, 200.0));
+        let shown = [Some((ViewKind::Perspective, rect)), None, None, None];
+        let views = views_json(&state, shown, [None, Some(rect), None, None]);
+        assert_eq!(views["views"][0]["kind"], "3d");
+        assert_eq!(views["views"][1]["kind"], "logical");
+        assert_eq!(views["views"][1]["visible"], true);
+        assert_eq!(views["views"][1]["rect"], json!([10.0, 20.0, 300.0, 200.0]));
+        assert_eq!(views["views"][3]["kind"], "logical");
+        assert_eq!(views["views"][3]["visible"], false);
+        let bad = json!({ "quadrants": ["3d", "logic", "front", "side"] });
+        assert!(err(&mut state, "set_view_layout", bad).contains("\"logical\""));
+        ok(&mut state, "set_view_layout", json!({ "layout": "default" }));
+        assert!(err(&mut state, "set_view_layout", json!({ "split_y": 2 })).contains("split_y"));
+
+        assert!(matches!(
+            call(&mut state, "set_render_mode", json!({ "mode": "Wireframe" })),
+            Outcome::Ui(UiOp::RunAction(Action::RenderWireframe))
+        ));
+        assert!(err(&mut state, "set_render_mode", json!({ "mode": "xray" })).contains("mode must be"));
+        assert!(err(&mut state, "set_render_mode", json!({})).contains("mode is required"));
+
+        let before = state.cameras.top.zoom;
+        let r = ok(&mut state, "zoom_2d", json!({ "view": "top", "factor": 2 }));
+        assert!((state.cameras.top.zoom - (before * 2.0).min(Camera2d::MAX_ZOOM)).abs() < 1e-9, "{r}");
+        ok(&mut state, "zoom_2d", json!({ "zoom": 1.0, "anchor": [64, 64, 0] }));
+        assert_eq!(state.cameras.front.zoom, 1.0);
+        assert!(err(&mut state, "zoom_2d", json!({ "zoom": 1, "factor": 2 })).contains("zoom or factor"));
+        assert!(err(&mut state, "zoom_2d", json!({ "zoom": 1000 })).contains("zoom must be"));
+
+        ok(&mut state, "pan_2d", json!({ "view": "front", "center": [10, 20, 30] }));
+        assert_eq!(state.cameras.front.center, ViewKind::Front.to_2d(DVec3::new(10.0, 20.0, 30.0)));
+        let c = state.cameras.top.center;
+        ok(&mut state, "pan_2d", json!({ "view": "top", "by": [16, -8] }));
+        assert_eq!(state.cameras.top.center, c + DVec2::new(16.0, -8.0));
+        assert!(err(&mut state, "pan_2d", json!({})).contains("center or by"));
+        assert!(err(&mut state, "pan_2d", json!({ "by": [1e9, 0] })).contains("by must be"));
+
+        let views = views_json(&state, [None; 4], [None; 4]);
+        assert_eq!(views["views"].as_array().unwrap().len(), 4);
+        assert!(views["camera_3d"]["position"].is_array());
+        assert!(MODE_NAMES.contains(&views["render_mode"].as_str().unwrap()));
+        assert_eq!(MODE_NAMES.len(), MODES.len());
+    }
+
+    #[test]
+    fn render_modes_and_displacements_in_2d() {
+        use hp_app::settings::{Disp2dSetting, Disp2dViewSetting, RenderModeSetting};
+        let mut state = hp_app::testing::test_state();
+        for (name, action, mode) in MODES {
+            assert!(MODE_NAMES.contains(name));
+            assert!(matches!(
+                call(&mut state, "set_render_mode", json!({ "mode": name })),
+                Outcome::Ui(UiOp::RunAction(a)) if a == *action
+            ));
+            state.settings.view.render_mode = *mode;
+            assert_eq!(views_json(&state, [None; 4], [None; 4])["render_mode"], *name);
+        }
+        for m in [RenderModeSetting::Baked, RenderModeSetting::LightmapGrid, RenderModeSetting::Unshaded] {
+            assert!(MODES.iter().any(|(_, _, x)| *x == m), "{m:?}");
+        }
+        let r = ok(
+            &mut state,
+            "set_view_layout",
+            json!({ "displacements_2d": ["global", "outline", "MESH", "selected_mesh"] }),
+        );
+        let views = &state.settings.render.displacements_2d_views;
+        assert_eq!(views[0], Disp2dViewSetting::Global);
+        assert_eq!(views[1], Disp2dViewSetting::Own(Disp2dSetting::Outline));
+        assert_eq!(views[2], Disp2dViewSetting::Own(Disp2dSetting::Mesh));
+        assert_eq!(views[3], Disp2dViewSetting::Own(Disp2dSetting::SelectedMesh));
+        assert_eq!(r["displacements_2d"]["views"][1]["drawn"], "outline");
+        assert_eq!(r["displacements_2d"]["views"][0]["choice"], "global");
+        assert_eq!(r["displacements_2d"]["source_brushes"], true, "on by default");
+        let r = ok(&mut state, "set_view_layout", json!({ "disp_source_brushes": false }));
+        assert!(!state.settings.render.disp_source_2d);
+        assert_eq!(r["displacements_2d"]["source_brushes"], false);
+        state.settings.render.disp_walkable = true;
+        let v = views_json(&state, [None; 4], [None; 4]);
+        assert_eq!(v["displacements_2d"]["walkability"], true);
+        assert_eq!(v["displacements_2d"]["views"][3]["drawn"], "selected_mesh");
+        let any = |state: &mut AppState, name: &str, v: Value| super::super::tools::run(state, name, &v);
+        let l = match any(&mut state, "list_actions", json!({ "query": "disp" })) {
+            Outcome::Done(r) => r.structured.unwrap(),
+            other => panic!("{other:?}"),
+        };
+        let ids: Vec<&str> = l["actions"].as_array().unwrap().iter().filter_map(|a| a["id"].as_str()).collect();
+        assert!(ids.contains(&"toggle_disp_walkable") && ids.contains(&"toggle_disp_mesh_2d"), "{ids:?}");
+        for id in ["toggle_disp_walkable", "toggle_disp_mesh_2d", "render_baked", "bake_lighting"] {
+            assert!(
+                matches!(
+                    any(&mut state, "run_action", json!({ "action": id })),
+                    Outcome::Ui(UiOp::RunAction(a)) if a.id() == id
+                ),
+                "{id}"
+            );
+        }
+        for (path, value) in [("render.disp_walkable", json!(false)), ("render.displacements_2d", json!("Outline"))] {
+            assert!(matches!(
+                any(&mut state, "set_setting", json!({ "path": path, "value": value })),
+                Outcome::Ui(UiOp::Settings { .. })
+            ));
+        }
+        assert!(err(&mut state, "set_view_layout", json!({ "displacements_2d": ["mesh"] })).contains("4 of"));
+        assert!(
+            err(&mut state, "set_view_layout", json!({ "displacements_2d": ["a", "b", "c", "d"] })).contains("4 of")
+        );
+    }
+}

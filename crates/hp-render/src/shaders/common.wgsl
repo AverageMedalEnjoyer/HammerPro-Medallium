@@ -1,0 +1,212 @@
+struct View {
+    view_proj: mat4x4<f32>,
+    eye: vec4<f32>,
+    right: vec4<f32>,
+    up: vec4<f32>,
+    forward: vec4<f32>,
+    viewport: vec4<f32>,
+    selection: vec4<f32>,
+    grid_a: vec4<f32>,
+    grid_b: vec4<f32>,
+    ortho: vec4<f32>,
+    ambient: vec4<f32>,
+    cluster_dims: vec4<u32>,
+    cluster_z: vec4<f32>,
+    misc: vec4<u32>,
+    shadow_vp: mat4x4<f32>,
+    shadow: vec4<f32>,
+    opts: vec4<u32>,
+    grid3d: vec4<f32>,
+    fog_a: vec4<f32>,
+    fog_b: vec4<f32>,
+    fog_c: vec4<f32>,
+    sky: vec4<f32>,
+    sky3d: vec4<f32>,
+    proj: vec4<f32>,
+    sky_uv: array<vec4<f32>, 6>,
+};
+
+struct ObjState {
+    flags: u32,
+    color: u32,
+    tint: u32,
+    pad: u32,
+};
+
+struct Light {
+    pos_range: vec4<f32>,
+    color: vec4<f32>,
+    dir: vec4<f32>,
+    cone: vec4<f32>,
+    atten: vec4<f32>,
+    extra: vec4<f32>,
+};
+
+fn spot_cone(l: Light, s: f32) -> f32 {
+    if l.extra.y < 0.5 {
+        return smoothstep(l.cone.y, l.cone.x, s);
+    }
+    if s <= l.cone.y {
+        return 0.0;
+    }
+    if s >= l.cone.x {
+        return 1.0;
+    }
+    var m = clamp((s - l.cone.y) / max(l.cone.x - l.cone.y, 1e-6), 0.0, 1.0);
+    if l.extra.x != 0.0 && l.extra.x != 1.0 {
+        m = pow(m, l.extra.x);
+    }
+    return m;
+}
+
+fn light_falloff(l: Light, dist: f32) -> f32 {
+    if l.dir.w > 0.0 && dist > l.dir.w {
+        return 0.0;
+    }
+    let d = min(max(dist, 1.0), max(l.atten.w, 1.0));
+    let denom = l.atten.x + d * (l.atten.y + d * l.atten.z);
+    var f = 1.0;
+    if denom > 1e-12 {
+        f = 1.0 / denom;
+    }
+    if l.cone.w > l.cone.z {
+        f *= clamp((l.cone.w - dist) / (l.cone.w - l.cone.z), 0.0, 1.0);
+    }
+    return f;
+}
+
+@group(0) @binding(0) var<uniform> view: View;
+@group(0) @binding(1) var<storage, read> objects: array<ObjState>;
+@group(0) @binding(2) var samp: sampler;
+@group(0) @binding(3) var samp_clamp: sampler;
+@group(0) @binding(4) var<storage, read> lights: array<Light>;
+@group(0) @binding(5) var<storage, read> clusters: array<vec2<u32>>;
+@group(0) @binding(6) var<storage, read> light_indices: array<u32>;
+@group(0) @binding(7) var shadow_map: texture_depth_2d;
+@group(0) @binding(8) var shadow_samp: sampler_comparison;
+@group(0) @binding(9) var<storage, read> model_lights: array<vec4<f32>>;
+@group(0) @binding(10) var<storage, read> model_colors: array<u32>;
+@group(0) @binding(11) var<uniform> light_styles: array<vec4<f32>, 32>;
+
+@group(0) @binding(12) var cube_maps: texture_cube_array<f32>;
+@group(0) @binding(13) var<storage, read> cube_info: array<vec4<f32>>;
+
+@group(0) @binding(14) var local_shadow_maps: texture_depth_2d_array;
+
+fn light_style(s: u32) -> f32 {
+    let i = min(s, 127u);
+    return light_styles[i / 4u][i % 4u];
+}
+
+const F_SELECTED: u32 = 1u;
+const F_HIDDEN: u32 = 2u;
+const F_HOVERED: u32 = 4u;
+const F_NO_3D: u32 = 8u;
+const F_NO_2D: u32 = 16u;
+const F_ALWAYS_EDGES: u32 = 32u;
+const F_INVALID: u32 = 64u;
+const F_DIMMED: u32 = 128u;
+const F_INSTANCE: u32 = 256u;
+const F_SKY_3D: u32 = 512u;
+const F_ROPE: u32 = 1024u;
+const F_GAME_HIDDEN: u32 = 2048u;
+const F_DISPLACEMENT: u32 = 4096u;
+const F_NO_GAME_WIRE: u32 = 8192u;
+const F_BRUSH_ENTITY: u32 = 16384u;
+const F_COMPILED_LIGHT: u32 = 32768u;
+const F_NO_PROBE: u32 = 65536u;
+const F_NO_SHADOW: u32 = 131072u;
+
+const OPT_WALKABLE: u32 = 1u;
+const OPT_FOG: u32 = 2u;
+const OPT_FOG_BLEND: u32 = 4u;
+const OPT_GRID_3D: u32 = 8u;
+const OPT_SKY_PASS: u32 = 16u;
+const OPT_MODEL_FADE: u32 = 32u;
+const OPT_NEUTRAL_FLAT: u32 = 64u;
+const OPT_DETAIL_SELECTED: u32 = 128u;
+const OPT_DETAIL_NONE: u32 = 256u;
+const OPT_WALK_MARKS: u32 = 512u;
+const OPT_SOURCE_2D: u32 = 1024u;
+const OPT_GAME_WIRE: u32 = 2048u;
+const OPT_COMPILED_LIGHT: u32 = 4096u;
+const OPT_COMPILED_FULLBRIGHT: u32 = 8192u;
+const OPT_NORMAL_MAPS: u32 = 16384u;
+const OPT_CUBEMAPS: u32 = 32768u;
+const OPT_PROBE: u32 = 65536u;
+const OPT_SHADOW_PASS: u32 = 131072u;
+const OPT_MODEL_LIGHT: u32 = 262144u;
+
+const EDGE_DETAIL_BIT: u32 = 0x80000000u;
+const EDGE_SOURCE_BIT: u32 = 0x40000000u;
+const EDGE_CLASS_SHIFT: u32 = 29u;
+const EDGE_SLOT_MASK: u32 = 0x1fffffffu;
+
+const MODE_TEXTURED: u32 = 0u;
+const MODE_FLAT: u32 = 1u;
+const MODE_WIREFRAME: u32 = 2u;
+const MODE_TEXTURED_WIRE: u32 = 3u;
+const MODE_LIT: u32 = 4u;
+const MODE_UNSHADED: u32 = 5u;
+const MODE_SMOOTHING: u32 = 6u;
+
+const INVALID_RGB: vec3<f32> = vec3<f32>(1.0, 0.05, 0.05);
+const INSTANCE_RGB: vec3<f32> = vec3<f32>(0.35, 0.75, 1.0);
+
+const COLLAPSED: vec4<f32> = vec4<f32>(2.0, 2.0, 2.0, 1.0);
+
+fn srgb_to_linear(c: vec3<f32>) -> vec3<f32> {
+    let lo = c / 12.92;
+    let hi = pow((c + vec3<f32>(0.055)) / 1.055, vec3<f32>(2.4));
+    return select(hi, lo, c <= vec3<f32>(0.04045));
+}
+
+fn unpack_srgba(c: u32) -> vec4<f32> {
+    let v = unpack4x8unorm(c);
+    return vec4<f32>(srgb_to_linear(v.rgb), v.a);
+}
+
+fn object_state(slot: u32) -> ObjState {
+    if slot >= arrayLength(&objects) {
+        return ObjState(0u, 0xffffffffu, 0xffffffffu, 0u);
+    }
+    return objects[slot];
+}
+
+fn is_ortho() -> bool {
+    return view.eye.w > 0.5;
+}
+
+fn hidden_in_view(flags: u32) -> bool {
+    let mask = select(F_NO_3D, F_NO_2D, is_ortho());
+    let probing = (view.opts.x & OPT_PROBE) != 0u;
+    let probe = probing && (flags & F_COMPILED_LIGHT) != 0u;
+    let shadow_pass = (view.opts.x & OPT_SHADOW_PASS) != 0u;
+    let hidden = select(F_HIDDEN, 0u, probe) | select(0u, F_NO_PROBE, probing) | select(0u, F_NO_SHADOW, shadow_pass);
+    if (flags & (hidden | mask)) != 0u {
+        return true;
+    }
+    if (view.opts.x & OPT_GAME_WIRE) != 0u && (flags & F_DISPLACEMENT) != 0u {
+        return true;
+    }
+    return (view.opts.x & OPT_SKY_PASS) != 0u && (flags & F_SKY_3D) == 0u;
+}
+
+fn fog_amount(world: vec3<f32>) -> f32 {
+    if (view.opts.x & OPT_FOG) == 0u || is_ortho() {
+        return 0.0;
+    }
+    let d = distance(world, view.eye.xyz);
+    let start = view.fog_b.w;
+    let end = max(view.fog_c.w, start + 1.0);
+    return clamp((d - start) / (end - start), 0.0, 1.0) * view.fog_a.w;
+}
+
+fn fog_color(world: vec3<f32>) -> vec3<f32> {
+    if (view.opts.x & OPT_FOG_BLEND) == 0u {
+        return view.fog_a.rgb;
+    }
+    let dir = normalize(world - view.eye.xyz + vec3<f32>(1e-4, 0.0, 0.0));
+    let t = clamp(dot(dir, view.fog_c.xyz) * 0.5 + 0.5, 0.0, 1.0);
+    return mix(view.fog_b.rgb, view.fog_a.rgb, t);
+}

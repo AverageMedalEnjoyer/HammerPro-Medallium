@@ -1,0 +1,190 @@
+use crate::actions::{Action, Check};
+use crate::i18n::TrTable;
+use crate::state::AppState;
+
+action_list! { lab_actions {
+    OpenBsp => "open_bsp", File, FileImport, None, Ready;
+    CompareMaps => "compare_maps", Map, MapInfo, None, Ready;
+    EntityGallery => "entity_gallery", Map, MapInfo, None, Ready;
+    ShowLogicalView => "show_logical_view", View, ViewType, None, Ready;
+    ToggleNavMesh => "toggle_nav_mesh", View, ViewDisplay, None, Ready;
+    PhysicsPlacement => "physics_placement", Tools, ToolsPlacement, None, Ready;
+    BrushesToProp => "brushes_to_prop", Tools, ToolsPlacement, None, Ready;
+    PropToBrushes => "prop_to_brushes", Tools, ToolsPlacement, None, Ready;
+    GenerateNavMesh => "generate_nav_mesh", Tools, ToolsPlacement, None, Ready;
+    LoadNavMesh => "load_nav_mesh", Map, MapPointfile, None, Ready;
+    ToggleParticles => "toggle_particles", View, ViewDisplay, None, Ready;
+    ToggleParticlesSelected => "toggle_particles_selected", View, ViewDisplay, None, Ready;
+    ImportModel => "import_model", File, FileImport, None, Ready;
+    TogglePlayerView => "toggle_player_view", View, ViewDisplay, sc(NONE, Key::F6), Ready;
+    PropperOptions => "propper_options", Tools, ToolsPlacement, None, Ready;
+}}
+
+pub(super) const REPEATS: &[Action] = &[];
+
+pub(super) fn enabled(state: &AppState, action: Action) -> Option<bool> {
+    match action {
+        Action::ToggleParticlesSelected => Some(state.settings.lab.show_particles),
+        Action::PropToBrushes => Some(selected_prop(state).is_some()),
+        Action::BrushesToProp => {
+            Some(state.doc.selection().objects.iter().any(|o| matches!(o, hp_editor::ObjRef::Solid(_))))
+        }
+        _ => None,
+    }
+}
+
+pub fn selected_prop(state: &AppState) -> Option<hp_editor::Id> {
+    let scene = state.doc.scene();
+    state.doc.selection().objects.iter().find_map(|o| match *o {
+        hp_editor::ObjRef::Entity(id) => scene.entity(id).filter(|n| is_model_prop(&n.entity)).map(|_| id),
+        hp_editor::ObjRef::Solid(_) => None,
+    })
+}
+
+pub fn is_model_prop(e: &hp_vmf::Entity) -> bool {
+    e.classname.to_ascii_lowercase().starts_with("prop_")
+        && e.get("model").is_some_and(|m| m.trim().to_ascii_lowercase().ends_with(".mdl"))
+}
+
+pub(super) fn check(state: &AppState, action: Action) -> Option<Check> {
+    match action {
+        Action::ShowLogicalView => Some(Check::Toggle(state.runtime.lab.logic_open)),
+        Action::PropperOptions => Some(Check::Toggle(state.runtime.lab.propper_options_open)),
+        Action::ToggleNavMesh => Some(Check::Toggle(state.settings.lab.show_nav_mesh)),
+        Action::ToggleParticles => Some(Check::Toggle(state.settings.lab.show_particles)),
+        Action::ToggleParticlesSelected => Some(Check::Toggle(state.settings.lab.particles_selected_only)),
+        Action::TogglePlayerView => Some(Check::Toggle(state.runtime.lab.player.active)),
+        _ => None,
+    }
+}
+
+pub(super) fn icon(action: Action) -> Option<&'static str> {
+    match action {
+        Action::OpenBsp => Some("📦"),
+        Action::ShowLogicalView => Some("🔀"),
+        Action::CompareMaps => Some("⚖"),
+        Action::ToggleNavMesh => Some("🗺"),
+        Action::TogglePlayerView => Some("🚶"),
+        _ => None,
+    }
+}
+
+pub(super) const TR: TrTable = &[
+    ("action.open_bsp", "Open compiled map (BSP)...", "Ouvrir une map compilée (BSP)..."),
+    ("action.import_model", "Import a model (FBX, OBJ, glTF)...", "Importer un modèle (FBX, OBJ, glTF)..."),
+    ("action.compare_maps", "Compare with another map...", "Comparer avec une autre map..."),
+    ("action.entity_gallery", "Insert entity gallery", "Insérer la galerie d'entités"),
+    ("action.show_logical_view", "Logical view", "Vue logique"),
+    ("action.toggle_nav_mesh", "Show nav mesh", "Afficher le nav mesh"),
+    ("action.physics_placement", "Physics placement (drop and settle)", "Placement physique (chute et pose)"),
+    (
+        "lab.physplace.nothing",
+        "Nothing to drop: the selection is already resting on a surface.",
+        "Rien à faire tomber : la sélection repose déjà sur une surface.",
+    ),
+    ("shell.undo.physics_placement", "Physics placement", "Placement physique"),
+    ("shell.undo.push_props", "Push props", "Pousser des props"),
+    ("action.brushes_to_prop", "Convert brushes to a static prop", "Convertir les brushes en prop statique"),
+    ("lab.lod.enabled", "Levels of detail (LOD)", "Niveaux de détail (LOD)"),
+    (
+        "lab.lod.enabled_tip",
+        "Simplified versions of the model that the game draws far away (fewer triangles, same look).",
+        "Versions simplifiées du modèle que le jeu affiche de loin (moins de triangles, même apparence).",
+    ),
+    ("lab.lod.levels", "Levels", "Niveaux"),
+    (
+        "lab.lod.levels_tip",
+        "Levels below the full model (3 at least; big models get one or two more).",
+        "Niveaux sous le modèle complet (3 au moins ; les gros modèles en ont un ou deux de plus).",
+    ),
+    ("lab.lod.reduction", "Each keeps", "Chacun garde"),
+    (
+        "lab.lod.reduction_tip",
+        "Part of the triangles of the level above each level keeps (small models are reduced more gently).",
+        "Part des triangles du niveau précédent que garde chaque niveau (les petits modèles sont réduits plus doucement).",
+    ),
+    ("action.propper_options", "Static prop options (Propper)...", "Options des props statiques (Propper)..."),
+    (
+        "lab.prop.sandboxed",
+        "Automated runs do not compile models (studiomdl writes into the game).",
+        "Les lancements automatisés ne compilent pas de modèles (studiomdl écrit dans le jeu).",
+    ),
+    ("lab.prop.select", "Select the brushes to convert into a prop.", "Sélectionnez les brushes à convertir en prop."),
+    (
+        "lab.prop.no_game",
+        "Set the game folder first (Settings > Game).",
+        "Configurez d'abord le dossier du jeu (Paramètres > Jeu).",
+    ),
+    (
+        "lab.prop.no_studiomdl",
+        "studiomdl was not found in the game's bin folder.",
+        "studiomdl est introuvable dans le dossier bin du jeu.",
+    ),
+    (
+        "lab.prop.empty",
+        "The selection has no visible faces to make a prop from.",
+        "La sélection n'a aucune face visible pour faire un prop.",
+    ),
+    (
+        "lab.prop.failed",
+        "Could not write the model source files.",
+        "Impossible d'écrire les fichiers source du modèle.",
+    ),
+    (
+        "lab.prop.preparing",
+        "Preparing a {0} triangle prop (blend textures, levels of detail, collision): {1}",
+        "Préparation d'un prop de {0} triangles (textures de mélange, niveaux de détail, collision) : {1}",
+    ),
+    ("lab.prop.compiling", "Compiling a {0} triangle prop: {1}", "Compilation d'un prop de {0} triangles : {1}"),
+    (
+        "lab.prop.compile_failed",
+        "studiomdl could not compile the prop (see the console).",
+        "studiomdl n'a pas pu compiler le prop (voir la console).",
+    ),
+    ("lab.prop.done", "Brushes converted to {0}.", "Brushes convertis en {0}."),
+    (
+        "lab.prop.replace_failed",
+        "The model compiled but the brushes could not be replaced: {0}",
+        "Le modèle a compilé mais les brushes n'ont pas pu être remplacés : {0}",
+    ),
+    ("shell.undo.convert_to_static_prop", "Convert to static prop", "Conversion en prop statique"),
+    ("action.prop_to_brushes", "Convert prop to brushes...", "Convertir le prop en brushes..."),
+    ("shell.undo.convert_prop_to_brushes", "Convert prop to brushes", "Conversion du prop en brushes"),
+    ("action.generate_nav_mesh", "Generate nav mesh", "Générer le nav mesh"),
+    (
+        "lab.navgen.save_first",
+        "Save the map first: the nav mesh is written next to it.",
+        "Enregistrez d'abord la map : le nav mesh est écrit à côté.",
+    ),
+    (
+        "lab.navgen.no_spawn",
+        "No player start in the map: add an info_player_start where players walk.",
+        "Aucun point d'apparition dans la map : ajoutez un info_player_start là où les joueurs marchent.",
+    ),
+    ("lab.navgen.working", "Generating the nav mesh...", "Génération du nav mesh..."),
+    (
+        "lab.navgen.nothing",
+        "no walkable ground found around the player starts",
+        "aucun sol praticable trouvé autour des points d'apparition",
+    ),
+    ("lab.navgen.crashed", "the generator stopped", "le générateur s'est arrêté"),
+    ("lab.navgen.done", "Nav mesh generated: {0} areas in {1} ms", "Nav mesh généré : {0} zones en {1} ms"),
+    (
+        "lab.navgen.capped",
+        "The map is very large: the nav mesh stopped at its sample limit.",
+        "La map est très grande : le nav mesh s'est arrêté à sa limite d'échantillons.",
+    ),
+    (
+        "lab.navgen.bad_seeds",
+        "{0} player start(s) have no ground under them and were skipped.",
+        "{0} point(s) d'apparition sans sol en dessous ont été ignorés.",
+    ),
+    ("lab.navgen.failed", "Nav mesh generation failed: {0}", "Échec de la génération du nav mesh : {0}"),
+    ("action.load_nav_mesh", "Load nav mesh...", "Charger un nav mesh..."),
+    ("action.toggle_player_view", "Player view", "Vue joueur"),
+    ("action.toggle_particles", "Show particles", "Afficher les particules"),
+    ("action.toggle_particles_selected", "Particles of the selection only", "Particules de la sélection uniquement"),
+    ("shell.undo.move_in_logical_view", "Move in logical view", "Déplacement dans la vue logique"),
+    ("shell.undo.arrange_logical_view", "Arrange logical view", "Organisation de la vue logique"),
+    ("shell.undo.insert_entity_gallery", "Insert entity gallery", "Insertion de la galerie d'entités"),
+];

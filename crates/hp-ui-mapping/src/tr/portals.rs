@@ -1,0 +1,90 @@
+use hp_app::i18n::TrTable;
+
+pub const TR: TrTable = &[
+    ("portals.title", "Portals and visibility", "Portails et visibilité"),
+    ("portals.offer", "The compile wrote a new portal file.", "La compilation a écrit un nouveau fichier de portails."),
+    ("portals.load", "Load it", "Le charger"),
+    ("portals.dismiss", "Not now", "Pas maintenant"),
+    ("portals.summary_one", "{0} portal between {1} clusters", "{0} portail entre {1} clusters"),
+    ("portals.summary", "{0} portals between {1} clusters", "{0} portails entre {1} clusters"),
+    (
+        "portals.truncated",
+        "The file announces {0} portals: only the first million are shown",
+        "Le fichier annonce {0} portails : seul le premier million est affiché",
+    ),
+    ("portals.none", "No portal file loaded", "Aucun fichier de portails chargé"),
+    ("portals.width", "Line width", "Épaisseur des lignes"),
+    ("portals.xray", "See through the walls (3D)", "Voir à travers les murs (3D)"),
+    (
+        "portals.xray_tip",
+        "The 3D view draws the portals over the geometry, like the 2D views",
+        "La vue 3D dessine les portails par dessus la géométrie, comme les vues 2D",
+    ),
+    ("portals.detach", "Detach window", "Détacher la fenêtre"),
+    (
+        "portals.detach_tip",
+        "Show it in its own window, which can go to another screen",
+        "L'afficher dans sa propre fenêtre, qu'on peut mettre sur un autre écran",
+    ),
+    ("portals.attach", "Put back in the main window", "Remettre dans la fenêtre principale"),
+    ("portals.leaf_grid", "Leaf grid (1024 units)", "Grille des feuilles (1024 unités)"),
+    ("portals.leaf_width", "Thickness", "Épaisseur"),
+    (
+        "portals.leaf_grid_tip",
+        "The compiler splits leaves every 1024 units: hints work best along this grid",
+        "Le compilateur découpe les feuilles toutes les 1024 unités : les hints marchent mieux le long de cette grille",
+    ),
+    (
+        "portals.pvs_tip",
+        "Portals of the clusters visible from the camera (or a picked point) turn green, like mat_leafvis 3 in game. Needs a map compiled with visibility.",
+        "Les portails des clusters visibles depuis la caméra (ou un point choisi) passent en vert, comme mat_leafvis 3 en jeu. Nécessite une map compilée avec la visibilité.",
+    ),
+    ("portals.from_camera", "From the camera", "Depuis la caméra"),
+    ("portals.from_point", "From a point", "Depuis un point"),
+    ("portals.pick_tip", "Click a point in a view", "Cliquez un point dans une vue"),
+    (
+        "portals.no_vis",
+        "No visibility data yet: compile the map with visibility",
+        "Pas encore de données de visibilité : compilez la map avec la visibilité",
+    ),
+    ("portals.visible", "Cluster {0}: {1} of {2} clusters visible", "Cluster {0} : {1} clusters visibles sur {2}"),
+    (
+        "portals.in_solid",
+        "The point is in a solid or outside of the map",
+        "Le point est dans un solide ou hors de la map",
+    ),
+    ("portals.vbsp_only", "Geometry only and reload", "Géométrie seule et recharger"),
+    (
+        "portals.vbsp_only_tip",
+        "Build only the geometry (seconds) of the current map and load its portals: see the effect of hints and func_detail right away",
+        "Construire seulement la géométrie (quelques secondes) de la map actuelle et charger ses portails : l'effet des hints et des func_detail se voit tout de suite",
+    ),
+    ("portals.building", "Building the portals...", "Construction des portails..."),
+    ("portals.reload", "Reload", "Recharger"),
+    (
+        "portals.reload_tip",
+        "Read the newest portal file of the map; after edits, it is built again first",
+        "Lire le fichier de portails le plus récent de la map ; après des modifications, il est d'abord reconstruit",
+    ),
+    (
+        "portals.cost",
+        "Drawn from here: faces {0}, triangles {1}, displacements {2}, props {3}, overlays {4}",
+        "Dessiné d'ici : faces {0}, triangles {1}, displacements {2}, props {3}, overlays {4}",
+    ),
+    (
+        "portals.cost_tip",
+        "What the engine draws for the visible clusters of the compiled map (before frustum culling and fade distances)",
+        "Ce que le moteur dessine pour les clusters visibles de la map compilée (avant le culling de la vue et les distances de fondu)",
+    ),
+    ("portals.heat", "Color by render cost", "Colorer selon le coût de rendu"),
+    (
+        "portals.heat_tip",
+        "Portals go from green to red with the triangles drawn from their clusters: red areas are the ones to optimize (hints, func_detail, areaportals)",
+        "Les portails passent du vert au rouge selon les triangles dessinés depuis leurs clusters : les zones rouges sont celles à optimiser (hints, func_detail, areaportals)",
+    ),
+    (
+        "portals.heat_needs_vis",
+        "Needs the visibility of the compiled map: compile it with visibility",
+        "Nécessite la visibilité de la map compilée : compilez-la avec la visibilité",
+    ),
+];

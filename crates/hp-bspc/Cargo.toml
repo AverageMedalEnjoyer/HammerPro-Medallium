@@ -1,0 +1,31 @@
+[package]
+name = "hp-bspc"
+description = "The Hammer Pro map compiler: VMF to BSP for Garry's Mod (BSP tree, portals, leaks, faces, collision, visibility, lighting), written from scratch in Rust."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-vmf.workspace = true
+hp-bsp.workspace = true
+hp-kv.workspace = true
+hp-vmt.workspace = true
+hp-vtf.workspace = true
+hp-geom.workspace = true
+hp-light = { path = "../hp-light" }
+glam.workspace = true
+thiserror.workspace = true
+rayon.workspace = true
+ahash.workspace = true
+smallvec.workspace = true
+
+[dev-dependencies]
+hp-fs = { path = "../hp-fs" }
+hp-decompile = { path = "../hp-decompile" }
+hp-mdl.workspace = true
+hp-compile.workspace = true
+hp-fgd.workspace = true
+
+[target.'cfg(windows)'.dev-dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Threading"] }

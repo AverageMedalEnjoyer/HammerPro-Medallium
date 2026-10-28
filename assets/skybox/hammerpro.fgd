@@ -1,0 +1,75 @@
+// Entity definitions Hammer Pro adds to the game's (loaded after every
+// other FGD file). See assets/skybox/point_hammerpro_skybox.lua.
+
+@ExtendClass = sky_camera
+[
+	targetname(target_source) : "Name" : : "Name a skybox switch (point_hammerpro_skybox) uses to show the 3D skybox of this sky_camera."
+]
+
+@PointClass base(Targetname) iconsprite("editor/logic_auto.vmt") color(220 220 220) line(255 255 255, targetname, skycamera) = point_hammerpro_skybox :
+	"Hammer Pro skybox switch (Garry's Mod): shows the 3D skybox of a sky_camera when it gets Activate, so one map can have several 3D skyboxes (day and night, areas...). " +
+	"The game shows one 3D skybox at a time, for every player. Hammer Pro ships its Lua with the map: in the development addon of test compiles and in Build and save as content."
+[
+	skycamera(target_destination) : "Sky camera" : "" : "Name of the sky_camera whose 3D skybox this switch shows."
+
+	mode(choices) : "Mode" : 0 : "Global changes the 3D skybox for everyone (the engine shows one at a time). Per player draws it on each client, so several players can see different 3D skyboxes at once (day and night, one per area). Per player draws the 3D skybox geometry of the chosen sky_camera; the far 2D sky and the fog stay the map's own (the engine has one of each)." =
+	[
+		0 : "Global (everyone)"
+		1 : "Per player"
+	]
+
+	spawnflags(flags) =
+	[
+		1 : "Start active (global)" : 0
+	]
+
+	input Activate(void) : "Show the 3D skybox of the sky camera."
+	input Deactivate(void) : "Show the map's own 3D skybox again (when this switch is the one shown)."
+	input Toggle(void) : "Activate when inactive, else deactivate."
+
+	output OnActivated(void) : "Fired when the skybox of this switch is shown."
+	output OnDeactivated(void) : "Fired when the skybox of this switch stops being shown."
+]
+
+// Maximum distance (Hammer Pro: Edit > Set maximum distance). The keys the
+// game honours, with their spheres drawn around the selected entities.
+// Extending a class replaces its helpers of the same name: the spheres the
+// game's own definitions draw are listed again.
+
+@ExtendClass sphere(_fifty_percent_distance) sphere(_zero_percent_distance) sphere(_distance, 255 96 64) = light
+[
+	_distance(integer) : "Maximum distance" : 0 : "The light does not reach farther than this, in units (0 = no limit). The game cuts the light of models there; Hammer Pro's compiler also fades the lightmaps out over the last quarter of it (Valve's VRAD does not)."
+]
+
+@ExtendClass sphere(_fifty_percent_distance) sphere(_zero_percent_distance) sphere(_distance, 255 96 64) = light_spot
+[
+	_distance(integer) : "Maximum distance" : 0 : "The light does not reach farther than this, in units (0 = no limit). The game cuts the light of models there; Hammer Pro's compiler also fades the lightmaps out over the last quarter of it (Valve's VRAD does not)."
+]
+
+@ExtendClass sphere(fademindist) sphere(fademaxdist) = prop_door_rotating
+[
+]
+
+@ExtendClass sphere(MaxDist) sphere(OuterMaxDist, 255 96 64) = env_lightglow
+[
+]
+
+@ExtendClass sphere(DisappearMinDist) sphere(DisappearMaxDist, 255 96 64) = func_lod
+[
+]
+
+// Parallax corrected cubemaps (Mapbase): a box brush tied to an
+// env_cubemap. The compiler writes the box into the cubemap materials
+// ($envMapParallax, $envMapParallaxOBB1 to 3, $envMapOrigin) and removes
+// the brush entity. Selecting the env_cubemap draws a line to its box.
+
+@ExtendClass line(64 200 255, targetname, parallaxobb) = env_cubemap
+[
+	parallaxobb(target_destination) : "Cubemap Bounds" : : "Name of a parallax_obb brush entity: the box the reflections of this cubemap are corrected to (parallax corrected cubemaps). The shaders of Mapbase games correct them; the stock shaders of Garry's Mod and of Valve's games ignore the box (the reflection stays the plain cubemap). Leave empty for a plain cubemap."
+]
+
+@SolidClass color(64 200 255) = parallax_obb :
+	"Parallax corrected cubemap bounds (Mapbase): a box brush, usually the room the env_cubemap is in, named by the Cubemap Bounds of env_cubemap entities (several may share one). Only its first brush counts and it must be a box (its first, second and third sides give the corner, the edges and the depth). The compiler removes it from the map. Garry's Mod's stock shaders ignore parallax correction."
+[
+	targetname(target_source) : "Name" : : "The name the env_cubemap entities give in Cubemap Bounds."
+]

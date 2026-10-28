@@ -1,0 +1,36 @@
+[package]
+name = "hp-ui-entities"
+description = "Hammer Pro entity properties, class picker, I/O editor, model browser, entity dialogs."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-editor.workspace = true
+hp-geom.workspace = true
+hp-vmf.workspace = true
+hp-render.workspace = true
+egui.workspace = true
+glam.workspace = true
+log.workspace = true
+hp-fgd.workspace = true
+hp-fs.workspace = true
+hp-kv.workspace = true
+hp-mdl.workspace = true
+hp-compile.workspace = true
+hp-meshio.workspace = true
+hp-vtf.workspace = true
+hp-vmt.workspace = true
+rfd.workspace = true
+pollster.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+rodio = { version = "0.23", default-features = false, features = ["playback", "wav", "mp3", "vorbis", "symphonia-adpcm"] }
+
+[dev-dependencies]
+egui-wgpu.workspace = true
+wgpu.workspace = true
+image.workspace = true
+egui = { workspace = true, features = ["default_fonts"] }

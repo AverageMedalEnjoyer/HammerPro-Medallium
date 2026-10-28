@@ -1,0 +1,14 @@
+[package]
+name = "hp-vmt"
+description = "VMT (Valve material) parser, writer, patch resolver and text editor for Hammer Pro."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-kv.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+rayon.workspace = true

@@ -1,0 +1,75 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+default-members = ["crates/hammerpro"]
+
+[workspace.package]
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+authors = ["HammerPro contributors"]
+description = "HammerPro: a modern, fast level editor for Source engine maps (Garry's Mod first)."
+
+[workspace.dependencies]
+hp-kv = { path = "crates/hp-kv" }
+hp-vmf = { path = "crates/hp-vmf" }
+hp-geom = { path = "crates/hp-geom" }
+hp-vpk = { path = "crates/hp-vpk" }
+hp-gma = { path = "crates/hp-gma" }
+hp-vtf = { path = "crates/hp-vtf" }
+hp-vmt = { path = "crates/hp-vmt" }
+hp-fgd = { path = "crates/hp-fgd" }
+hp-mdl = { path = "crates/hp-mdl" }
+hp-fs = { path = "crates/hp-fs" }
+hp-compile = { path = "crates/hp-compile" }
+hp-render = { path = "crates/hp-render" }
+hp-editor = { path = "crates/hp-editor" }
+hp-bsp = { path = "crates/hp-bsp" }
+hp-meshio = { path = "crates/hp-meshio" }
+hp-bspc = { path = "crates/hp-bspc" }
+
+glam = { version = "0.34", features = ["bytemuck"] }
+rayon = "1.12"
+memchr = "2.8"
+thiserror = "2"
+anyhow = "1"
+log = "0.4"
+memmap2 = "0.9"
+texpresso = { version = "2.0", features = ["rayon"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "tga", "bmp"] }
+bytemuck = { version = "1.25", features = ["derive"] }
+crossbeam-channel = "0.5"
+parking_lot = "0.12"
+ahash = "0.8"
+indexmap = "2"
+smallvec = "1.15"
+serde = { version = "1", features = ["derive"] }
+toml = "1"
+dirs = "7"
+pollster = "1"
+wgpu = "30"
+eframe = { version = "0.37", default-features = false, features = ["accesskit", "clipboard", "default_fonts", "links", "wgpu", "wayland", "x11"] }
+egui = { version = "0.37", features = ["default_fonts", "monochrome_emoji_fonts"] }
+egui-wgpu = "0.37"
+egui_extras = { version = "0.37", features = ["image"] }
+rfd = "0.17"
+
+[profile.dev]
+opt-level = 1
+incremental = false
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+opt-level = 3
+debug = false
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+debug = false
+
+[profile.fast]
+inherits = "release"
+lto = false
+codegen-units = 16
+incremental = true

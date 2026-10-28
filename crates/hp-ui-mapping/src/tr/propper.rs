@@ -1,0 +1,120 @@
+use hp_app::i18n::TrTable;
+
+pub const TR: TrTable = &[
+    ("propper.options_title", "Static prop options (Propper)", "Options des props statiques (Propper)"),
+    (
+        "propper.options_intro",
+        "Used by \"Convert brushes to a static prop\" and by the model import.",
+        "Utilisées par \"Convertir les brushes en prop statique\" et par l'import de modèles.",
+    ),
+    (
+        "propper.options_collision",
+        "Collision: each brush stays one convex piece; displacements get slabs that follow their surface.",
+        "Collision : chaque brush reste une pièce convexe ; les displacements ont des dalles qui suivent leur surface.",
+    ),
+    (
+        "propper.options_blend",
+        "Blend materials (WorldVertexTransition) of displacements are baked into a texture of the model.",
+        "Les matériaux de mélange (WorldVertexTransition) des displacements sont cuits dans une texture du modèle.",
+    ),
+    (
+        "propper.details",
+        "{0} levels of detail (triangles: {1}), {2} collision pieces, surface {3}.",
+        "{0} niveaux de détail (triangles : {1}), {2} pièces de collision, surface {3}.",
+    ),
+    (
+        "propper.baked",
+        "Blend materials baked into a {1} x {2} texture ({0} displacements).",
+        "Matériaux de mélange cuits dans une texture de {1} x {2} ({0} displacements).",
+    ),
+    ("propper.write_failed", "Could not write the prop files: {0}", "Impossible d'écrire les fichiers du prop : {0}"),
+    ("propper.title", "Convert prop to brushes", "Convertir le prop en brushes"),
+    (
+        "propper.select",
+        "Select a prop_static, prop_dynamic or prop_physics with a model.",
+        "Sélectionnez un prop_static, prop_dynamic ou prop_physics avec un modèle.",
+    ),
+    (
+        "propper.no_content",
+        "The game content is not mounted yet: set the game folder (Settings > Game) or wait for it to load.",
+        "Le contenu du jeu n'est pas encore monté : configurez le dossier du jeu (Paramètres > Jeu) ou attendez son chargement.",
+    ),
+    ("propper.model_missing", "Model not found: {0}", "Modèle introuvable : {0}"),
+    ("propper.model_bad", "Cannot read the model {0}: {1}", "Impossible de lire le modèle {0} : {1}"),
+    ("propper.model", "Model", "Modèle"),
+    ("propper.triangles", "{0} render triangles", "{0} triangles de rendu"),
+    (
+        "propper.has_collision",
+        "Collision model: {0} convex pieces (one brush each).",
+        "Modèle de collision : {0} pièces convexes (une brush chacune).",
+    ),
+    (
+        "propper.no_collision",
+        "No collision model: the brushes are built from the render mesh.",
+        "Pas de modèle de collision : les brushes sont construites depuis le maillage de rendu.",
+    ),
+    ("propper.shape", "Shape from", "Forme depuis"),
+    ("propper.shape_auto", "Automatic", "Automatique"),
+    (
+        "propper.shape_auto_tip",
+        "The collision model when the model has one (the exact brushes of a prop made with Hammer Pro), else the render mesh.",
+        "Le modèle de collision quand le modèle en a un (les brushes exactes d'un prop fait avec Hammer Pro), sinon le maillage de rendu.",
+    ),
+    ("propper.shape_collision", "Collision model", "Modèle de collision"),
+    (
+        "propper.shape_collision_tip",
+        "One brush per convex piece of the collision model.",
+        "Une brush par pièce convexe du modèle de collision.",
+    ),
+    ("propper.shape_render", "Render mesh (convex pieces)", "Maillage de rendu (pièces convexes)"),
+    (
+        "propper.shape_render_tip",
+        "Brushes grown from the convex parts of the visible mesh: close to the model, approximate on curved or hollow shapes.",
+        "Des brushes construites depuis les parties convexes du maillage visible : proches du modèle, approximatives sur les formes courbes ou creuses.",
+    ),
+    ("propper.target", "Put the brushes in", "Mettre les brushes dans"),
+    ("propper.target_world", "The world", "Le monde"),
+    ("propper.keep", "Keep the prop", "Garder le prop"),
+    ("propper.convert", "Convert", "Convertir"),
+    (
+        "propper.no_phy",
+        "This model has no collision model: choose Automatic or Render mesh.",
+        "Ce modèle n'a pas de modèle de collision : choisissez Automatique ou Maillage de rendu.",
+    ),
+    (
+        "propper.too_many_tris",
+        "The render mesh has {0} triangles, too many to rebuild brushes from (at most {1}).",
+        "Le maillage de rendu a {0} triangles, trop pour en reconstruire des brushes (au plus {1}).",
+    ),
+    (
+        "propper.too_many_pieces",
+        "The model would make {0} brushes (at most {1}): it is too detailed to become brushes.",
+        "Le modèle donnerait {0} brushes (au plus {1}) : il est trop détaillé pour devenir des brushes.",
+    ),
+    (
+        "propper.no_brush",
+        "No part of the model is large enough to make a brush.",
+        "Aucune partie du modèle n'est assez grande pour faire une brush.",
+    ),
+    (
+        "propper.done_one",
+        "Prop converted to {0} brush ({1} textured faces, {2} in nodraw).",
+        "Prop converti en {0} brush ({1} faces texturées, {2} en nodraw).",
+    ),
+    (
+        "propper.done",
+        "Prop converted to {0} brushes ({1} textured faces, {2} in nodraw).",
+        "Prop converti en {0} brushes ({1} faces texturées, {2} en nodraw).",
+    ),
+    (
+        "propper.approximate",
+        "{0} of them only approximate the model (its mesh is not made of closed convex parts there).",
+        "{0} d'entre elles ne font qu'approcher le modèle (son maillage n'y est pas fait de parties convexes fermées).",
+    ),
+    (
+        "propper.skipped",
+        "{0} parts were too small or too flat to make a brush.",
+        "{0} parties étaient trop petites ou trop plates pour faire une brush.",
+    ),
+    ("propper.failed", "Could not convert the prop: {0}", "Impossible de convertir le prop : {0}"),
+];

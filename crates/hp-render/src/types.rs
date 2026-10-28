@@ -1,0 +1,916 @@
+use bytemuck::{Pod, Zeroable};
+use core::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Not};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct TexId(pub(crate) u32);
+
+impl TexId {
+    pub const MISSING: TexId = TexId(0);
+    pub const LOADING: TexId = TexId(1);
+    pub const WHITE: TexId = TexId(2);
+    pub(crate) const FLAT_NORMAL: TexId = TexId(u32::MAX);
+
+    pub const fn raw(self) -> u32 {
+        self.0
+    }
+
+    pub const fn is_builtin(self) -> bool {
+        self.0 <= 2 || self.0 == u32::MAX
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum TexFormat {
+    Rgba8Srgb,
+    Bc1Srgb,
+    Bc2Srgb,
+    Bc3Srgb,
+    Rgba8Linear,
+    Bc1Linear,
+    Bc2Linear,
+    Bc3Linear,
+}
+
+impl TexFormat {
+    pub const fn block_bytes(self) -> Option<usize> {
+        match self {
+            TexFormat::Rgba8Srgb | TexFormat::Rgba8Linear => None,
+            TexFormat::Bc1Srgb | TexFormat::Bc1Linear => Some(8),
+            TexFormat::Bc2Srgb | TexFormat::Bc3Srgb | TexFormat::Bc2Linear | TexFormat::Bc3Linear => Some(16),
+        }
+    }
+
+    pub const fn is_linear(self) -> bool {
+        matches!(self, TexFormat::Rgba8Linear | TexFormat::Bc1Linear | TexFormat::Bc2Linear | TexFormat::Bc3Linear)
+    }
+
+    pub const fn to_linear(self) -> Self {
+        match self {
+            TexFormat::Rgba8Srgb | TexFormat::Rgba8Linear => TexFormat::Rgba8Linear,
+            TexFormat::Bc1Srgb | TexFormat::Bc1Linear => TexFormat::Bc1Linear,
+            TexFormat::Bc2Srgb | TexFormat::Bc2Linear => TexFormat::Bc2Linear,
+            TexFormat::Bc3Srgb | TexFormat::Bc3Linear => TexFormat::Bc3Linear,
+        }
+    }
+
+    pub fn level_size(self, width: u32, height: u32) -> usize {
+        let (w, h) = (width.max(1) as usize, height.max(1) as usize);
+        match self.block_bytes() {
+            None => w.saturating_mul(h).saturating_mul(4),
+            Some(b) => w.div_ceil(4).saturating_mul(h.div_ceil(4)).saturating_mul(b),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct TextureUpload {
+    pub width: u32,
+    pub height: u32,
+    pub format: TexFormat,
+    pub levels: Vec<Vec<u8>>,
+}
+
+macro_rules! bitflags_u32 {
+    ($(#[$meta:meta])* $name:ident { $($(#[$fmeta:meta])* $flag:ident = $val:expr;)* }) => {
+        $(#[$meta])*
+        #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+        pub struct $name(pub u32);
+
+        impl $name {
+            $($(#[$fmeta])* pub const $flag: $name = $name($val);)*
+
+            pub const fn empty() -> Self {
+                Self(0)
+            }
+
+            pub const fn bits(self) -> u32 {
+                self.0
+            }
+
+            pub const fn contains(self, other: Self) -> bool {
+                self.0 & other.0 == other.0
+            }
+
+            pub const fn intersects(self, other: Self) -> bool {
+                self.0 & other.0 != 0
+            }
+
+            pub const fn is_empty(self) -> bool {
+                self.0 == 0
+            }
+
+            pub fn set(&mut self, other: Self, on: bool) {
+                if on {
+                    self.0 |= other.0;
+                } else {
+                    self.0 &= !other.0;
+                }
+            }
+        }
+
+        impl BitOr for $name {
+            type Output = Self;
+            fn bitor(self, rhs: Self) -> Self {
+                Self(self.0 | rhs.0)
+            }
+        }
+
+        impl BitOrAssign for $name {
+            fn bitor_assign(&mut self, rhs: Self) {
+                self.0 |= rhs.0;
+            }
+        }
+
+        impl BitAnd for $name {
+            type Output = Self;
+            fn bitand(self, rhs: Self) -> Self {
+                Self(self.0 & rhs.0)
+            }
+        }
+
+        impl BitAndAssign for $name {
+            fn bitand_assign(&mut self, rhs: Self) {
+                self.0 &= rhs.0;
+            }
+        }
+
+        impl Not for $name {
+            type Output = Self;
+            fn not(self) -> Self {
+                Self(!self.0)
+            }
+        }
+    };
+}
+
+bitflags_u32! {
+    MaterialFlags {
+        TRANSLUCENT = 1;
+        ALPHA_TEST = 1 << 1;
+        ADDITIVE = 1 << 2;
+        TOOL = 1 << 3;
+        UNLIT = 1 << 4;
+        TWO_SIDED = 1 << 5;
+        NODRAW_IN_3D = 1 << 6;
+        SKY = 1 << 7;
+        OPAQUE_TEXTURE = 1 << 8;
+        MODULATE = 1 << 9;
+        MODULATE_2X = 1 << 10;
+        DECAL_MODULATE = 1 << 11;
+        SELF_ILLUM = 1 << 12;
+    }
+}
+
+bitflags_u32! {
+    ObjectFlags {
+        SELECTED = 1;
+        HIDDEN = 1 << 1;
+        HOVERED = 1 << 2;
+        NO_3D = 1 << 3;
+        NO_2D = 1 << 4;
+        ALWAYS_EDGES = 1 << 5;
+        INVALID = 1 << 6;
+        DIMMED = 1 << 7;
+        INSTANCE = 1 << 8;
+        SKY_3D = 1 << 9;
+        ROPE = 1 << 10;
+        GAME_HIDDEN = 1 << 11;
+        DISPLACEMENT = 1 << 12;
+        NO_GAME_WIRE = 1 << 13;
+        BRUSH_ENTITY = 1 << 14;
+        COMPILED_LIGHT = 1 << 15;
+        NO_PROBE = 1 << 16;
+        NO_SHADOW = 1 << 17;
+    }
+}
+
+pub type MaterialId = u32;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct MaterialDesc {
+    pub texture: Option<TexId>,
+    pub tex_size: [f32; 2],
+    pub flags: MaterialFlags,
+    pub tint: [f32; 4],
+    pub bump: Option<BumpDesc>,
+    pub texture2: Option<TexId>,
+    pub texture3: Option<TexId>,
+    pub texture4: Option<TexId>,
+    pub scroll: [f32; 2],
+    pub alpha_ref: f32,
+    pub detail: Option<DetailDesc>,
+    pub water: Option<WaterDesc>,
+    pub envmap: Option<EnvmapDesc>,
+    pub self_illum: Option<SelfIllumDesc>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SelfIllumDesc {
+    pub tint: [f32; 3],
+    pub mask: Option<TexId>,
+    pub mask_alpha: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct CubemapId(pub(crate) u16);
+
+impl CubemapId {
+    pub const SKY: CubemapId = CubemapId(0);
+
+    pub const fn raw(self) -> u16 {
+        self.0
+    }
+}
+
+pub const NO_CUBEMAP: u16 = u16::MAX;
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct CubemapProbe {
+    pub origin: [f32; 3],
+    pub size: u32,
+    pub sides: Vec<(ObjectId, [f32; 4])>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct CubemapImage<'a> {
+    pub size: u32,
+    pub faces: [&'a [[f32; 3]]; 6],
+    pub origin: Option<[f32; 3]>,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct CubemapStats {
+    pub probes: u32,
+    pub ready: u32,
+    pub images: u32,
+    pub textures: u32,
+    pub pending_faces: u32,
+    pub resolution: u32,
+    pub bytes: u64,
+    pub faces_rendered: u64,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum EnvmapAlphaMask {
+    #[default]
+    None,
+    InverseBase,
+    Base,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct EnvmapDesc {
+    pub cubemap: Option<CubemapId>,
+    pub texture: Option<TexId>,
+    pub tint: [f32; 3],
+    pub contrast: f32,
+    pub saturation: [f32; 3],
+    pub mask: Option<TexId>,
+    pub mask_alpha: bool,
+    pub mask_uv: [f32; 4],
+    pub alpha_mask: EnvmapAlphaMask,
+    pub fresnel: f32,
+    pub phong_fresnel: f32,
+    pub fresnel_ranges: [f32; 3],
+    pub light_scale: f32,
+    pub no_envmap: [bool; 2],
+    pub parallax: bool,
+}
+
+impl Default for EnvmapDesc {
+    fn default() -> Self {
+        Self {
+            cubemap: None,
+            texture: None,
+            tint: [1.0; 3],
+            contrast: 0.0,
+            saturation: [1.0; 3],
+            mask: None,
+            mask_alpha: false,
+            mask_uv: [1.0, 1.0, 0.0, 0.0],
+            alpha_mask: EnvmapAlphaMask::None,
+            fresnel: 1.0,
+            phong_fresnel: 0.0,
+            fresnel_ranges: [0.0, 0.5, 1.0],
+            light_scale: 0.0,
+            no_envmap: [false; 2],
+            parallax: false,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct BumpDesc {
+    pub texture: TexId,
+    pub texture2: Option<TexId>,
+    pub blend4: Option<[f32; 4]>,
+    pub ssbump: bool,
+    pub uv: [f32; 4],
+    pub scroll: [f32; 2],
+}
+
+impl BumpDesc {
+    pub fn new(texture: TexId) -> Self {
+        Self { texture, texture2: None, blend4: None, ssbump: false, uv: [1.0, 1.0, 0.0, 0.0], scroll: [0.0; 2] }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WaterDesc {
+    pub normal_map: Option<TexId>,
+    pub frames: [u32; 3],
+    pub frame_rate: f32,
+    pub bump_uv: [f32; 4],
+    pub bump_scroll: [f32; 2],
+    pub scroll1: [f32; 2],
+    pub scroll2: [f32; 2],
+    pub refract: bool,
+    pub refract_tint: [f32; 3],
+    pub refract_amount: f32,
+    pub reflect: bool,
+    pub reflect_tint: [f32; 3],
+    pub reflect_amount: f32,
+    pub fog_color: [f32; 3],
+    pub fog_range: [f32; 2],
+    pub cheap: bool,
+    pub cheap_blend: bool,
+    pub cheap_range: [f32; 2],
+    pub fresnel: bool,
+    pub reflect_blend: f32,
+    pub base_texture: Option<TexId>,
+    pub bottom: Option<WaterBottom>,
+    pub envmap: bool,
+    pub above_water: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct WaterBottom {
+    pub refract_tint: [f32; 3],
+    pub refract_amount: f32,
+    pub fog_color: [f32; 3],
+    pub fog_range: [f32; 2],
+}
+
+impl Default for WaterDesc {
+    fn default() -> Self {
+        Self {
+            normal_map: None,
+            frames: [1, 1, 1],
+            frame_rate: 0.0,
+            bump_uv: [1.0, 1.0, 0.0, 0.0],
+            bump_scroll: [0.0; 2],
+            scroll1: [0.0; 2],
+            scroll2: [0.0; 2],
+            refract: true,
+            refract_tint: [1.0; 3],
+            refract_amount: 0.0,
+            reflect: true,
+            reflect_tint: [1.0; 3],
+            reflect_amount: 0.8,
+            fog_color: [1.0, 0.0, 0.0],
+            fog_range: [0.0, 0.0],
+            cheap: false,
+            cheap_blend: true,
+            cheap_range: [500.0, 1000.0],
+            fresnel: true,
+            reflect_blend: 1.0,
+            base_texture: None,
+            bottom: None,
+            envmap: false,
+            above_water: true,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct DetailDesc {
+    pub texture: TexId,
+    pub mode: u32,
+    pub raw: bool,
+    pub sets_alpha: bool,
+    pub uv: [f32; 4],
+    pub tint_blend: [f32; 4],
+}
+
+impl DetailDesc {
+    pub const MODE_MOD2X: u32 = 0;
+    pub const MODE_ADDITIVE: u32 = 1;
+    pub const MODE_DETAIL_OVER_BASE: u32 = 2;
+    pub const MODE_FADE: u32 = 3;
+    pub const MODE_BASE_OVER_DETAIL: u32 = 4;
+    pub const MODE_ADDITIVE_SELFILLUM: u32 = 5;
+    pub const MODE_ADDITIVE_SELFILLUM_THRESHOLD_FADE: u32 = 6;
+    pub const MODE_MOD2X_SELECT_TWO_PATTERNS: u32 = 7;
+    pub const MODE_MULTIPLY: u32 = 8;
+    pub const MODE_MASK_BASE_BY_DETAIL_ALPHA: u32 = 9;
+    pub const MODE_SSBUMP_BUMP: u32 = 10;
+    pub const MODE_SSBUMP_NOBUMP: u32 = 11;
+    pub const MODE_TWO_TEXTURE_LERP: u32 = 12;
+    pub const MODE_TWO_TEXTURE_MASK: u32 = 13;
+}
+
+impl Default for MaterialDesc {
+    fn default() -> Self {
+        Self {
+            texture: None,
+            tex_size: [512.0, 512.0],
+            flags: MaterialFlags::empty(),
+            tint: [1.0; 4],
+            bump: None,
+            texture2: None,
+            texture3: None,
+            texture4: None,
+            scroll: [0.0; 2],
+            alpha_ref: 0.5,
+            detail: None,
+            water: None,
+            envmap: None,
+            self_illum: None,
+        }
+    }
+}
+
+pub type ObjectId = u32;
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Pod, Zeroable)]
+pub struct Vertex {
+    pub pos: [f32; 3],
+    pub normal: [f32; 3],
+    pub uv: [f32; 2],
+    pub alpha: f32,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct MeshBatch {
+    pub material: MaterialId,
+    pub vertices: Vec<Vertex>,
+    pub indices: Vec<u32>,
+    pub blend: Vec<BlendVertex>,
+    pub cubemaps: Vec<u16>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct BlendVertex {
+    pub weights: [f32; 4],
+    pub tint: [f32; 3],
+}
+
+impl Default for BlendVertex {
+    fn default() -> Self {
+        Self { weights: [1.0, 0.0, 0.0, 0.0], tint: [1.0; 3] }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ObjectMesh {
+    pub batches: Vec<MeshBatch>,
+    pub edges: Vec<[f32; 3]>,
+    pub detail_edges: Vec<[f32; 3]>,
+    pub source_edges: Vec<[f32; 3]>,
+    pub marks: Vec<MarkTri>,
+    pub aabb_min: [f32; 3],
+    pub aabb_max: [f32; 3],
+    pub wire_color: [u8; 3],
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub enum WalkClass {
+    #[default]
+    Buildable = 0,
+    Walkable = 1,
+    Steep = 2,
+}
+
+impl WalkClass {
+    pub const ALL: [WalkClass; 3] = [WalkClass::Buildable, WalkClass::Walkable, WalkClass::Steep];
+
+    pub const fn srgb(self) -> [u8; 3] {
+        match self {
+            WalkClass::Buildable => [60, 200, 90],
+            WalkClass::Walkable => [250, 190, 40],
+            WalkClass::Steep => [235, 55, 70],
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct MarkTri {
+    pub p: [[f32; 3]; 3],
+    pub class: WalkClass,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub enum Detail2d {
+    #[default]
+    All,
+    Selected,
+    None,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct ModelId(pub(crate) u32);
+
+impl ModelId {
+    pub const fn raw(self) -> u32 {
+        self.0
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ModelPart {
+    pub material: MaterialId,
+    pub vertices: Vec<Vertex>,
+    pub indices: Vec<u32>,
+    pub tangents: Vec<[f32; 4]>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ModelLod {
+    pub switch_point: f32,
+    pub parts: Vec<ModelPart>,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum DetailSpriteOrientation {
+    #[default]
+    Fixed,
+    ScreenAligned,
+    Vertical,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct DetailSprite {
+    pub origin: [f32; 3],
+    pub right: [f32; 3],
+    pub up: [f32; 3],
+    pub ul: [f32; 2],
+    pub lr: [f32; 2],
+    pub tex: [f32; 4],
+    pub orientation: DetailSpriteOrientation,
+    pub color: [u8; 4],
+    pub object: ObjectId,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ModelInstance {
+    pub model: ModelId,
+    pub transform: [[f32; 4]; 4],
+    pub object: ObjectId,
+    pub tint: [f32; 4],
+    pub fade: [f32; 2],
+}
+
+impl ModelInstance {
+    pub fn detail_fade(dist: f32, fade: f32) -> [f32; 2] {
+        let dist = if dist.is_finite() { dist.max(1.0) } else { 1.0 };
+        let fade = if fade.is_finite() { fade.max(0.0) } else { 0.0 };
+        [-(dist - fade).max(0.0), -dist]
+    }
+}
+
+impl Default for ModelInstance {
+    fn default() -> Self {
+        Self {
+            model: ModelId(0),
+            transform: [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0], [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]],
+            object: 0,
+            tint: [1.0; 4],
+            fade: [0.0; 2],
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SpriteInstance {
+    pub pos: [f32; 3],
+    pub size: f32,
+    pub material: MaterialId,
+    pub color: [f32; 4],
+    pub object: ObjectId,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum LightKind {
+    Point,
+    Spot { dir: [f32; 3], inner_deg: f32, outer_deg: f32 },
+    Directional { dir: [f32; 3] },
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct LightFalloff {
+    pub constant: f32,
+    pub linear: f32,
+    pub quadratic: f32,
+    pub cap: f32,
+    pub cutoff: f32,
+    pub fade: [f32; 2],
+    pub exponent: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PreviewLight {
+    pub kind: LightKind,
+    pub pos: [f32; 3],
+    pub color: [f32; 3],
+    pub intensity: f32,
+    pub range: f32,
+    pub falloff: Option<LightFalloff>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum OrthoAxis {
+    Top,
+    Front,
+    Side,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ViewKind {
+    Perspective { eye: [f32; 3], forward: [f32; 3], up: [f32; 3], fov_y_deg: f32, near: f32, far: f32 },
+    Ortho { axis: OrthoAxis, center: [f32; 3], pixels_per_unit: f32 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum RenderMode {
+    Textured,
+    Flat,
+    Wireframe,
+    TexturedWire,
+    Lit,
+    Unshaded,
+    SmoothingGroups,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct ViewCounts {
+    pub draw_calls: u32,
+    pub triangles: u64,
+    pub world_draws: u32,
+    pub world_triangles: u64,
+    pub model_draws: u32,
+    pub model_triangles: u64,
+    pub model_instances: u32,
+    pub sprites: u32,
+    pub material_changes: u32,
+    pub chunks_in_frustum: u32,
+    pub chunks_occluded: u32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GridParams {
+    pub size: f32,
+    pub major_every: u32,
+    pub show_1024: bool,
+    pub opacity: f32,
+}
+
+impl Default for GridParams {
+    fn default() -> Self {
+        Self { size: 16.0, major_every: 8, show_1024: true, opacity: 1.0 }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ViewParams {
+    pub size: [u32; 2],
+    pub kind: ViewKind,
+    pub mode: RenderMode,
+    pub grid: Option<GridParams>,
+    pub background: [f32; 3],
+    pub selection_color: [f32; 4],
+    pub show_sprites: bool,
+    pub show_models: bool,
+    pub msaa: bool,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub enum Models2d {
+    Boxes,
+    Wireframe,
+    #[default]
+    SelectedOnly,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Grid3d {
+    pub size: f32,
+    pub major_every: u32,
+    pub fade_cells: f32,
+    pub opacity: f32,
+}
+
+impl Default for Grid3d {
+    fn default() -> Self {
+        Self { size: 16.0, major_every: 8, fade_cells: 64.0, opacity: 0.45 }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SkyView {
+    pub faces: [Option<TexId>; 6],
+    pub uv: [[f32; 4]; 6],
+    pub yaw_deg: f32,
+}
+
+impl SkyView {
+    pub const IDENTITY_UV: [f32; 4] = [1.0, 1.0, 0.0, 0.0];
+
+    pub fn new(faces: [Option<TexId>; 6], yaw_deg: f32) -> Self {
+        Self { faces, uv: [Self::IDENTITY_UV; 6], yaw_deg }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Sky3d {
+    pub origin: [f32; 3],
+    pub scale: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Fog {
+    pub color: [f32; 3],
+    pub color2: [f32; 3],
+    pub dir: [f32; 3],
+    pub blend: bool,
+    pub start: f32,
+    pub end: f32,
+    pub max_density: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ViewOptions {
+    pub grid_3d: Option<Grid3d>,
+    pub models_2d: Models2d,
+    pub model_distance: f32,
+    pub fill_selected_2d: f32,
+    pub vertex_dots_min_zoom: f32,
+    pub sprites_2d_px: f32,
+    pub show_sky: bool,
+    pub show_sky_3d: bool,
+    pub sky_see_through: bool,
+    pub water_preview: bool,
+    pub show_fog: bool,
+    pub occlusion_culling: bool,
+    pub force_opaque: bool,
+    pub walkable: bool,
+    pub detail_2d: Detail2d,
+    pub walk_marks: bool,
+    pub cull_radius: f32,
+    pub time: f32,
+    pub model_fade: bool,
+    pub collision_models: bool,
+    pub collision_only: bool,
+    pub selection_outline: bool,
+    pub grid_dotted: bool,
+    pub grid_highlight_64: bool,
+    pub grid_min_px: f32,
+    pub source_brush_2d: bool,
+    pub game_wireframe: u8,
+    pub compiled_lighting: bool,
+    pub normal_maps: bool,
+    pub cubemaps: bool,
+    pub light_shadows: u32,
+}
+
+impl Default for ViewOptions {
+    fn default() -> Self {
+        Self {
+            grid_3d: None,
+            models_2d: Models2d::default(),
+            model_distance: 0.0,
+            fill_selected_2d: 0.0,
+            vertex_dots_min_zoom: 0.0,
+            sprites_2d_px: 0.0,
+            show_sky: false,
+            show_sky_3d: false,
+            sky_see_through: false,
+            water_preview: false,
+            show_fog: false,
+            occlusion_culling: false,
+            force_opaque: false,
+            walkable: false,
+            detail_2d: Detail2d::All,
+            walk_marks: false,
+            cull_radius: 0.0,
+            time: 0.0,
+            model_fade: false,
+            collision_models: false,
+            collision_only: false,
+            selection_outline: false,
+            grid_dotted: false,
+            grid_highlight_64: false,
+            grid_min_px: 4.0,
+            source_brush_2d: false,
+            game_wireframe: 0,
+            compiled_lighting: false,
+            normal_maps: false,
+            cubemaps: false,
+            light_shadows: 0,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Environment {
+    pub sky: Option<SkyView>,
+    pub sky_3d: Option<Sky3d>,
+    pub fog: Option<Fog>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct BackgroundImage {
+    pub texture: TexId,
+    pub axis: OrthoAxis,
+    pub corners: [[f32; 3]; 4],
+    pub opacity: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct StaticLineStyle {
+    pub width_px: f32,
+    pub on_top: bool,
+    pub in_2d: bool,
+    pub in_3d: bool,
+    pub visible: bool,
+}
+
+impl Default for StaticLineStyle {
+    fn default() -> Self {
+        Self { width_px: 1.0, on_top: false, in_2d: true, in_3d: true, visible: true }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct OverlayLine {
+    pub a: [f32; 3],
+    pub b: [f32; 3],
+    pub color: [f32; 4],
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct OverlayTri {
+    pub p: [[f32; 3]; 3],
+    pub color: [f32; 4],
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct OverlayPoint {
+    pub pos: [f32; 3],
+    pub color: [f32; 4],
+    pub size_px: f32,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Overlay {
+    pub lines: Vec<OverlayLine>,
+    pub lines_on_top: Vec<OverlayLine>,
+    pub triangles: Vec<OverlayTri>,
+    pub triangles_on_top: Vec<OverlayTri>,
+    pub points: Vec<OverlayPoint>,
+}
+
+impl Overlay {
+    pub fn clear(&mut self) {
+        self.lines.clear();
+        self.lines_on_top.clear();
+        self.triangles.clear();
+        self.triangles_on_top.clear();
+        self.points.clear();
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.lines.is_empty()
+            && self.lines_on_top.is_empty()
+            && self.triangles.is_empty()
+            && self.triangles_on_top.is_empty()
+            && self.points.is_empty()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct RenderStats {
+    pub draw_calls: u32,
+    pub triangles: u64,
+    pub objects: u32,
+    pub chunks: u32,
+    pub textures: u32,
+    pub approx_gpu_bytes: u64,
+    pub retained_uploads: u64,
+    pub retained_overlay_bytes: u64,
+    pub chunks_in_frustum: u32,
+    pub chunks_occluded: u32,
+    pub static_lines: u64,
+    pub content_generation: u64,
+    pub shadowed_lights: u32,
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum RenderError {
+    #[error("invalid texture: {0}")]
+    InvalidTexture(String),
+    #[error("unknown view {0}")]
+    UnknownView(u32),
+    #[error("GPU readback failed: {0}")]
+    Readback(String),
+}

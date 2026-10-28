@@ -1,0 +1,17 @@
+[package]
+name = "hp-editor"
+description = "Hammer Pro editing core: document, scene, selection, undo/redo, editing operations, picking, clipboard and problem checks."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-bsp.workspace = true
+hp-kv.workspace = true
+hp-vmf.workspace = true
+hp-geom.workspace = true
+glam.workspace = true
+rayon.workspace = true
+thiserror.workspace = true
+indexmap = { workspace = true, features = ["rayon"] }

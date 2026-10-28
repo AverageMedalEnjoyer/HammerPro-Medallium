@@ -1,0 +1,7 @@
+# Open a real map, let content stream in, take a screenshot.
+wait 10
+open D:/SteamLibrary/steamapps/common/GarrysMod/garrysmod/gamemodes/terrortown/mapexamples/ttt_traps.vmf
+wait 240
+screenshot target/e2e/smoke.png
+wait 10
+exit

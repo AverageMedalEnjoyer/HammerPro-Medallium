@@ -1,0 +1,7 @@
+# 3D view maximized on a real map.
+wait 10
+open D:/SteamLibrary/steamapps/common/GarrysMod/garrysmod/gamemodes/terrortown/mapexamples/ttt_weaponcheck.vmf
+wait 200
+screenshot target/e2e/view3d.png
+wait 10
+exit

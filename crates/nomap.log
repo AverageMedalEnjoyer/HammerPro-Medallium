@@ -1,0 +1,7 @@
+Hammer Pro map compiler (hp-bspc 0.1.2)
+Command line: -serveraddons nomap
+Warning: VBSP: Unknown option "-serveraddons" (ignored)
+Error: cannot read C:\Users\oracle\Desktop\gmodmapping\HammerPro\crates\nomap.vmf: Le fichier spécifié est introuvable. (os error 2)
+Hammer Pro map compiler (hp-bspc 0.1.2)
+Command line: -serveraddons nomap
+Error: cannot read C:\Users\oracle\Desktop\gmodmapping\HammerPro\crates\nomap.vmf: Le fichier spécifié est introuvable. (os error 2)

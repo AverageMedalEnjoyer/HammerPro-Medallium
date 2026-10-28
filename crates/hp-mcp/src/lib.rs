@@ -1,0 +1,27 @@
+pub mod b64;
+pub mod bridge;
+pub mod install;
+pub mod protocol;
+pub mod registry;
+pub mod server;
+pub mod tools;
+
+mod process;
+
+pub const SERVER_NAME: &str = "hammer-pro";
+pub const PRODUCT_NAME: &str = "Hammer Pro";
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const BRIDGE_ARG: &str = "--mcp";
+pub const INSTANCE_ENV: &str = "HAMMERPRO_INSTANCE";
+pub const DIR_ENV: &str = "HAMMERPRO_MCP_DIR";
+pub const MAX_MESSAGE_BYTES: usize = 8 * 1024 * 1024;
+
+pub const NO_INSTANCE_TEXT: &str = "No Hammer Pro window has its MCP server switched on. Open Hammer Pro, tick MCP > \
+     MCP server in the menu bar to switch it on (it is off by default), then try again. Call list_instances to see \
+     the windows with MCP on.";
+
+pub const INSTRUCTIONS: &str = "Hammer Pro is a Source engine (Garry's Mod) map editor. These tools edit the map \
+     open in a Hammer Pro window: coordinates are Source units (Z up), materials are names like \
+     \"dev/dev_measuregeneric01b\" (search_materials), every edit is one undo step labelled \"MCP: <tool>\" that the \
+     user can undo. Start with get_map_info. Use screenshot_view to look at the result. Object ids are the VMF ids; \
+     when an entity and a solid share an id, ids names the entity: use solid_ids for the solid.";

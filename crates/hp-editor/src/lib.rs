@@ -1,0 +1,86 @@
+#![forbid(unsafe_code)]
+
+mod changes;
+mod clipboard;
+mod document;
+mod extra;
+mod glob;
+mod grids;
+mod history;
+mod ids;
+mod ops;
+mod pick;
+mod problems;
+mod scene;
+mod selection;
+mod stats;
+mod visibility;
+
+pub mod compile_export;
+pub mod deps_roots;
+pub mod describe;
+pub mod diff;
+pub mod edicts;
+pub mod fingerprint;
+pub mod gallery;
+pub mod instances;
+pub mod limits;
+pub mod luxels;
+pub mod max_distance;
+pub mod prefab;
+pub mod prop_export;
+pub mod side_index;
+pub mod sky;
+pub mod unprop;
+
+#[cfg(test)]
+mod tests;
+
+pub use changes::Changes;
+pub use clipboard::PasteSpecial;
+pub use document::{Document, EditOptions, ManifestLink};
+pub use glob::{glob_match, glob_replace};
+pub use grids::{GRIDS_BLOCK, MAX_GRID_NAME, OBJECT_GRID_KEY, clean_grid_name, editor_grid};
+pub use history::{FACE_SELECTION_STEP, SELECTION_STEP, UndoLimits};
+pub use ids::{IdBuildHasher, IdHasher, IdMap, IdSet};
+pub use ops::{AlignMode, ClipKeep, EntityQuery, FaceEdit, ReplaceScope};
+pub use ops::{ConnPart, MAX_TEXT_LEN, TextField, TextMatch, TextQuery, find_ranges};
+pub use pick::{Hit, PickOptions, RectMode};
+pub use problems::{
+    BrushClassFn, MaterialKind, MaterialKindFn, Problem, ProblemAssets, ProblemContext, Severity, TargetKeyFn,
+    parent_name,
+};
+pub use scene::{EntityNode, GroupNode, Owner, Scene, SolidNode};
+pub use selection::{FaceRef, ObjRef, SelectMode, SelectOp, Selection};
+pub use stats::MapStats;
+pub use visibility::VisgroupState;
+
+pub type Id = hp_vmf::Id;
+
+#[derive(Debug, thiserror::Error)]
+pub enum EditError {
+    #[error("{0}")]
+    Vmf(#[from] hp_vmf::VmfError),
+    #[error("{0}")]
+    Geom(#[from] hp_geom::GeomError),
+    #[error("object not found: {0:?}")]
+    NotFound(ObjRef),
+    #[error("face not found: solid {0}, side {1}")]
+    FaceNotFound(Id, usize),
+    #[error("group {0} not found")]
+    GroupNotFound(Id),
+    #[error("visgroup {0} not found")]
+    VisgroupNotFound(Id),
+    #[error("invalid argument: {0}")]
+    Invalid(String),
+    #[error("nothing to do: {0}")]
+    Nothing(&'static str),
+    #[error("the clipboard does not contain map objects")]
+    EmptyClipboard,
+    #[error("a transaction is open")]
+    TransactionOpen,
+    #[error("the document has no file path")]
+    NoPath,
+}
+
+pub type EditResult<T> = Result<T, EditError>;

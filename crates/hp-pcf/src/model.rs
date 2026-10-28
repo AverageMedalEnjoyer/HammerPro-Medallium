@@ -1,0 +1,116 @@
+use crate::dmx::{Dmx, Element};
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Operator {
+    pub function: String,
+    pub params: Element,
+}
+
+impl Operator {
+    pub fn float(&self, name: &str) -> Option<f32> {
+        self.params.float(name)
+    }
+
+    pub fn int(&self, name: &str) -> Option<i32> {
+        self.params.int(name)
+    }
+
+    pub fn bool(&self, name: &str) -> Option<bool> {
+        self.params.bool(name)
+    }
+
+    pub fn vec3(&self, name: &str) -> Option<[f32; 3]> {
+        self.params.vec3(name)
+    }
+
+    pub fn color(&self, name: &str) -> Option<[u8; 4]> {
+        self.params.color(name)
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Child {
+    pub system: String,
+    pub delay: f32,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct SystemDef {
+    pub name: String,
+    pub material: String,
+    pub max_particles: u32,
+    pub initial_particles: u32,
+    pub radius: f32,
+    pub color: [u8; 4],
+    pub emitters: Vec<Operator>,
+    pub initializers: Vec<Operator>,
+    pub operators: Vec<Operator>,
+    pub renderers: Vec<Operator>,
+    pub children: Vec<Child>,
+}
+
+impl Default for SystemDef {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            material: String::new(),
+            max_particles: 1000,
+            initial_particles: 0,
+            radius: 5.0,
+            color: [255, 255, 255, 255],
+            emitters: Vec::new(),
+            initializers: Vec::new(),
+            operators: Vec::new(),
+            renderers: Vec::new(),
+            children: Vec::new(),
+        }
+    }
+}
+
+fn operators(dmx: &Dmx, e: &Element, key: &str) -> Vec<Operator> {
+    e.elements(key)
+        .into_iter()
+        .filter_map(|i| dmx.elements.get(i))
+        .map(|op| Operator {
+            function: op.str("functionName").unwrap_or(&op.name).to_owned(),
+            params: Element {
+                kind: op.kind.clone(),
+                name: op.name.clone(),
+                attrs: op.attrs.iter().filter(|(k, _)| !k.eq_ignore_ascii_case("functionName")).cloned().collect(),
+            },
+        })
+        .collect()
+}
+
+pub fn systems(dmx: &Dmx) -> Vec<SystemDef> {
+    let mut out = Vec::new();
+    for e in &dmx.elements {
+        if e.kind != "DmeParticleSystemDefinition" {
+            continue;
+        }
+        let d = SystemDef::default();
+        let children = e
+            .elements("children")
+            .into_iter()
+            .filter_map(|i| dmx.elements.get(i))
+            .filter_map(|c| {
+                let child = c.elements("child").first().and_then(|&i| dmx.elements.get(i))?;
+                Some(Child { system: child.name.clone(), delay: c.float("delay").unwrap_or(0.0).clamp(0.0, 60.0) })
+            })
+            .collect();
+        out.push(SystemDef {
+            name: e.name.clone(),
+            material: e.str("material").unwrap_or("").to_owned(),
+            max_particles: e.int("max_particles").map_or(d.max_particles, |v| v.clamp(0, 100_000) as u32),
+            initial_particles: e.int("initial_particles").map_or(0, |v| v.clamp(0, 100_000) as u32),
+            radius: e.float("radius").map_or(d.radius, |v| v.clamp(0.0, 100_000.0)),
+            color: e.color("color").unwrap_or(d.color),
+            emitters: operators(dmx, e, "emitters"),
+            initializers: operators(dmx, e, "initializers"),
+            operators: operators(dmx, e, "operators"),
+            renderers: operators(dmx, e, "renderers"),
+            children,
+        });
+    }
+    out
+}

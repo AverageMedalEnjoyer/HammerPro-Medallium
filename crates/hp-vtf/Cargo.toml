@@ -1,0 +1,13 @@
+[package]
+name = "hp-vtf"
+description = "Fast Valve Texture Format (VTF) decoder and encoder for Hammer Pro."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+thiserror.workspace = true
+texpresso.workspace = true
+image.workspace = true
+rayon.workspace = true

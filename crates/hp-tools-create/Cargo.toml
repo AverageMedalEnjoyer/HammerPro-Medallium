@@ -1,0 +1,21 @@
+[package]
+name = "hp-tools-create"
+description = "Hammer Pro creation tools: block, entity, clip, decal, overlay."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-editor.workspace = true
+hp-geom.workspace = true
+hp-vmf.workspace = true
+hp-render.workspace = true
+egui.workspace = true
+glam.workspace = true
+log.workspace = true
+hp-fgd.workspace = true
+hp-kv.workspace = true
+hp-fs.workspace = true
+hp-mdl.workspace = true

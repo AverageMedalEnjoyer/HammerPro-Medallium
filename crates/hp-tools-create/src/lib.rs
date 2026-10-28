@@ -1,0 +1,56 @@
+#![forbid(unsafe_code)]
+
+mod block;
+mod block_preview;
+mod clip;
+mod common;
+mod cordon;
+mod decal;
+mod entity;
+mod overlay_tool;
+pub mod path;
+mod picker;
+mod polygon;
+mod tr;
+
+pub mod model_bvh;
+pub mod prefab_place;
+mod sprinkle;
+pub mod sprinkle_def;
+
+#[cfg(test)]
+mod tests;
+#[cfg(test)]
+mod tests_support;
+
+pub use block::{BlockOptions, BlockTool, CreateAs, DEFAULT_DEPTH, Primitive, new_depth_range};
+pub use clip::{ClipTool, clip_plane_2d, next_keep};
+pub use cordon::{CORDON_TR, CordonTool, target_cordon};
+pub use decal::{DECAL_SURFACE_OFFSET, DecalTool, decal_basis, decal_origin};
+pub use entity::{EntityTool, align_to_normal, is_prop_class, rest_on_surface};
+pub use overlay_tool::{OverlayTool, overlay_basis, overlay_keyvalues};
+pub use path::{PATH_TR, PathTool};
+pub use polygon::{MAX_POLYGON_POINTS, PointCheck, PolygonOptions, PolygonTool, check_point, is_convex_outline};
+pub use prefab_place::{PREFAB_TR, insert_prefab};
+pub use sprinkle::{SPRINKLE_TR, SprinkleTool, user_sprinkle_dir};
+pub use tr::TR;
+
+pub fn register_translations() {
+    hp_app::i18n::register(TR);
+    hp_app::i18n::register(CORDON_TR);
+    hp_app::i18n::register(SPRINKLE_TR);
+    hp_app::i18n::register(PREFAB_TR);
+    hp_app::i18n::register(PATH_TR);
+}
+
+pub fn tools() -> Vec<Box<dyn hp_app::Tool>> {
+    vec![
+        Box::new(BlockTool::new()),
+        Box::new(PolygonTool::new()),
+        Box::new(EntityTool::new()),
+        Box::new(ClipTool::new()),
+        Box::new(DecalTool::new()),
+        Box::new(OverlayTool::new()),
+        Box::new(PathTool::new()),
+    ]
+}

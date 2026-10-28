@@ -1,0 +1,21 @@
+[package]
+name = "hp-ui-viewports"
+description = "Hammer Pro viewports: 3D and 2D views, cameras, input routing, drag and drop."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-editor.workspace = true
+hp-geom.workspace = true
+hp-render.workspace = true
+hp-vmf.workspace = true
+egui.workspace = true
+glam.workspace = true
+log.workspace = true
+
+[dev-dependencies]
+hp-fgd.workspace = true
+hp-fs.workspace = true

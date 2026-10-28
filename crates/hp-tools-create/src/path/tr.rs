@@ -1,0 +1,81 @@
+use hp_app::i18n::TrTable;
+
+pub const PATH_TR: TrTable = &[
+    ("path.class", "Class", "Classe"),
+    (
+        "path.class_tip",
+        "Class of the new points. Each point names the next one in its \"{0}\" key.",
+        "Classe des nouveaux points. Chaque point nomme le suivant dans sa clé « {0} ».",
+    ),
+    ("path.base", "Name", "Nom"),
+    (
+        "path.base_tip",
+        "Base name of the points: \"{0}\" names them {0}_1, {0}_2... (always unique in the map).",
+        "Nom de base des points : « {0} » les nomme {0}_1, {0}_2... (toujours uniques dans la carte).",
+    ),
+    ("path.loop", "Loop", "Boucle"),
+    (
+        "path.loop_tip",
+        "Ending a path links its last point back to the first one (a closed track).",
+        "Terminer un chemin relie son dernier point au premier (un circuit fermé).",
+    ),
+    ("path.relink", "Relink on delete", "Relier à la suppression"),
+    (
+        "path.relink_tip",
+        "Deleting path points in this tool links the point before each one to the point after it.",
+        "Supprimer des points dans cet outil relie le point précédent de chacun au point suivant.",
+    ),
+    ("path.offset", "Height", "Hauteur"),
+    (
+        "path.offset_tip",
+        "Extra distance above the surface for points placed in the 3D view.",
+        "Distance ajoutée au-dessus de la surface pour les points placés dans la vue 3D.",
+    ),
+    ("path.end", "End path", "Terminer le chemin"),
+    ("path.end_tip", "End the path being drawn ({0} or {1}).", "Terminer le chemin en cours ({0} ou {1})."),
+    ("path.close_now", "Close loop", "Fermer la boucle"),
+    (
+        "path.close_now_tip",
+        "Link the last point of the path being drawn to its first point and end it.",
+        "Relier le dernier point du chemin en cours à son premier point et le terminer.",
+    ),
+    ("path.insert", "Insert point", "Insérer un point"),
+    (
+        "path.insert_tip",
+        "Insert a point after the selected one, halfway to the next (or Shift+drag a point in a view).",
+        "Insérer un point après celui sélectionné, à mi-chemin du suivant (ou Maj+glisser un point dans une vue).",
+    ),
+    ("path.remove", "Remove and relink", "Supprimer et relier"),
+    (
+        "path.remove_tip",
+        "Remove the selected path points; the point before each one links to the point after it.",
+        "Supprimer les points sélectionnés ; le point précédent de chacun est relié au point suivant.",
+    ),
+    ("path.count", "{0} points", "{0} points"),
+    ("path.chains", "{0} paths in the map", "{0} chemins dans la carte"),
+    (
+        "path.hint_idle",
+        "Click in a view to place the first point of a path. Drag a point to move it, Shift+drag to insert one after it.",
+        "Cliquez dans une vue pour placer le premier point d'un chemin. Glissez un point pour le déplacer, Maj+glisser pour en insérer un après.",
+    ),
+    (
+        "path.hint_drawing",
+        "Click to add points ({0} so far), click a point to link to it. {1} or {2} ends the path.",
+        "Cliquez pour ajouter des points ({0} pour l'instant), cliquez un point pour le relier. {1} ou {2} termine le chemin.",
+    ),
+    ("path.not_path", "Select a path point first.", "Sélectionnez d'abord un point de chemin."),
+    ("path.failed", "Path edit failed: {0}", "Échec de la modification du chemin : {0}"),
+    ("path.ended", "Path ended: {0} points.", "Chemin terminé : {0} points."),
+    ("path.ended_loop", "Path closed into a loop: {0} points.", "Chemin fermé en boucle : {0} points."),
+    ("path.inserted", "Inserted {0}.", "{0} inséré."),
+    (
+        "path.inserted_renamed",
+        "Inserted {0}; {1} points after it renumbered.",
+        "{0} inséré ; {1} points suivants renumérotés.",
+    ),
+    ("path.removed", "Removed {0} objects, neighbours relinked.", "{0} objets supprimés, voisins reliés."),
+    ("path.ctx_insert", "Insert path point after", "Insérer un point de chemin après"),
+    ("path.ctx_remove", "Remove path point and relink", "Supprimer le point de chemin et relier"),
+    ("path.ctx_end", "End path", "Terminer le chemin"),
+    ("path.ctx_close", "Close path loop", "Fermer la boucle du chemin"),
+];

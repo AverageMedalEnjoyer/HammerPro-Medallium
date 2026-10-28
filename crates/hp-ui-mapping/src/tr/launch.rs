@@ -1,0 +1,88 @@
+use hp_app::i18n::TrTable;
+
+pub const TR: TrTable = &[
+    ("launch.title", "Game", "Jeu"),
+    ("launch.fast_start", "Fast start", "Démarrage rapide"),
+    (
+        "launch.fast_start_tip",
+        "Options that make the game start faster for a test. They are added to the game arguments.",
+        "Options qui accélèrent le démarrage du jeu pour un test. Elles sont ajoutées aux arguments du jeu.",
+    ),
+    (
+        "launch.fast_start_note",
+        "Each option adds or removes its flag in the game arguments.",
+        "Chaque option ajoute ou retire son paramètre dans les arguments du jeu.",
+    ),
+    ("launch.novid", "Skip the intro video", "Passer la vidéo d'introduction"),
+    ("launch.novid_tip", "Saves a few seconds at every start", "Fait gagner quelques secondes à chaque démarrage"),
+    ("launch.windowed", "Windowed", "Fenêtré"),
+    ("launch.windowed_tip", "Run the game in a window", "Lancer le jeu dans une fenêtre"),
+    ("launch.borderless", "Borderless", "Sans bordure"),
+    ("launch.borderless_tip", "Window without borders", "Fenêtre sans bordure"),
+    ("launch.size", "Window size", "Taille de la fenêtre"),
+    (
+        "launch.size_tip",
+        "Width and height of the game window (-w, -h)",
+        "Largeur et hauteur de la fenêtre du jeu (-w, -h)",
+    ),
+    ("launch.console", "Open the console", "Ouvrir la console"),
+    ("launch.console_tip", "Show the developer console at start", "Afficher la console de développement au démarrage"),
+    ("launch.dev", "Developer messages", "Messages de développement"),
+    (
+        "launch.dev_tip",
+        "Show developer messages; also skips the menu background map",
+        "Afficher les messages de développement ; évite aussi le chargement de la map de fond du menu",
+    ),
+    ("launch.private", "Private local game", "Partie locale privée"),
+    (
+        "launch.private_tip",
+        "A local server for you alone: no network setup, faster to start",
+        "Un serveur local rien que pour vous : pas de réseau, démarrage plus rapide",
+    ),
+    ("launch.skip_content", "Skip unused Workshop and addons", "Ignorer le Workshop et les addons inutilisés"),
+    (
+        "launch.skip_content_tip",
+        "When the map uses nothing from them, the game does not mount Workshop downloads and addons (-noworkshop, -noaddons): it starts faster, but addon tools and weapons are not available in game.",
+        "Quand la map n'en utilise rien, le jeu ne monte pas les téléchargements du Workshop ni les addons (-noworkshop, -noaddons) : il démarre plus vite, mais les outils et armes des addons ne sont pas disponibles en jeu.",
+    ),
+    ("launch.load_report", "Report the map load time", "Indiquer le temps de chargement de la map"),
+    (
+        "launch.load_report_tip",
+        "Tell how long the game took to load the map, and where the time went (needs the Hammer Pro bridge, Settings > Game)",
+        "Indiquer combien de temps le jeu a mis à charger la map, et où est passé le temps (nécessite le pont Hammer Pro, Paramètres > Jeu)",
+    ),
+    ("launch.last_load", "Last load: {0} in {1} s", "Dernier chargement : {0} en {1} s"),
+    ("launch.timing", "Start the game:", "Démarrer le jeu :"),
+    ("launch.at_end", "after the compile", "après la compilation"),
+    (
+        "launch.at_end_tip",
+        "Start the game once the map is compiled (like Hammer)",
+        "Démarrer le jeu une fois la map compilée (comme Hammer)",
+    ),
+    ("launch.at_start", "when the compile starts", "au début de la compilation"),
+    (
+        "launch.at_start_tip",
+        "Start the game as soon as the compile starts: it boots while the compiler runs, then loads the map",
+        "Démarrer le jeu dès le début de la compilation : il se lance pendant que le compilateur tourne, puis charge la map",
+    ),
+    ("launch.reuse", "Reuse the running game", "Réutiliser le jeu lancé"),
+    (
+        "launch.reuse_tip",
+        "Load the map in the game already running instead of starting it again",
+        "Charger la map dans le jeu déjà lancé au lieu de le redémarrer",
+    ),
+    ("launch.game_ready", "Game ready", "Jeu prêt"),
+    (
+        "launch.game_ready_tip",
+        "Garry's Mod is running: the next test loads the map in it",
+        "Garry's Mod est lancé : le prochain test y charge la map",
+    ),
+    ("launch.game_starting", "Game starting", "Jeu en démarrage"),
+    (
+        "launch.game_starting_tip",
+        "Garry's Mod is starting: the map loads as soon as it is ready",
+        "Garry's Mod démarre : la map se chargera dès qu'il sera prêt",
+    ),
+    ("launch.game_off", "Game not running", "Jeu non lancé"),
+    ("launch.game_off_tip", "Garry's Mod is not running", "Garry's Mod n'est pas lancé"),
+];

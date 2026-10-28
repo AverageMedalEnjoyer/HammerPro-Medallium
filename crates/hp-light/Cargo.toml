@@ -1,0 +1,13 @@
+[package]
+name = "hp-light"
+description = "Hammer Pro lighting helpers: light parsing, texture lights, ray hierarchy, lightmap atlas and texel packing of the baked preview."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-vmf.workspace = true
+glam.workspace = true
+rayon.workspace = true
+hp-fs.workspace = true

@@ -1,0 +1,14 @@
+# Create a block in the Top view with the block tool, confirm with Enter.
+wait 30
+action new_map
+wait 10
+tool block
+wait 5
+drag @top:-128,-128 @top:128,64 left 10
+wait 5
+key Enter
+wait 10
+assert_selected 1
+screenshot target/e2e/block.png
+wait 10
+exit

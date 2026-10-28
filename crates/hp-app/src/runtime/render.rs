@@ -1,0 +1,147 @@
+use std::cell::Cell;
+
+use hp_editor::Id;
+
+use crate::settings::{RenderModeSetting, Settings};
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub struct RenderDisplay {
+    pub smoothing_groups: bool,
+    pub render_effects: bool,
+    pub highlight_invalid: bool,
+    pub visgroup_colors: bool,
+    pub displacements: bool,
+    pub displacements_in_2d: bool,
+    pub displacements_only: bool,
+    pub disp_walkable: bool,
+    pub sky: bool,
+    pub sky_3d: bool,
+    pub fog: Option<Id>,
+    pub sky_camera: Option<Id>,
+    pub lods: bool,
+    pub collision: bool,
+    pub collision_only: bool,
+    pub hidden_tools: u8,
+    pub normal_maps: bool,
+    pub cubemaps: bool,
+    pub cubemaps_auto: bool,
+}
+
+pub const HIDE_NODRAW: u8 = 1;
+pub const HIDE_CLIPS: u8 = 2;
+pub const HIDE_TRIGGERS: u8 = 4;
+pub const HIDE_HINTS: u8 = 8;
+
+impl Default for RenderDisplay {
+    fn default() -> Self {
+        Self {
+            smoothing_groups: false,
+            render_effects: true,
+            highlight_invalid: true,
+            visgroup_colors: false,
+            displacements: true,
+            displacements_in_2d: true,
+            displacements_only: false,
+            disp_walkable: false,
+            sky: true,
+            sky_3d: true,
+            fog: None,
+            sky_camera: None,
+            lods: false,
+            collision: false,
+            collision_only: false,
+            hidden_tools: 0,
+            normal_maps: true,
+            cubemaps: true,
+            cubemaps_auto: true,
+        }
+    }
+}
+
+impl RenderDisplay {
+    pub fn from_settings(s: &Settings, rt: &RenderRuntime) -> Self {
+        let r = &s.render;
+        Self {
+            smoothing_groups: s.view.render_mode == RenderModeSetting::SmoothingGroups,
+            render_effects: r.render_effects,
+            highlight_invalid: r.highlight_invalid,
+            visgroup_colors: r.use_visgroup_colors,
+            displacements: r.show_displacements,
+            displacements_in_2d: r.displacements_in_2d,
+            displacements_only: r.displacements_only,
+            disp_walkable: r.disp_walkable,
+            sky: r.sky_preview,
+            sky_3d: r.skybox_3d,
+            fog: r.fog_preview.then_some(rt.fog_controller.unwrap_or(0)),
+            sky_camera: rt.sky_camera,
+            lods: r.lod_distances.iter().any(|d| d.is_finite() && *d > 0.0),
+            collision: r.collision_models,
+            collision_only: r.collision_only,
+            hidden_tools: [
+                (r.hide_nodraw, HIDE_NODRAW),
+                (r.hide_clips, HIDE_CLIPS),
+                (r.hide_triggers, HIDE_TRIGGERS),
+                (r.hide_hints, HIDE_HINTS),
+            ]
+            .iter()
+            .filter(|(on, _)| *on)
+            .fold(0, |m, (_, bit)| m | bit),
+            normal_maps: r.normal_maps,
+            cubemaps: r.cubemaps,
+            cubemaps_auto: r.cubemaps_auto,
+        }
+    }
+}
+
+thread_local! {
+    static DISPLAY: Cell<RenderDisplay> = Cell::new(RenderDisplay::default());
+}
+
+pub fn publish_render_display(display: RenderDisplay) {
+    DISPLAY.with(|d| d.set(display));
+}
+
+pub fn render_display() -> RenderDisplay {
+    DISPLAY.with(Cell::get)
+}
+
+pub fn previewed_sky_camera(state: &crate::AppState) -> Option<Id> {
+    let id = state.runtime.render.sky_camera?;
+    let node = state.doc.scene().entity(id)?;
+    hp_editor::sky::is_sky_camera(&node.entity).then_some(id)
+}
+
+#[derive(Debug, Default)]
+pub struct RenderRuntime {
+    pub fog_controller: Option<Id>,
+    pub sky_camera: Option<Id>,
+    pub views_rendered: u64,
+    pub views_reused: u64,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn display_follows_settings_and_is_per_thread() {
+        let mut s = Settings::default();
+        s.view.render_mode = RenderModeSetting::SmoothingGroups;
+        s.render.fog_preview = true;
+        let rt = RenderRuntime { fog_controller: Some(42), ..Default::default() };
+        let d = RenderDisplay::from_settings(&s, &rt);
+        assert!(d.smoothing_groups);
+        assert_eq!(d.fog, Some(42));
+        assert!(d.normal_maps);
+        s.render.normal_maps = false;
+        assert!(!RenderDisplay::from_settings(&s, &rt).normal_maps);
+        assert!(d.cubemaps && d.cubemaps_auto);
+        s.render.cubemaps = false;
+        assert!(!RenderDisplay::from_settings(&s, &rt).cubemaps);
+        publish_render_display(d);
+        assert_eq!(render_display(), d);
+        let other = std::thread::spawn(render_display).join().expect("thread");
+        assert_eq!(other, RenderDisplay::default());
+        publish_render_display(RenderDisplay::default());
+    }
+}

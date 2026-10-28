@@ -1,0 +1,154 @@
+use hp_app::i18n::TrTable;
+
+pub const TR: TrTable = &[
+    ("lighting.megabytes", "{0} MB", "{0} Mo"),
+    ("lighting.phase_preparing", "Preparing", "Préparation"),
+    ("lighting.phase_compiling", "Compiling the map", "Compilation de la carte"),
+    ("lighting.phase_direct", "Direct light", "Lumière directe"),
+    ("lighting.phase_bounce", "Bounced light", "Lumière rebondie"),
+    ("lighting.phase_finishing", "Finishing", "Finalisation"),
+    ("lighting.quality", "Quality", "Qualité"),
+    (
+        "lighting.quality_tip",
+        "The preview compiles the map and lights it like the compiler: Draft gives the same light levels with noisier shadows, Normal is the quality of a normal compile, Final the one of a final compile (slowest)",
+        "L'aperçu compile la carte et l'éclaire comme le compilateur : Brouillon donne les mêmes niveaux de lumière avec des ombres plus bruitées, Normal est la qualité d'une compilation normale, Finale celle d'une compilation finale (la plus lente)",
+    ),
+    ("lighting.quality_draft", "Draft", "Brouillon"),
+    ("lighting.quality_normal", "Normal", "Normal"),
+    ("lighting.quality_final", "Final", "Finale"),
+    (
+        "lighting.hdr_tip",
+        "HDR lightmaps, like the game shows them: the compile settings light the map in HDR",
+        "Lightmaps HDR, comme le jeu les affiche : les réglages de compilation éclairent la carte en HDR",
+    ),
+    (
+        "lighting.ldr_tip",
+        "LDR lightmaps, like the game shows them: the compile settings light the map in LDR only",
+        "Lightmaps LDR, comme le jeu les affiche : les réglages de compilation éclairent la carte en LDR seulement",
+    ),
+    ("lighting.preview", "Lighting preview", "Aperçu de l'éclairage"),
+    (
+        "lighting.around_tip",
+        "Compiles and lights only what lies within {0} units of the 3D camera (the area is sealed like a cordon)",
+        "Compile et éclaire seulement ce qui se trouve à moins de {0} unités de la caméra 3D (la zone est fermée comme un cordon)",
+    ),
+    ("lighting.kind_full", "Whole map", "Carte entière"),
+    ("lighting.kind_around", "Around the camera", "Autour de la caméra"),
+    ("lighting.kind_update", "Update", "Mise à jour"),
+    ("lighting.progress", "{0}: {1} ({2} s)", "{0} : {1} ({2} s)"),
+    ("lighting.last_stopped", "Baking stopped", "Précalcul arrêté"),
+    ("lighting.last_done_one", "{0} face baked in {1} s", "{0} face précalculée en {1} s"),
+    ("lighting.last_done", "{0} faces baked in {1} s", "{0} faces précalculées en {1} s"),
+    (
+        "lighting.reduced",
+        "Large map: previewed at {0} times the lightmap resolution",
+        "Grande carte : aperçu à {0} fois la résolution des lightmaps",
+    ),
+    (
+        "lighting.atlas_full",
+        "{0} faces did not fit in the preview memory",
+        "{0} faces n'ont pas tenu dans la mémoire de l'aperçu",
+    ),
+    ("lighting.not_baked", "Not baked yet", "Pas encore précalculé"),
+    ("lighting.stale", "Lighting is out of date", "L'éclairage n'est plus à jour"),
+    (
+        "lighting.no_lights",
+        "The map has no light entity (light, light_spot, light_environment)",
+        "La carte n'a aucune entité de lumière (light, light_spot, light_environment)",
+    ),
+    ("lighting.rebake", "Bake again", "Précalculer à nouveau"),
+    ("lighting.options", "Options (saved in the map)", "Options (enregistrées dans la carte)"),
+    ("lighting.brightness", "Brightness", "Luminosité"),
+    ("lighting.bounced", "Bounced light", "Lumière rebondie"),
+    (
+        "lighting.bounced_tip",
+        "Light reflected by surfaces (slower bakes)",
+        "Lumière réfléchie par les surfaces (précalcul plus lent)",
+    ),
+    ("lighting.dynamic", "Dynamic updates", "Mises à jour dynamiques"),
+    (
+        "lighting.dynamic_tip",
+        "Bakes the map again automatically once edits stop for the update delay",
+        "Précalcule à nouveau la carte automatiquement quand les modifications s'arrêtent pendant le délai de mise à jour",
+    ),
+    ("lighting.delay", "Update delay", "Délai de mise à jour"),
+    ("lighting.bake_dist", "Radius around the camera", "Rayon autour de la caméra"),
+    ("lighting.advanced", "Advanced", "Avancé"),
+    ("lighting.debug", "Show light reach", "Afficher la portée des lumières"),
+    ("lighting.debug_tip", "Draws how far the selected lights reach", "Affiche la portée des lumières sélectionnées"),
+    ("lighting.reset", "Restore defaults", "Rétablir les valeurs par défaut"),
+    (
+        "lighting.options_failed",
+        "Cannot change the lighting options: {0}",
+        "Impossible de modifier les options d'éclairage : {0}",
+    ),
+    ("lighting.cc", "Color correction", "Correction des couleurs"),
+    (
+        "lighting.cc_help",
+        "Lookups (.raw) applied to the baked lighting preview, saved in the map like Hammer++",
+        "Tables de correspondance (.raw) appliquées à l'aperçu de l'éclairage précalculé, enregistrées dans la carte comme dans Hammer++",
+    ),
+    ("lighting.cc_from_map", "From the map", "Depuis la carte"),
+    (
+        "lighting.cc_from_map_tip",
+        "Uses the files and the maximum weights of the color_correction entities",
+        "Utilise les fichiers et les poids maximaux des entités color_correction",
+    ),
+    ("lighting.cc_clear", "Clear", "Effacer"),
+    ("lighting.budget", "Lightmap budget", "Budget des lightmaps"),
+    ("lighting.budget_computing", "Computing the budget", "Calcul du budget en cours"),
+    ("lighting.budget_detail", "{0} faces, {1} luxels", "{0} faces, {1} luxels"),
+    (
+        "lighting.tiny_one",
+        "{0} face with a lightmap scale of {1} or less",
+        "{0} face avec une échelle de lightmap de {1} ou moins",
+    ),
+    (
+        "lighting.tiny",
+        "{0} faces with a lightmap scale of {1} or less",
+        "{0} faces avec une échelle de lightmap de {1} ou moins",
+    ),
+    ("lighting.select", "Select", "Sélectionner"),
+    (
+        "lighting.wide_one",
+        "{0} face split by VBSP (wider than 32 luxels)",
+        "{0} face découpée par VBSP (plus de 32 luxels de large)",
+    ),
+    (
+        "lighting.wide",
+        "{0} faces split by VBSP (wider than 32 luxels)",
+        "{0} faces découpées par VBSP (plus de 32 luxels de large)",
+    ),
+    (
+        "lighting.oversized_disps",
+        "{0} displacements are too large for VBSP: raise their lightmap scale",
+        "{0} displacements sont trop grands pour VBSP : augmentez leur échelle de lightmap",
+    ),
+    ("lighting.top_faces", "Most expensive faces", "Faces les plus coûteuses"),
+    ("lighting.col_face", "Face", "Face"),
+    ("lighting.col_scale", "Scale", "Échelle"),
+    ("lighting.col_luxels", "Luxels", "Luxels"),
+    ("lighting.col_size", "Size", "Taille"),
+    ("lighting.face", "Brush {0}, side {1}", "Brush {0}, côté {1}"),
+    ("lighting.face_disp", "Displacement {0}, side {1}", "Displacement {0}, côté {1}"),
+    ("lighting.face_tip", "Select this face", "Sélectionner cette face"),
+    ("lighting.budget_gauge", "{0} of {1} ({2}%)", "{0} sur {1} ({2} %)"),
+    (
+        "lighting.budget_tip",
+        "Estimated size of the lightmaps in the BSP against the engine limit of 16 MB (VBSP also removes hidden faces)",
+        "Taille estimée des lightmaps dans le BSP face à la limite du moteur de 16 Mo (VBSP retire aussi les faces cachées)",
+    ),
+    (
+        "lighting.stats",
+        "{0} of {1} faces baked, {2} of video memory, {3} shadow triangles",
+        "{0} faces précalculées sur {1}, {2} de mémoire vidéo, {3} triangles d'ombre",
+    ),
+];
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn table_is_clean() {
+        assert!(hp_app::i18n::lint_table(super::TR).is_empty());
+    }
+}

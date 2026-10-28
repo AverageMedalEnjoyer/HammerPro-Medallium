@@ -1,0 +1,21 @@
+[package]
+name = "hp-render"
+description = "Hammer Pro GPU renderer (wgpu): 3D and 2D editor views, chunked batching, overlays, preview lighting."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+wgpu.workspace = true
+glam.workspace = true
+bytemuck.workspace = true
+log.workspace = true
+thiserror.workspace = true
+rayon.workspace = true
+ahash.workspace = true
+texpresso.workspace = true
+
+[dev-dependencies]
+pollster.workspace = true
+image.workspace = true

@@ -1,0 +1,35 @@
+[package]
+name = "hp-assets"
+description = "Hammer Pro asset system: game content mounting, materials, textures, thumbnails, models, FGD, scene sync to the renderer."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-editor.workspace = true
+hp-geom.workspace = true
+hp-vmf.workspace = true
+hp-vmt.workspace = true
+hp-vtf.workspace = true
+hp-fgd.workspace = true
+hp-fs.workspace = true
+hp-mdl.workspace = true
+hp-render.workspace = true
+hp-light = { path = "../hp-light" }
+egui.workspace = true
+glam.workspace = true
+log.workspace = true
+rayon.workspace = true
+crossbeam-channel.workspace = true
+parking_lot.workspace = true
+ahash.workspace = true
+hp-bsp.workspace = true
+image.workspace = true
+wgpu.workspace = true
+
+[dev-dependencies]
+pollster.workspace = true
+wgpu.workspace = true
+egui-wgpu.workspace = true

@@ -1,0 +1,16 @@
+[package]
+name = "hp-decompile"
+description = "Rebuilds an editable VMF map from a compiled Source BSP: brushes, brush entities, func_detail, displacements, static props, overlays, cubemaps, areaportals, occluders and entities with their outputs."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-bsp.workspace = true
+hp-vmf.workspace = true
+hp-geom.workspace = true
+hp-kv.workspace = true
+glam.workspace = true
+thiserror.workspace = true
+rayon.workspace = true

@@ -1,0 +1,25 @@
+[package]
+name = "hp-ui-lab"
+description = "Hammer Pro large later projects: logical view (entity and I/O schematic), navigation mesh display, opening compiled maps."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-ui-viewports = { path = "../hp-ui-viewports" }
+hp-editor.workspace = true
+hp-vmf.workspace = true
+hp-fgd.workspace = true
+hp-geom.workspace = true
+hp-render.workspace = true
+hp-bsp.workspace = true
+hp-nav = { path = "../hp-nav" }
+hp-decompile = { path = "../hp-decompile" }
+hp-pcf = { path = "../hp-pcf" }
+hp-fs.workspace = true
+egui.workspace = true
+glam.workspace = true
+crossbeam-channel.workspace = true
+log.workspace = true

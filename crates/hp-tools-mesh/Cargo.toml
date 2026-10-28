@@ -1,0 +1,20 @@
+[package]
+name = "hp-tools-mesh"
+description = "Hammer Pro vertex and displacement tools."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-app = { path = "../hp-app" }
+hp-editor.workspace = true
+hp-geom.workspace = true
+hp-vmf.workspace = true
+hp-render.workspace = true
+egui.workspace = true
+glam.workspace = true
+
+[dev-dependencies]
+eframe.workspace = true
+image.workspace = true

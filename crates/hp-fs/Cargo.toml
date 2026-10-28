@@ -1,0 +1,25 @@
+[package]
+name = "hp-fs"
+description = "Game filesystem and asset index for Hammer Pro: gameinfo, VPKs, mount.cfg, addons, workshop GMAs and custom texture folders."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-kv.workspace = true
+hp-vpk.workspace = true
+hp-gma.workspace = true
+hp-vtf.workspace = true
+hp-vmt.workspace = true
+hp-mdl.workspace = true
+hp-bsp.workspace = true
+thiserror.workspace = true
+rayon.workspace = true
+parking_lot.workspace = true
+ahash.workspace = true
+image.workspace = true
+log.workspace = true
+
+[dev-dependencies]
+rayon.workspace = true

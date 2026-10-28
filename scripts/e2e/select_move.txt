@@ -1,0 +1,17 @@
+# Box select everything in the Top view (quadrant 1), move it with a drag, then undo.
+wait 30
+open D:/SteamLibrary/steamapps/common/GarrysMod/garrysmod/gamemodes/terrortown/mapexamples/ttt_weaponcheck.vmf
+wait 120
+tool select
+drag @v1:0.03,0.08 @v1:0.97,0.97 left 10
+wait 5
+screenshot target/e2e/select_box.png
+wait 5
+drag @top:0,0 @top:256,0 left 10
+wait 5
+screenshot target/e2e/select_moved.png
+key Ctrl+Z
+wait 10
+screenshot target/e2e/select_undo.png
+wait 5
+exit

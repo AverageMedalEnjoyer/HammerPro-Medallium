@@ -1,0 +1,14 @@
+wait 30
+action new_map
+wait 10
+tool block
+wait 5
+drag @top:-128,-128 @top:128,64 left 10
+wait 5
+screenshot target/e2e/block_top_pending.png
+wait 5
+key Enter
+wait 10
+screenshot target/e2e/block_top.png
+wait 10
+exit

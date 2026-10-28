@@ -1,0 +1,16 @@
+[package]
+name = "hp-geom"
+description = "Brush geometry for Hammer Pro: planes, polygons, UVs, CSG, primitives, picking, displacements."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+hp-vmf.workspace = true
+glam.workspace = true
+rayon.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+hp-kv.workspace = true

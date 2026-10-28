@@ -1,0 +1,91 @@
+; FBX 7.4.0 project file
+; A table exported from a Z up tool: a top and a leg (child of the top,
+; placed through a rotation pivot), units of 2.54 cm (inches).
+FBXHeaderExtension:  {
+	FBXHeaderVersion: 1003
+	FBXVersion: 7400
+	Creator: "hand written"
+}
+GlobalSettings:  {
+	Version: 1000
+	Properties70:  {
+		P: "UpAxis", "int", "Integer", "",2
+		P: "UpAxisSign", "int", "Integer", "",1
+		P: "FrontAxis", "int", "Integer", "",1
+		P: "FrontAxisSign", "int", "Integer", "",-1
+		P: "CoordAxis", "int", "Integer", "",0
+		P: "CoordAxisSign", "int", "Integer", "",1
+		P: "UnitScaleFactor", "double", "Number", "",2.54
+	}
+}
+Definitions:  {
+	ObjectType: "Material" {
+		Count: 2
+		PropertyTemplate: "FbxSurfacePhong" {
+			Properties70:  {
+				P: "DiffuseColor", "Color", "", "A",0.5,0.5,0.5
+			}
+		}
+	}
+}
+Objects:  {
+	Geometry: 1001, "Geometry::top", "Mesh" {
+		Vertices: *24 {
+			a: -24,-12,28,24,-12,28,24,12,28,-24,12,28,-24,-12,30,24,-12,30,24,12,30,-24,12,30
+		}
+		PolygonVertexIndex: *24 {
+			a: 0,3,2,-2,4,5,6,-8,0,1,5,-5,1,2,6,-6,2,3,7,-7,3,0,4,-8
+		}
+		LayerElementMaterial: 0 {
+			MappingInformationType: "AllSame"
+			ReferenceInformationType: "IndexToDirect"
+			Materials: *1 {
+				a: 0
+			}
+		}
+	}
+	Geometry: 1002, "Geometry::leg", "Mesh" {
+		Vertices: *24 {
+			a: -1,-1,0,1,-1,0,1,1,0,-1,1,0,-1,-1,28,1,-1,28,1,1,28,-1,1,28
+		}
+		PolygonVertexIndex: *24 {
+			a: 0,3,2,-2,4,5,6,-8,0,1,5,-5,1,2,6,-6,2,3,7,-7,3,0,4,-8
+		}
+	}
+	Model: 2001, "Model::top", "Mesh" {
+		Version: 232
+		Properties70:  {
+			P: "Lcl Translation", "Lcl Translation", "", "A",0,0,0
+		}
+		Shading: T
+		Culling: "CullingOff"
+	}
+	Model: 2002, "Model::leg", "Mesh" {
+		Version: 232
+		Properties70:  {
+			P: "RotationPivot", "Vector3D", "Vector", "",20,0,0
+			P: "Lcl Translation", "Lcl Translation", "", "A",0,-10,0
+			P: "Lcl Rotation", "Lcl Rotation", "", "A",0,0,180
+		}
+	}
+	Material: 3001, "Material::oak top", "" {
+		Version: 102
+		ShadingModel: "phong"
+		Properties70:  {
+			P: "DiffuseColor", "Color", "", "A",0.6,0.4,0.2
+		}
+	}
+	Material: 3002, "Material::steel", "" {
+		Version: 102
+		ShadingModel: "phong"
+	}
+}
+Connections:  {
+	;Model::top, Model::RootNode
+	C: "OO",2001,0
+	C: "OO",2002,2001
+	C: "OO",1001,2001
+	C: "OO",1002,2002
+	C: "OO",3001,2001
+	C: "OO",3002,2002
+}
