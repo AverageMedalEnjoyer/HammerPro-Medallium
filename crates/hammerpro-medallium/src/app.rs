@@ -28,6 +28,30 @@ impl Tool for NullTool {
     }
 }
 
+#[cfg(windows)]
+pub fn pid_alive(pid: u32) -> bool {
+    use windows_sys::Win32::Foundation::CloseHandle;
+    use windows_sys::Win32::System::Threading::{
+        GetExitCodeProcess, OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION,
+    };
+    const STILL_ACTIVE: u32 = 259;
+    unsafe {
+        let handle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+        if handle.is_null() {
+            return false;
+        }
+        let mut code = 0u32;
+        let ok = GetExitCodeProcess(handle, &mut code) != 0;
+        CloseHandle(handle);
+        ok && code == STILL_ACTIVE
+    }
+}
+
+#[cfg(not(windows))]
+pub fn pid_alive(pid: u32) -> bool {
+    std::path::Path::new(&format!("/proc/{pid}")).exists()
+}
+
 struct ScreenshotJob {
     path: PathBuf,
     frames: u64,
@@ -241,7 +265,7 @@ impl HammerProApp {
                 &Settings::crash_dir(),
                 std::process::id(),
                 Some(&previous_log),
-                &hp_mcp::registry::pid_alive,
+                &crash::pid_alive,
             )
         };
 
@@ -1191,12 +1215,6 @@ impl HammerProApp {
                 self.state.settings.ui.theme = theme;
                 hp_app::theme::apply(ctx, theme, self.state.settings.ui.ui_scale);
             }
-            Command::Setting { path, value } => {
-                match crate::dispatch::mcp::script_setting(&mut self.state, ctx, &path, &value) {
-                    Ok(()) => eprintln!("script: setting {path} = {value}"),
-                    Err(e) => eprintln!("script: setting {path}: {e}"),
-                }
-            }
             Command::WindowSize(w, h) => {
                 ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(egui::vec2(w, h)));
             }
@@ -1222,7 +1240,6 @@ impl eframe::App for HammerProApp {
 
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw_input: &mut egui::RawInput) {
         self.inject_script_input(ctx, raw_input);
-        crate::dispatch::mcp::inject_input(self, ctx, raw_input);
         let keep_tabs = self.shell.capturing_shortcut() || self.modal_open();
         self.keys.before_frame(ctx, raw_input, keep_tabs, self.app_capture());
     }

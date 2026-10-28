@@ -14,7 +14,6 @@ mod instances;
 pub(crate) mod lab;
 mod launch;
 pub(crate) mod lighting;
-pub(crate) mod mcp;
 mod mesh;
 mod placement;
 mod render;
@@ -81,7 +80,6 @@ const PACKAGES: &[&dyn Package] = &[
     &content::Content,
     &health::Health,
     &lab::Lab,
-    &mcp::Mcp,
 ];
 
 #[allow(dead_code)]
@@ -105,7 +103,6 @@ pub(crate) struct Packages {
     pub content: content::State,
     pub health: health::State,
     pub lab: lab::State,
-    pub mcp: mcp::State,
 }
 
 pub fn register_translations() {

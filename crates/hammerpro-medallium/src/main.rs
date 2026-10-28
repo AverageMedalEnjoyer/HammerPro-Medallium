@@ -142,13 +142,6 @@ fn pick_adapter(adapters: &[wgpu::Adapter], surface: Option<&wgpu::Surface<'_>>)
 }
 
 fn main() -> eframe::Result<()> {
-    if std::env::args().nth(1).as_deref() == Some(hp_mcp::BRIDGE_ARG) {
-        let options = hp_mcp::bridge::BridgeOptions {
-            tools: dispatch::mcp::tool_specs(),
-            ..hp_mcp::bridge::BridgeOptions::from_env()
-        };
-        std::process::exit(hp_mcp::bridge::run_stdio_with(options));
-    }
     if std::env::args().nth(1).as_deref() == Some(bspc_cli::BSPC_ARG) {
         let args: Vec<String> = std::env::args().skip(2).collect();
         std::process::exit(bspc_cli::run(&args));
