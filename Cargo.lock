@@ -1487,7 +1487,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "hammerpro"
+name = "hammerpro-medallium"
 version = "1.0.0"
 dependencies = [
  "arboard",
@@ -1509,7 +1509,6 @@ dependencies = [
  "hp-geom",
  "hp-kv",
  "hp-light",
- "hp-mcp",
  "hp-mdl",
  "hp-nav",
  "hp-pcf",
@@ -1794,19 +1793,6 @@ dependencies = [
  "hp-fs",
  "hp-vmf",
  "rayon",
-]
-
-[[package]]
-name = "hp-mcp"
-version = "1.0.0"
-dependencies = [
- "dirs",
- "getrandom 0.3.4",
- "log",
- "serde",
- "serde_json",
- "toml_edit",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4125,7 +4111,6 @@ dependencies = [
  "indexmap",
  "toml_datetime",
  "toml_parser",
- "toml_writer",
  "winnow",
 ]
 
