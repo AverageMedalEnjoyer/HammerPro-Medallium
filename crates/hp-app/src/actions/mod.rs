@@ -163,14 +163,11 @@ mod health;
 mod lab;
 pub use lab::{is_model_prop, selected_prop};
 #[macro_use]
-mod mcp;
-mod mcp_tools;
 
 collect_actions! { ()
     shell_actions selection_actions brush_actions workflow_actions instances_actions visibility_actions
     helpers_actions mesh_actions entities_actions render_actions lighting_actions placement_actions
     compile_actions startup_actions launch_actions content_actions health_actions lab_actions
-    mcp_actions
 }
 
 const READY_COUNT: usize = {
@@ -219,11 +216,10 @@ macro_rules! first_answer {
             .or_else(|| content::$f($($arg),*))
             .or_else(|| health::$f($($arg),*))
             .or_else(|| lab::$f($($arg),*))
-            .or_else(|| mcp::$f($($arg),*))
     };
 }
 
-const REPEATS: [&[Action]; 19] = [
+const REPEATS: [&[Action]; 18] = [
     shell::REPEATS,
     selection::REPEATS,
     brush::REPEATS,
@@ -242,7 +238,6 @@ const REPEATS: [&[Action]; 19] = [
     content::REPEATS,
     health::REPEATS,
     lab::REPEATS,
-    mcp::REPEATS,
 ];
 
 pub const TABLES: &[TrTable] = &[
@@ -265,8 +260,6 @@ pub const TABLES: &[TrTable] = &[
     content::TR,
     health::TR,
     lab::TR,
-    mcp::TR,
-    mcp_tools::TR,
 ];
 
 impl Action {

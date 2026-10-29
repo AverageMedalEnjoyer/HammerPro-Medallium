@@ -235,7 +235,6 @@ fn menus(ui: &mut Ui, state: &mut AppState, extensions: &mut [MenuExtension]) ->
             close_on_escape(ui);
         });
     }
-    mcp_menu(ui, state);
     ui.cursor().left()
 }
 
@@ -262,36 +261,6 @@ pub fn menu_bar_with(ui: &mut Ui, state: &mut AppState, extensions: &mut [MenuEx
             r.on_hover_text(tip);
         });
     });
-}
-
-fn mcp_menu(ui: &mut Ui, state: &mut AppState) {
-    let on = state.runtime.mcp.running;
-    let title = if on { "MCP ✔" } else { "MCP" };
-    ui.menu_button(title, |ui| {
-        ui.set_min_width(MENU_MIN_WIDTH);
-        let mut running = on;
-        if ui.checkbox(&mut running, hp_app::Action::ToggleMcpServer.label()).clicked() {
-            state.request(hp_app::Action::ToggleMcpServer);
-            ui.close();
-        }
-        let mcp = &state.runtime.mcp;
-        let status = match (mcp.running, mcp.port) {
-            (true, Some(port)) => {
-                format!("{} - {port} - {}", t!("shell.mcp.pill_on"), crate::status::mcp::clients_text(mcp.clients))
-            }
-            (true, None) => t!("shell.mcp.pill_on").to_owned(),
-            (false, _) => t!("shell.mcp.pill_off").to_owned(),
-        };
-        ui.label(RichText::new(status).small().color(ui.visuals().weak_text_color()));
-        ui.separator();
-        if ui.button(format!("⚙  {}", t!("shell.mcp.more"))).clicked() {
-            state.request(hp_app::Action::McpPanel);
-            ui.close();
-        }
-        close_on_escape(ui);
-    })
-    .response
-    .on_hover_text(crate::status::mcp::tooltip(state));
 }
 
 fn category_menu(ui: &mut Ui, state: &mut AppState, cat: Category, extensions: &mut [MenuExtension]) {

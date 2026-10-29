@@ -7,7 +7,6 @@ mod compile;
 mod health;
 mod launch;
 mod lighting;
-pub(crate) mod mcp;
 mod shell;
 mod startup;
 
@@ -16,7 +15,7 @@ pub use shell::{SIZE_LIMIT, StatusCache, fmt_len, fmt_point, fmt_size};
 pub(crate) use startup::late_text;
 
 pub(crate) const TABLES: &[TrTable] =
-    &[shell::TR, startup::TR, compile::TR, health::TR, launch::TR, lighting::TR, mcp::TR];
+    &[shell::TR, startup::TR, compile::TR, health::TR, launch::TR, lighting::TR];
 
 fn default_segments() -> Vec<Box<dyn StatusSegment>> {
     let mut out = Vec::new();
@@ -26,7 +25,6 @@ fn default_segments() -> Vec<Box<dyn StatusSegment>> {
     out.extend(health::segments());
     out.extend(launch::segments());
     out.extend(lighting::segments());
-    out.extend(mcp::segments());
     out
 }
 

@@ -11,7 +11,6 @@ use crate::keys::{Capture, capture_from_events, is_clipboard_event};
 mod brush;
 mod compile;
 mod content;
-mod discord;
 mod editing;
 mod entities;
 mod game;
@@ -23,7 +22,6 @@ mod keyboard;
 mod lab;
 mod launch;
 mod lighting;
-mod mcp;
 mod mesh;
 mod placement;
 mod render;
@@ -132,8 +130,6 @@ fn package_pages() -> Vec<Box<dyn SettingsPage>> {
     pages.extend(content::pages());
     pages.extend(health::pages());
     pages.extend(lab::pages());
-    pages.extend(mcp::pages());
-    pages.extend(discord::pages());
     pages
 }
 
@@ -161,8 +157,6 @@ pub(crate) const TABLES: &[TrTable] = &[
     content::TR,
     health::TR,
     lab::TR,
-    mcp::TR,
-    discord::TR,
 ];
 
 const CONFIRM_SECS: f64 = 4.0;

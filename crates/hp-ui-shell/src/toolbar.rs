@@ -247,45 +247,6 @@ pub fn selection_bar(ui: &mut Ui, state: &mut AppState) {
     });
 }
 
-pub fn mcp_pill(ui: &mut Ui, state: &mut AppState) -> egui::Response {
-    let mcp = &state.runtime.mcp;
-    let on = mcp.running;
-    let visuals = ui.visuals();
-    let (fg, bg, stroke) = if on {
-        (visuals.panel_fill, visuals.strong_text_color(), visuals.strong_text_color())
-    } else {
-        (visuals.weak_text_color(), Color32::TRANSPARENT, visuals.widgets.inactive.fg_stroke.color.gamma_multiply(0.5))
-    };
-    let text = match (on, mcp.port) {
-        (true, Some(port)) => {
-            format!("{} · {port} · {}", t!("shell.mcp.pill_on"), crate::status::mcp::clients_text(mcp.clients))
-        }
-        (true, None) => t!("shell.mcp.pill_on").to_owned(),
-        (false, _) => t!("shell.mcp.pill_off").to_owned(),
-    };
-    let more = ui.add(egui::Button::new(RichText::new("⏷").small()).frame(false).min_size(egui::vec2(16.0, 22.0)));
-    if more.on_hover_text(t!("shell.mcp.more")).clicked() {
-        state.request(Action::McpPanel);
-    }
-    let pill = egui::Button::new(RichText::new(text).strong().color(fg))
-        .fill(bg)
-        .stroke(egui::Stroke::new(1.0, stroke))
-        .corner_radius(11.0)
-        .min_size(egui::vec2(0.0, 22.0));
-    let tip = crate::status::mcp::tooltip(state);
-    let r = ui.add(pill).on_hover_text(tip);
-    if r.clicked() {
-        state.request(Action::ToggleMcpServer);
-    }
-    r.context_menu(|ui| {
-        if ui.button(t!("shell.mcp.more")).clicked() {
-            state.request(Action::McpPanel);
-            ui.close();
-        }
-    });
-    r
-}
-
 fn grid_controls(ui: &mut Ui, state: &mut AppState) {
     let target = state.target_grid();
     let label = crate::grids::source_label(&target);
