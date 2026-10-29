@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 pub use hp_bsp::limits::LimitSet;
 pub use hp_bsp::{Branch, BspFormat};
 
-use crate::detect::{LibraryFolder, parse_library_folders, path_key};
+use crate::detect::{GMOD_APP_ID, path_key};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub enum LightingPasses {
@@ -520,7 +520,7 @@ pub struct GameProfile {
 
 impl GameProfile {
     pub fn is_gmod(&self) -> bool {
-        self.id == GMOD_ID
+        self.id == GMOD_ID || self.app_id == GMOD_APP_ID
     }
 
     pub fn is_supported(&self) -> bool {
@@ -587,7 +587,7 @@ impl GameProfile {
         Some(p)
     }
 
-    pub fn from_game_dir(game_dir: &Path, libraries: &[PathBuf]) -> Option<GameProfile> {
+    pub fn from_game_dir(game_dir: &Path) -> Option<GameProfile> {
         let gameinfo = read_gameinfo(game_dir)?;
         let folder = game_dir.file_name()?.to_string_lossy().into_owned();
         let parent = game_dir.parent()?.to_path_buf();
@@ -603,7 +603,7 @@ impl GameProfile {
         }
         let base = known_game_of_app(gameinfo.app_id);
         let base_root = if in_sourcemods {
-            base.and_then(|b| find_install(b, libraries)).unwrap_or_default()
+            base.and_then(|b| sourcemod_base_root(b, &parent)).unwrap_or_default()
         } else {
             parent.clone()
         };
@@ -693,106 +693,16 @@ pub(crate) fn parse_gameinfo(text: &str) -> GameInfo {
     }
 }
 
-fn find_install(g: &KnownGame, libraries: &[PathBuf]) -> Option<PathBuf> {
-    for lib in libraries {
-        let steamapps = lib.join("steamapps");
-        let mut candidates = Vec::new();
-        if let Ok(bytes) = std::fs::read(steamapps.join(format!("appmanifest_{}.acf", g.app_id)))
-            && let Ok(kv) = hp_kv::parse(&String::from_utf8_lossy(&bytes))
-            && let Some(dir) = kv.child("AppState").and_then(|s| s.get("installdir"))
-            && !dir.trim().is_empty()
-        {
-            candidates.push(steamapps.join("common").join(dir.trim()));
-        }
-        candidates.extend(g.install_dirs.iter().map(|d| steamapps.join("common").join(d)));
-        if let Some(root) = candidates.into_iter().find(|c| c.join(g.game_folder).join("gameinfo.txt").is_file()) {
-            return Some(root);
-        }
-    }
-    None
-}
-
-fn libraries() -> Vec<PathBuf> {
-    crate::detect::detect_steam_libraries()
-}
-
-pub fn detect_games_in(libraries: &[PathBuf]) -> Vec<GameProfile> {
-    let mut out: Vec<GameProfile> = Vec::new();
-    let mut seen: Vec<String> = Vec::new();
-    for g in KNOWN_GAMES.iter().filter(|g| g.branch.is_some()) {
-        let Some(root) = find_install(g, libraries) else { continue };
-        let Some(p) = GameProfile::installed_in(g, &root) else { continue };
-        let key = path_key(&p.game_dir);
-        if seen.contains(&key) {
-            continue;
-        }
-        seen.push(key);
-        out.push(p);
-    }
-    for lib in libraries {
-        let mods = lib.join("steamapps").join("sourcemods");
-        let Ok(read) = std::fs::read_dir(&mods) else { continue };
-        let mut dirs: Vec<PathBuf> =
-            read.flatten().map(|e| e.path()).filter(|p| p.join("gameinfo.txt").is_file()).collect();
-        dirs.sort_by_key(|p| p.file_name().map(|n| n.to_string_lossy().to_ascii_lowercase()));
-        for d in dirs {
-            if let Some(p) = GameProfile::from_game_dir(&d, libraries)
-                && p.is_supported()
-                && !seen.contains(&path_key(&p.game_dir))
-            {
-                seen.push(path_key(&p.game_dir));
-                out.push(p);
-            }
-        }
-    }
-    out
-}
-
-pub fn detect_games() -> Vec<GameProfile> {
-    detect_games_in(&libraries())
-}
-
-pub fn game_catalogue_in(libraries: &[PathBuf]) -> Vec<GameProfile> {
-    let mut out = detect_games_in(libraries);
-    let missing: Vec<GameProfile> = KNOWN_GAMES
+fn sourcemod_base_root(g: &KnownGame, sourcemods: &Path) -> Option<PathBuf> {
+    let common = sourcemods.parent()?.join("common");
+    g.install_dirs
         .iter()
-        .filter(|g| g.branch.is_some() && !out.iter().any(|p| p.id == g.id))
-        .map(GameProfile::not_installed)
-        .collect();
-    out.extend(missing);
-    out
+        .map(|d| common.join(d))
+        .find(|root| root.join(g.game_folder).join("gameinfo.txt").is_file())
 }
 
-pub fn game_catalogue() -> Vec<GameProfile> {
-    let mut cache = CATALOGUE.lock();
-    if let Some(list) = cache.as_ref() {
-        return list.clone();
-    }
-    let list = game_catalogue_in(&libraries());
-    *cache = Some(list.clone());
-    list
-}
-
-pub fn refresh_games() {
-    *CATALOGUE.lock() = None;
-}
-
-static CATALOGUE: parking_lot::Mutex<Option<Vec<GameProfile>>> = parking_lot::Mutex::new(None);
-
-pub fn resolve_game(id: &str, game_dir: Option<&Path>) -> Option<GameProfile> {
-    if let Some(dir) = game_dir.filter(|d| !d.as_os_str().is_empty()) {
-        let dir = game_folder_of(dir, id);
-        if let Some(mut p) = GameProfile::from_game_dir(&dir, &libraries()) {
-            if known_game(id).is_some() {
-                p.id = id.to_owned();
-            }
-            return Some(p);
-        }
-    }
-    let list = game_catalogue();
-    list.into_iter()
-        .find(|p| p.id.eq_ignore_ascii_case(id.trim()))
-        .or_else(|| known_game(id).map(GameProfile::not_installed))
+pub fn resolve_game(id: &str) -> Option<GameProfile> {
+    crate::gameconfig::profile_of(id)
 }
 
 pub fn game_folder_of(dir: &Path, id: &str) -> PathBuf {
@@ -806,19 +716,6 @@ pub fn game_folder_of(dir: &Path, id: &str) -> PathBuf {
         }
     }
     dir.to_path_buf()
-}
-
-pub fn libraries_of_steam_root(root: &Path) -> Vec<PathBuf> {
-    let mut out = vec![root.to_path_buf()];
-    if let Ok(bytes) = std::fs::read(root.join("steamapps").join("libraryfolders.vdf")) {
-        for LibraryFolder { path, .. } in parse_library_folders(&String::from_utf8_lossy(&bytes)) {
-            if !out.iter().any(|p| path_key(p) == path_key(&path)) {
-                out.push(path);
-            }
-        }
-    }
-    out.retain(|p| p.join("steamapps").is_dir());
-    out
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -932,9 +829,12 @@ pub(crate) fn plan_game(
     } else {
         profile.root.clone()
     };
-    let uses_appid = info.text.to_ascii_lowercase().contains("|appid_");
-    let libs = if uses_appid { libraries() } else { Vec::new() };
-    let app_root = |id: u32| known_game_of_app(id).and_then(|g| find_install(g, &libs));
+    let common = base.parent().map(Path::to_path_buf).unwrap_or_default();
+    let app_root = |id: u32| {
+        known_game_of_app(id).and_then(|g| {
+            g.install_dirs.iter().map(|d| common.join(d)).find(|root| root.join(g.game_folder).join("gameinfo.txt").is_file())
+        })
+    };
     let mut paths = game_paths(&info.text, &base, game_dir, &app_root);
     if paths.is_empty() {
         paths.push(GamePath::Dir(game_dir.clone()));
@@ -1096,47 +996,26 @@ mod tests {
     }
 
     #[test]
-    fn games_are_found_in_steam_libraries() {
+    fn games_are_read_from_their_own_folder() {
         let t = steam();
-        let libs = libraries_of_steam_root(&t.path().join("lib1"));
-        assert_eq!(libs.len(), 2);
-        let games = detect_games_in(&libs);
-        let ids: Vec<&str> = games.iter().map(|g| g.id.as_str()).collect();
-        assert_eq!(ids, ["hl2", "ep2", "sdk2013sp", "cstrike", "tf", "portal2", "mod:mymod"]);
-        let tf = &games[4];
+        let common = t.path().join("lib1/steamapps/common");
+        let tf = GameProfile::from_game_dir(&common.join("Team Fortress 2/tf")).expect("tf");
+        assert_eq!(tf.id, "tf");
         assert_eq!(tf.branch, Some(Branch::Source2013));
         assert!(tf.exe.as_ref().is_some_and(|e| e.ends_with("tf_win64.exe")));
         assert_eq!(tf.fgds.len(), 1);
-        assert!(tf.fgds[0].ends_with("bin/tf.fgd") || tf.fgds[0].ends_with("bin\\tf.fgd"));
         assert_eq!(tf.game_arg(), "tf");
         assert_eq!(tf.launch_args(Some("ctf_test")), ["-steam", "-game", "tf", "+map", "ctf_test"]);
-        assert!(games[3].fgds[0].ends_with("cstrike.fgd"));
-        let p2 = &games[5];
+        let p2 = GameProfile::from_game_dir(&common.join("Portal 2/portal2")).expect("portal 2");
         assert_eq!((p2.branch, p2.lighting), (Some(Branch::Portal2), LightingPasses::HdrOnly));
-        let m = &games[6];
+        let m = GameProfile::from_game_dir(&t.path().join("lib1/steamapps/sourcemods/mymod")).expect("mod");
         assert!(m.source_mod && m.mapbase && m.installed);
         assert_eq!(m.name, "My Mapbase Mod");
         assert_eq!(m.branch, Some(Branch::Source2013));
-        assert!(m.root.ends_with("Source SDK Base 2013 Singleplayer"));
-        assert!(m.exe.as_ref().is_some_and(|e| e.ends_with("hl2.exe")));
+        assert!(m.root.as_os_str().is_empty(), "the base game of a mod is not searched for in other libraries");
+        assert!(m.exe.is_none());
         assert!(m.fgds[0].ends_with("mymod.fgd"));
         assert_eq!(m.game_arg(), m.game_dir.display().to_string());
-    }
-
-    #[test]
-    fn the_catalogue_lists_missing_games_after_the_detected_ones() {
-        let t = steam();
-        let libs = libraries_of_steam_root(&t.path().join("lib1"));
-        let all = game_catalogue_in(&libs);
-        let detected = detect_games_in(&libs).len();
-        assert!(all[..detected].iter().all(|g| g.installed));
-        assert!(all[detected..].iter().all(|g| !g.installed));
-        let gmod = all.iter().find(|g| g.is_gmod()).expect("Garry's Mod is always offered");
-        assert_eq!(gmod.branch, Some(Branch::GarrysMod));
-        let l4d2 = all.iter().find(|g| g.id == "left4dead2").expect("listed");
-        assert_eq!(l4d2.format().version, 21);
-        assert!(all.iter().all(GameProfile::is_supported));
-        assert!(!all.iter().any(|g| g.id == "cs2" || g.id == "contagion"));
     }
 
     #[test]
@@ -1159,15 +1038,15 @@ mod tests {
         let t = steam();
         let tf_root = t.path().join("lib1/steamapps/common/Team Fortress 2");
         assert_eq!(game_folder_of(&tf_root, "tf"), tf_root.join("tf"));
-        let p = GameProfile::from_game_dir(&tf_root.join("tf"), &[]).expect("a game");
+        let p = GameProfile::from_game_dir(&tf_root.join("tf")).expect("a game");
         assert_eq!(p.id, "tf");
         let other = t.path().join("lib1/steamapps/common/Other/othergame");
         t.write("lib1/steamapps/common/Other/othergame/gameinfo.txt", gameinfo("Other", 243750, "").as_bytes());
-        let p = GameProfile::from_game_dir(&other, &[]).expect("a game");
+        let p = GameProfile::from_game_dir(&other).expect("a game");
         assert!(p.id.starts_with("dir:"));
         assert_eq!(p.branch, Some(Branch::Source2013));
         t.write("lib1/steamapps/sourcemods/old/gameinfo.txt", gameinfo("Old", 215, "").as_bytes());
-        let p = GameProfile::from_game_dir(&t.path().join("lib1/steamapps/sourcemods/old"), &[]).expect("a mod");
+        let p = GameProfile::from_game_dir(&t.path().join("lib1/steamapps/sourcemods/old")).expect("a mod");
         assert!(!p.is_supported());
         assert!(p.unsupported.as_deref().unwrap_or("").contains("Source 2006"));
     }

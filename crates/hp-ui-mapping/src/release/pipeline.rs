@@ -305,7 +305,7 @@ fn run_stages(ctx: &Ctx<'_>) -> Result<ReleaseSummary, String> {
     let addon_nodes: Vec<&DepNode> =
         shipped.iter().copied().filter(|n| place(&n.vpath, s.mode) == Some(Place::Addon)).collect();
 
-    let game = input.gmod_root.as_deref().and_then(hp_compile::ToolPaths::detect);
+    let game = input.gmod_root.as_deref().and_then(gmod_tools);
     let mut cubemap_sources: Vec<PathBuf> = vec![out_bsp.clone()];
     if let Some(t) = &game {
         cubemap_sources.push(t.maps_dir.join(format!("{}.bsp", input.map)));
@@ -611,6 +611,18 @@ fn pack(
     }
     ctx.log(LogSeverity::Info, tf!("release.packed", files, fmt_bytes(zip_len as u64), dest.display()));
     Ok(((files, zip_len as u64), carried))
+}
+
+fn gmod_tools(root: &Path) -> Option<hp_compile::ToolPaths> {
+    let game_dir = root.join("garrysmod");
+    if !game_dir.join("gameinfo.txt").is_file() {
+        return None;
+    }
+    let mut tools = hp_compile::ToolPaths::for_game_dir(&game_dir);
+    tools.game_exe = [root.join("bin").join("win64").join("gmod.exe"), root.join("gmod.exe"), root.join("hl2.exe")]
+        .into_iter()
+        .find(|p| p.is_file());
+    Some(tools)
 }
 
 fn game_session(ctx: &Ctx<'_>, tools: &hp_compile::ToolPaths, staged: &Path) -> Result<Option<PathBuf>, String> {

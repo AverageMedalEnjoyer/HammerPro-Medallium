@@ -6,12 +6,13 @@ use serde::{Deserialize, Serialize};
 use crate::flags;
 use crate::launch::{DEFAULT_GAME_ARGS, DEFAULT_STEAM_URL, LaunchMethod, has_flag, launch_step};
 use crate::notice::Notice;
-use crate::tools::{BSPC_ARG, RAD_ARG, ToolPaths, strip_trailing_separators};
+use crate::tools::{ToolPaths, strip_trailing_separators};
 use crate::{CompileError, MapNameProblem, Result};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum StepKind {
     Bsp,
+    Vis,
     Rad,
     Pack,
     CopyToMaps,
@@ -345,52 +346,52 @@ impl CompilePlan {
 
         let threads: Vec<String> =
             opts.threads.map(|t| vec!["-threads".to_owned(), t.max(1).to_string()]).unwrap_or_default();
-        let target = opts.target.as_deref().map(str::trim).filter(|t| !t.is_empty() && !t.eq_ignore_ascii_case("gmod"));
-        let mut steps = Vec::with_capacity(5);
+        let mut steps = Vec::with_capacity(6);
         if modes.bsp != BspMode::Off {
-            let mut args = vec![BSPC_ARG.to_owned()];
-            if let Some(root) = game_dir.parent().filter(|p| !p.as_os_str().is_empty() && target.is_none()) {
-                args.push("-gmod".to_owned());
-                args.push(root.to_string_lossy().into_owned());
+            let mut args: Vec<String> = Vec::new();
+            if matches!(modes.bsp, BspMode::OnlyEnts | BspMode::EntsAndProps) {
+                args.push("-onlyents".to_owned());
             }
-            let (flags, extra) = flags::merge_flags(
-                StepKind::Bsp,
-                &flags::bsp_flags(modes.bsp, modes.vis, opts.stop_on_leak),
-                &opts.bsp_flags,
-                &split_args(&opts.extra_bsp_args),
-            );
-            args.extend(flags);
-            args.extend(threads.iter().cloned());
-            args.extend(extra);
-            push_content_args(&mut args, &opts.content_args);
-            if let Some(t) = target {
-                args.push("-target".to_owned());
-                args.push(t.to_owned());
+            if matches!(modes.bsp, BspMode::OnlyProps | BspMode::EntsAndProps) {
+                args.push("-onlyprops".to_owned());
             }
+            args.extend(split_args(&opts.extra_bsp_args));
             args.push("-game".to_owned());
             args.push(compile_game_dir.clone());
             args.push(map_arg.clone());
-            steps.push(Step::new(StepKind::Bsp, &tools.compiler, args));
+            steps.push(Step::new(StepKind::Bsp, &tools.vbsp, args));
+        }
+        if modes.bsp == BspMode::Full && modes.vis != VisMode::Off {
+            let mut args: Vec<String> = Vec::new();
+            if modes.vis == VisMode::Fast {
+                args.push("-fast".to_owned());
+            }
+            args.extend(threads.iter().cloned());
+            args.push("-game".to_owned());
+            args.push(compile_game_dir.clone());
+            args.push(map_arg.clone());
+            steps.push(Step::new(StepKind::Vis, &tools.vvis, args));
         }
         if modes.rad != RadMode::Off {
-            let mut args = vec![RAD_ARG.to_owned(), flags::rad_lighting(modes.rad, opts.lighting).flag().to_owned()];
-            let (flags, extra) = rad_step_flags(modes.rad, opts);
-            args.extend(flags);
+            let mut args = vec![flags::rad_lighting(modes.rad, opts.lighting).flag().to_owned()];
+            match modes.rad {
+                RadMode::Draft => args.push("-fast".to_owned()),
+                RadMode::Final => args.push("-final".to_owned()),
+                RadMode::Off | RadMode::Normal => {}
+            }
+            if opts.static_prop_lighting {
+                args.push("-StaticPropLighting".to_owned());
+            }
+            if opts.static_prop_shadows {
+                args.push("-StaticPropPolys".to_owned());
+                args.push("-TextureShadows".to_owned());
+            }
             args.extend(threads);
-            args.extend(extra);
-            push_content_args(&mut args, &opts.content_args);
-            if let Some(t) = target {
-                args.push("-target".to_owned());
-                args.push(t.to_owned());
-            }
-            if let Some(root) = game_dir.parent().filter(|p| !p.as_os_str().is_empty() && target.is_none()) {
-                args.push("-gmod".to_owned());
-                args.push(root.to_string_lossy().into_owned());
-            }
+            args.extend(split_args(&opts.extra_rad_args));
             args.push("-game".to_owned());
             args.push(compile_game_dir.clone());
             args.push(map_arg);
-            steps.push(Step::new(StepKind::Rad, &tools.compiler, args));
+            steps.push(Step::new(StepKind::Rad, &tools.vrad, args));
         }
 
         let pack_action = match &opts.deferred_pack {
@@ -522,24 +523,6 @@ pub fn rad_step_flags(mode: RadMode, opts: &PlanOptions) -> (Vec<String>, Vec<St
         flags.push(flags::NO_STATIC_PROP_SHADOWS.to_owned());
     }
     (flags, extra)
-}
-
-fn push_content_args(args: &mut Vec<String>, content: &[String]) {
-    let mut i = 0;
-    while i < content.len() {
-        let flag = &content[i];
-        let with_value = flag.eq_ignore_ascii_case("-insert_search_path");
-        let part = &content[i..(i + 1 + usize::from(with_value)).min(content.len())];
-        i += part.len();
-        let has = if with_value {
-            args.windows(part.len()).any(|w| w[0].eq_ignore_ascii_case(flag) && w[1..] == part[1..])
-        } else {
-            args.iter().any(|a| a.eq_ignore_ascii_case(flag))
-        };
-        if !has {
-            args.extend(part.iter().cloned());
-        }
-    }
 }
 
 pub fn split_args(s: &str) -> Vec<String> {

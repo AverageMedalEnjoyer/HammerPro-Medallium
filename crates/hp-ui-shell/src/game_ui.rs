@@ -1,19 +1,18 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use egui::{RichText, Ui};
 use hp_app::settings::CustomDirSetting;
 use hp_app::{AppState, Severity, t, tf};
 use hp_fs::{CustomLayout, CustomMode};
 
-use crate::jobs::{GameScan, Job, PickRequest, PickTarget, Picker, Poll, scan_game_folder};
+use crate::jobs::{PickRequest, PickTarget, Picker};
 
 #[derive(Debug, Default)]
 pub struct GameJobs {
     picker: Option<Picker>,
-    detect: Option<Job<Option<PathBuf>>>,
-    scan: Option<(PathBuf, Job<GameScan>)>,
-    pub last_scan: Option<GameScan>,
-    pub auto_detect_done: bool,
+    pub editor: crate::gameconfig_ui::ConfigEditor,
+    pub config_field: Option<crate::gameconfig_ui::ConfigField>,
+    pub config_pick: Option<(crate::gameconfig_ui::ConfigField, PathBuf)>,
 }
 
 impl GameJobs {
@@ -23,33 +22,20 @@ impl GameJobs {
         {
             let target = picker.target;
             self.picker = None;
-            apply_pick(state, target, paths);
-        }
-        if let Some(job) = &self.detect {
-            match job.poll() {
-                Poll::Pending => {}
-                Poll::Ready(found) => {
-                    self.detect = None;
-                    match found {
-                        Some(root) => {
-                            state.log(Severity::Success, tf!("shell.game.detected", root.display()));
-                            state.settings.game.gmod_root = Some(root);
-                            state.settings_dirty = true;
-                        }
-                        None => state.notify(Severity::Warning, t!("shell.game.not_found")),
+            match target {
+                PickTarget::ConfigFolder | PickTarget::ConfigFile => {
+                    if let (Some(field), Some(path)) = (self.config_field.take(), paths.into_iter().next()) {
+                        self.config_pick = Some((field, path));
                     }
                 }
-                Poll::Failed => self.detect = None,
-            }
-        }
-        if let Some((_, job)) = &self.scan {
-            match job.poll() {
-                Poll::Pending => {}
-                Poll::Ready(scan) => {
-                    self.last_scan = Some(scan);
-                    self.scan = None;
+                PickTarget::ConfigAddFile => {
+                    for path in paths {
+                        if hp_app::games::add_config_file(&path) {
+                            state.log(Severity::Info, tf!("shell.gc.saved", path.display()));
+                        }
+                    }
                 }
-                Poll::Failed => self.scan = None,
+                _ => apply_pick(state, target, paths),
             }
         }
     }
@@ -58,44 +44,10 @@ impl GameJobs {
         self.picker.is_some()
     }
 
-    pub fn detecting(&self) -> bool {
-        self.detect.is_some()
-    }
-
     pub fn pick(&mut self, ctx: &egui::Context, req: PickRequest) {
         if self.picker.is_none() {
             self.picker = Some(Picker::open(ctx, req));
         }
-    }
-
-    pub fn start_detect(&mut self, ctx: &egui::Context) {
-        if self.detect.is_none() {
-            self.detect = Some(Job::spawn(ctx, "detect-gmod", hp_fs::detect_gmod_root));
-        }
-    }
-
-    pub fn ensure_scan(&mut self, ctx: &egui::Context, root: Option<&Path>) {
-        let Some(root) = root.filter(|r| !r.as_os_str().is_empty()) else {
-            self.last_scan = None;
-            return;
-        };
-        let scanning_this = self.scan.as_ref().is_some_and(|(p, _)| p == root);
-        let scanned_this =
-            self.last_scan.as_ref().is_some_and(|s| s.root == root || s.root == root.parent().unwrap_or(root));
-        if scanning_this || (scanned_this && self.scan.is_none()) {
-            return;
-        }
-        let path = root.to_path_buf();
-        let job_path = path.clone();
-        self.scan = Some((path, Job::spawn(ctx, "scan-game", move || scan_game_folder(&job_path))));
-    }
-
-    pub fn rescan(&mut self) {
-        self.last_scan = None;
-    }
-
-    pub fn scanning(&self) -> bool {
-        self.scan.is_some()
     }
 }
 
@@ -106,15 +58,7 @@ pub fn apply_pick(state: &mut AppState, target: PickTarget, paths: Vec<PathBuf>)
     let game = &mut state.settings.game;
     let first = paths.first().cloned();
     match target {
-        PickTarget::GmodRoot => game.gmod_root = first,
         PickTarget::MapDir => game.map_dir = first,
-        PickTarget::GameDir => {
-            if let Some(dir) = first {
-                let id = game.game.clone();
-                let dir = hp_fs::games::game_folder_of(&dir, &id);
-                game.game_dirs.insert(id, dir);
-            }
-        }
         PickTarget::FgdOverride => game.fgd_override = first,
         PickTarget::ExtraGameDir => {
             for p in paths {
@@ -130,6 +74,7 @@ pub fn apply_pick(state: &mut AppState, target: PickTarget, paths: Vec<PathBuf>)
                 }
             }
         }
+        PickTarget::ConfigFolder | PickTarget::ConfigFile | PickTarget::ConfigAddFile => {}
         PickTarget::CustomTextureDirs => {
             for p in paths {
                 if !game.custom_texture_dirs.iter().any(|d| d.path == p) {
@@ -144,10 +89,9 @@ pub fn apply_pick(state: &mut AppState, target: PickTarget, paths: Vec<PathBuf>)
 
 pub fn request(target: PickTarget, start_dir: Option<PathBuf>) -> PickRequest {
     let (title, filter) = match target {
-        PickTarget::GmodRoot => (t!("shell.game.pick_root"), None),
         PickTarget::ExtraGameDir => (t!("shell.game.pick_extra_dir"), None),
         PickTarget::MapDir => (t!("shell.game.pick_map_dir"), None),
-        PickTarget::GameDir => (t!("shell.game.pick_game_dir"), None),
+        PickTarget::ConfigFolder | PickTarget::ConfigFile | PickTarget::ConfigAddFile => (t!("shell.gc.pick_folder"), None),
         PickTarget::CustomTextureDirs => (t!("shell.game.pick_custom_dir"), None),
         PickTarget::FgdOverride | PickTarget::ExtraFgds => {
             (t!("shell.game.pick_fgd"), Some((t!("shell.game.fgd_filter").to_owned(), vec!["fgd"])))
@@ -206,164 +150,6 @@ pub fn path_row(
         label_response
     });
     (out, inner.inner)
-}
-
-fn found_label(ui: &mut Ui, ok: bool, text: &str) {
-    let severity = if ok { hp_app::Severity::Success } else { hp_app::Severity::Error };
-    let (icon, color) = (severity.icon(), crate::common::severity_color(ui.visuals(), severity));
-    ui.label(RichText::new(icon).color(color));
-    ui.label(text);
-}
-
-pub fn default_is_gmod(state: &AppState) -> bool {
-    let g = state.settings.game.game.trim();
-    g.is_empty() || g.eq_ignore_ascii_case(hp_fs::GMOD_ID)
-}
-
-pub fn game_section(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
-    let ctx = ui.ctx().clone();
-    let list = hp_app::games::catalogue(Some(&ctx));
-    ui.horizontal(|ui| {
-        match &list {
-            Some(list) => {
-                if let Some(id) = hp_app::games::game_combo(ui, "hp_shell_game", &state.settings.game.game, list) {
-                    state.settings.game.game = id;
-                    state.settings_dirty = true;
-                }
-            }
-            None => {
-                ui.spinner();
-                ui.label(t!("shell.game.searching_games"));
-            }
-        }
-        if ui
-            .add_enabled(list.is_some(), egui::Button::new(t!("shell.game.search_again")))
-            .on_hover_text(t!("shell.game.search_again_tip"))
-            .clicked()
-        {
-            hp_app::games::refresh_catalogue();
-        }
-    });
-    ui.label(RichText::new(t!("shell.game.game_note")).weak().small());
-    if default_is_gmod(state) {
-        return;
-    }
-    let id = state.settings.game.game.clone();
-    let mut dir = state.settings.game.game_dirs.get(&id).cloned();
-    let (out, _) =
-        path_row(ui, t!("shell.game.game_dir"), None, &mut dir, t!("shell.game.game_dir_hint"), !jobs.picking());
-    if out.changed {
-        match dir {
-            Some(d) => state.settings.game.game_dirs.insert(id.clone(), d),
-            None => state.settings.game.game_dirs.remove(&id),
-        };
-        state.settings_dirty = true;
-    }
-    if out.browse {
-        jobs.pick(&ctx, request(PickTarget::GameDir, state.settings.game.game_dirs.get(&id).cloned()));
-    }
-    let Some(list) = list else { return };
-    let chosen = state.settings.game.game_dir_of(&id).map(Path::to_path_buf);
-    let profile = match chosen {
-        Some(d) => hp_fs::GameProfile::from_game_dir(&hp_fs::games::game_folder_of(&d, &id), &[]),
-        None => list.iter().find(|p| p.id.eq_ignore_ascii_case(&id)).cloned(),
-    };
-    let Some(p) = profile else {
-        found_label(ui, false, t!("shell.game.game_not_found"));
-        return;
-    };
-    if let Some(reason) = &p.unsupported {
-        found_label(ui, false, &tf!("shell.game.game_unsupported", reason));
-        return;
-    }
-    if p.installed {
-        found_label(ui, true, &tf!("shell.game.game_found", p.game_dir.display()));
-    } else {
-        found_label(ui, false, t!("shell.game.game_missing"));
-    }
-    let f = p.format();
-    let limits = if f.limits == hp_fs::games::LimitSet::Gmod {
-        t!("shell.game.limits_gmod")
-    } else {
-        t!("shell.game.limits_valve")
-    };
-    ui.label(tf!("shell.game.game_format", f.branch.name(), f.version, f.static_props.name(), limits));
-    let fgds: Vec<String> = p.fgds.iter().map(|f| f.display().to_string()).collect();
-    ui.label(if fgds.is_empty() {
-        t!("shell.game.game_no_fgd").to_owned()
-    } else {
-        tf!("shell.game.game_fgds", fgds.join(", "))
-    });
-    if let Some(exe) = &p.exe {
-        ui.label(tf!("shell.game.game_exe", exe.display()));
-    }
-    if p.mapbase {
-        ui.label(RichText::new(t!("shell.game.game_mapbase")).weak());
-    }
-    ui.label(RichText::new(t!("shell.game.gmod_only_note")).weak().small());
-}
-
-pub fn gmod_root_section(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
-    let ctx = ui.ctx().clone();
-    let row_height = ui.spacing().interact_size.y;
-    ui.allocate_ui_with_layout(
-        egui::vec2(ui.available_width(), row_height),
-        egui::Layout::right_to_left(egui::Align::Center),
-        |ui| {
-            if jobs.detecting() {
-                ui.label(RichText::new(t!("shell.game.detecting")).small());
-                ui.add(egui::Spinner::new().size(14.0));
-            } else if ui
-                .button(format!("🔍 {}", t!("shell.game.detect")))
-                .on_hover_text(t!("shell.game.detect_tip"))
-                .clicked()
-            {
-                jobs.start_detect(&ctx);
-            }
-            let browse = ui.add_enabled(!jobs.picking(), egui::Button::new(t!("common.browse")));
-            if browse.clicked() {
-                let start = state.settings.game.gmod_root.clone();
-                jobs.pick(&ctx, request(PickTarget::GmodRoot, start));
-            }
-            let width = ui.available_width().max(120.0);
-            if optional_path_edit(ui, &mut state.settings.game.gmod_root, t!("shell.game.root_hint"), width) {
-                state.settings_dirty = true;
-            }
-        },
-    );
-    jobs.ensure_scan(&ctx, state.settings.game.gmod_root.as_deref());
-    ui.add_space(2.0);
-    if state.settings.game.gmod_root.is_none() {
-        ui.label(RichText::new(t!("shell.game.auto_detect_note")).small().color(ui.visuals().weak_text_color()));
-        return;
-    }
-    if jobs.scanning() {
-        ui.horizontal(|ui| {
-            ui.add(egui::Spinner::new().size(12.0));
-            ui.label(RichText::new(t!("shell.game.scanning")).small());
-        });
-        return;
-    }
-    let Some(scan) = jobs.last_scan.clone() else { return };
-    ui.horizontal_wrapped(|ui| {
-        ui.spacing_mut().item_spacing.x = 4.0;
-        found_label(ui, scan.gameinfo, "gameinfo.txt");
-        ui.add_space(8.0);
-        found_label(ui, scan.fgd.is_some(), "garrysmod.fgd");
-        ui.add_space(8.0);
-        let weak = ui.visuals().weak_text_color();
-        ui.label(RichText::new("·").color(weak));
-        ui.label(RichText::new(tf!("shell.game.vpk_count", scan.vpk_count)).color(weak));
-        ui.label(RichText::new("·").color(weak));
-        ui.label(RichText::new(tf!("shell.game.addon_count", scan.addon_count)).color(weak));
-        if ui.small_button("⟳").on_hover_text(t!("shell.game.rescan")).clicked() {
-            jobs.rescan();
-        }
-    });
-    if !scan.is_valid() {
-        let color = crate::common::severity_color(ui.visuals(), hp_app::Severity::Warning);
-        ui.label(RichText::new(t!("shell.game.invalid_root")).color(color));
-    }
 }
 
 pub fn mount_toggles(ui: &mut Ui, state: &mut AppState) -> bool {
@@ -556,8 +342,8 @@ mod tests {
     #[test]
     fn picks_update_settings() {
         let mut state = hp_app::testing::test_state();
-        apply_pick(&mut state, PickTarget::GmodRoot, vec![PathBuf::from("D:/Games/GarrysMod")]);
-        assert_eq!(state.settings.game.gmod_root, Some(PathBuf::from("D:/Games/GarrysMod")));
+        apply_pick(&mut state, PickTarget::MapDir, vec![PathBuf::from("D:/Games/maps")]);
+        assert_eq!(state.settings.game.map_dir, Some(PathBuf::from("D:/Games/maps")));
         assert!(state.settings_dirty);
 
         apply_pick(
@@ -620,6 +406,6 @@ mod tests {
         let r = request(PickTarget::ExtraFgds, None);
         assert!(!r.title.is_empty());
         assert!(r.filter.is_some_and(|(_, e)| e == ["fgd"]));
-        assert!(request(PickTarget::GmodRoot, None).filter.is_none());
+        assert!(request(PickTarget::MapDir, None).filter.is_none());
     }
 }

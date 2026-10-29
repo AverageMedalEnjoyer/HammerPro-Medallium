@@ -202,8 +202,8 @@ fn run(job: Job, ctx: &Ctx<'_>) -> Outcome {
     let sides = SideTable::from_map(&map);
     let solid_count = map.world.solids.len() + map.entities.iter().map(|e| e.solids.len()).sum::<usize>();
     let fs = fs.unwrap_or_else(hp_fs::GameFs::empty);
-    let materials = crate::bspc_cli::GameMaterials { fs: fs.clone(), opts: Default::default() };
-    let models = crate::bspc_cli::GameModels { fs: &fs, allow_dynamic: false };
+    let materials = crate::bake_support::GameMaterials { fs: fs.clone(), opts: Default::default() };
+    let models = crate::bake_support::GameModels { fs: &fs, allow_dynamic: false };
     let builder =
         || rayon::ThreadPoolBuilder::new().num_threads(threads.0.max(1)).thread_name(|i| format!("hp-light-{i}"));
     let pool = match builder().stack_size(BAKE_STACK).build().or_else(|_| builder().build()) {

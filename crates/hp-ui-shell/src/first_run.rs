@@ -5,7 +5,7 @@ use hp_app::settings::NavScheme;
 use hp_app::{AppState, Severity, t, tf};
 
 use crate::common::{EscapeGuard, accent_text, modal_layer};
-use crate::game_ui::{GameJobs, custom_dirs_list, default_is_gmod, game_section, gmod_root_section, mount_toggles};
+use crate::game_ui::{GameJobs, custom_dirs_list, mount_toggles};
 
 pub const STEPS: usize = 3;
 
@@ -55,10 +55,6 @@ impl FirstRunWizard {
         if self.escape.should_close(ctx, layer) {
             self.skip(state);
             return;
-        }
-        if self.step == 1 && state.settings.game.gmod_root.is_none() && !jobs.auto_detect_done {
-            jobs.auto_detect_done = true;
-            jobs.start_detect(ctx);
         }
         let enter = !ctx.text_edit_focused() && ctx.input_mut(|i| i.consume_key(Modifiers::NONE, Key::Enter));
         if enter && self.next(state) {
@@ -252,17 +248,9 @@ fn game_step(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
     ui.add_space(4.0);
     ui.label(t!("shell.wizard.game_intro"));
     ui.add_space(8.0);
-    game_section(ui, state, jobs);
-    if !default_is_gmod(state) {
-        return;
-    }
-    ui.add_space(8.0);
-    gmod_root_section(ui, state, jobs);
-    ui.add_space(8.0);
-    if let Some(scan) = &jobs.last_scan
-        && scan.is_valid()
-        && state.settings.game.gmod_root.is_some()
-    {
+    crate::gameconfig_ui::config_list(ui, state, jobs);
+    if hp_fs::gameconfig::is_config_id(&state.settings.game.game) {
+        ui.add_space(8.0);
         let color = crate::common::severity_color(ui.visuals(), Severity::Success);
         ui.label(RichText::new(format!("✔ {}", t!("shell.wizard.game_ok"))).color(color));
     }
@@ -273,7 +261,7 @@ fn content_step(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
     ui.add_space(4.0);
     ui.label(t!("shell.wizard.content_intro"));
     ui.add_space(8.0);
-    if default_is_gmod(state) {
+    if state.settings.game.is_gmod() {
         mount_toggles(ui, state);
         ui.add_space(8.0);
     }
@@ -303,10 +291,10 @@ pub(crate) const TR: hp_app::i18n::TrTable = &[
     ("shell.wizard.game_title", "Which game do you map for?", "Pour quel jeu faites-vous des maps ?"),
     (
         "shell.wizard.game_intro",
-        "Hammer Pro reads textures, models and entity definitions from the game folder, and compiles maps for that game. Garry's Mod is the default.",
-        "Hammer Pro lit les textures, les modèles et les définitions d'entités dans le dossier du jeu, et compile les maps pour ce jeu. Garry's Mod est le jeu par défaut.",
+        "Pick a game configuration. Hammer Pro finds the gameconfig.txt and hammerplusplus_gameconfig.txt files on this computer and reads the game folder, entity definitions and compile programs from the one you choose.",
+        "Choisissez une configuration de jeu. Hammer Pro trouve les fichiers gameconfig.txt et hammerplusplus_gameconfig.txt de cet ordinateur et lit le dossier du jeu, les définitions d'entités et les programmes de compilation de celle que vous choisissez.",
     ),
-    ("shell.wizard.game_ok", "Everything needed was found.", "Tout le nécessaire a été trouvé."),
+    ("shell.wizard.game_ok", "Game configuration selected.", "Configuration de jeu choisie."),
     ("shell.wizard.content_title", "Content", "Contenu"),
     (
         "shell.wizard.content_intro",

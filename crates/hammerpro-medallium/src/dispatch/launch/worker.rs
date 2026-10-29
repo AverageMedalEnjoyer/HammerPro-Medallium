@@ -307,11 +307,9 @@ pub(crate) fn game_exe(root: &Path, chosen: Option<&Path>) -> Option<PathBuf> {
     if let Some(exe) = chosen.filter(|p| p.is_absolute() && p.is_file()) {
         return Some(exe.to_path_buf());
     }
-    hp_compile::ToolPaths::detect(root).and_then(|t| t.game_exe).or_else(|| {
-        [root.join("bin").join("win64").join("gmod.exe"), root.join("gmod.exe"), root.join("hl2.exe")]
-            .into_iter()
-            .find(|p| p.is_file())
-    })
+    [root.join("bin").join("win64").join("gmod.exe"), root.join("gmod.exe"), root.join("hl2.exe")]
+        .into_iter()
+        .find(|p| p.is_file())
 }
 
 #[cfg(test)]

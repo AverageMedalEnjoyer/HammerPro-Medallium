@@ -61,9 +61,8 @@ pub use workflow::{
 
 impl Settings {
     pub fn sync_game(&mut self) {
-        let g = &self.game;
-        self.compile.target = (!g.is_gmod()).then(|| g.active_game().to_owned());
-        self.compile.target_dir = g.game_dir_of(g.active_game()).map(Path::to_path_buf);
+        let id = self.game.active_game();
+        self.compile.target = (!id.is_empty()).then(|| id.to_owned());
     }
 
     pub fn set_map_game(&mut self, id: Option<&str>) -> bool {

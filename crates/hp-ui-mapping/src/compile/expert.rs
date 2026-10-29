@@ -6,7 +6,7 @@ use hp_app::settings::{CompileProfile, CompileSettings, ProfileStep};
 use hp_app::{AppState, Severity, t, tf};
 use hp_compile::cmdseq::{self, Sequence, Special};
 use hp_compile::template::{TOKENS, Tokens, expand};
-use hp_compile::{BSPC_ARG, CompilePlan, RAD_ARG, Step, StepAction, StepKind, ToolPaths, split_args};
+use hp_compile::{CompilePlan, Step, StepAction, StepKind, ToolPaths, split_args};
 
 use super::snapshot::Target;
 
@@ -50,17 +50,18 @@ pub(crate) fn default_profiles() -> Vec<CompileProfile> {
     let base = |name: &str, vis: &str, rad: &str| CompileProfile {
         name: name.to_owned(),
         steps: vec![
-            step("bsp", &format!(r"{vis}-game $gamedir $path\$file")),
+            step("bsp", r"-game $gamedir $path\$file"),
+            step("vis", &format!(r"{vis}-game $gamedir $path\$file")),
             step("rad", &format!(r"{rad}-game $gamedir $path\$file")),
             step("copy", r"$path\$file.bsp $bspdir\$file.bsp"),
             step("game", "-dev -console -allowdebug -hijack -game $gamedir +map $file"),
         ],
     };
     vec![
-        base("Default", "-vis ", ""),
-        base("Fast", "-fastvis ", "-bounce 2 -noextra "),
-        base("LDR + HDR", "-vis ", "-both "),
-        base("Final", "-vis ", "-both -final "),
+        base("Default", "", ""),
+        base("Fast", "-fast ", "-bounce 2 -noextra "),
+        base("LDR + HDR", "", "-both "),
+        base("Final", "", "-both -final "),
         CompileProfile {
             name: "Only entities".to_owned(),
             steps: vec![step("bsp", r"-onlyents -game $gamedir $path\$file")],
@@ -133,9 +134,9 @@ pub(crate) fn tokens_of(target: &Target, tools: &ToolPaths) -> Tokens {
         bspdir: s(&tools.maps_dir),
         gamedir: s(&tools.game_dir),
         exedir: tools.game_exe.as_deref().and_then(Path::parent).map(s).unwrap_or_default(),
-        bsp_exe: s(&tools.compiler),
-        vis_exe: s(&tools.compiler),
-        light_exe: s(&tools.compiler),
+        bsp_exe: s(&tools.vbsp),
+        vis_exe: s(&tools.vvis),
+        light_exe: s(&tools.vrad),
         game_exe: tools.game_exe.as_deref().map(s).unwrap_or_default(),
     }
 }
@@ -186,28 +187,6 @@ fn pack_files_of(args: &[String], n: usize) -> Result<Vec<(String, PathBuf)>, St
     Ok(files)
 }
 
-fn vvis_options(args: &[String]) -> Vec<String> {
-    let mut out = Vec::new();
-    let mut i = 0;
-    while let Some(a) = args.get(i) {
-        let lower = a.to_ascii_lowercase();
-        let values = match lower.as_str() {
-            "-radius_override" | "-threads" | "-mpi_pw" => 1,
-            "-trace" => 2,
-            _ => 0,
-        };
-        if lower == "-game" || lower == "-vproject" {
-            i += 2;
-            continue;
-        }
-        if a.starts_with('-') && lower != "-fast" {
-            out.extend(args.iter().skip(i).take(values + 1).cloned());
-        }
-        i += values + 1;
-    }
-    out
-}
-
 pub(crate) fn plan_of(profile: &CompileProfile, target: &Target, tools: &ToolPaths) -> Result<CompilePlan, String> {
     let tokens = tokens_of(target, tools);
     let mut roots = vec![target.build_dir.clone(), tools.game_dir.clone(), tools.maps_dir.clone()];
@@ -224,37 +203,14 @@ pub(crate) fn plan_of(profile: &CompileProfile, target: &Target, tools: &ToolPat
             }
             args.iter().map(|a| checked_path(a, &roots).ok_or_else(|| tf!("compile.expert.err_path", n, a))).collect()
         };
-        let compiler_args = |first: &str| -> Vec<String> {
-            let mut out = vec![first.to_owned()];
-            out.extend(args.iter().cloned());
-            out
-        };
         let action = match canonical_action(&s.action) {
             "run" => compiler_token(&s.program).unwrap_or("run"),
             other => other,
         };
         let mut st = match action {
-            "bsp" => Step::new(StepKind::Bsp, &tools.compiler, compiler_args(BSPC_ARG)),
-            "rad" => Step::new(StepKind::Rad, &tools.compiler, compiler_args(RAD_ARG)),
-            "vis" => {
-                if !s.enabled {
-                    continue;
-                }
-                let flag = if args.iter().any(|a| a.eq_ignore_ascii_case("-fast")) { "-fastvis" } else { "-vis" };
-                let bsp = plan
-                    .steps
-                    .iter_mut()
-                    .rev()
-                    .find(|st| st.kind == StepKind::Bsp && st.enabled)
-                    .ok_or_else(|| tf!("compile.expert.err_vis", n))?;
-                if !bsp.args.iter().any(|a| a.eq_ignore_ascii_case("-vis") || a.eq_ignore_ascii_case("-fastvis")) {
-                    bsp.args.insert(1, flag.to_owned());
-                }
-                let extra = vvis_options(&args);
-                let at = 2.min(bsp.args.len());
-                bsp.args.splice(at..at, extra);
-                continue;
-            }
+            "bsp" => Step::new(StepKind::Bsp, &tools.vbsp, args.clone()),
+            "vis" => Step::new(StepKind::Vis, &tools.vvis, args.clone()),
+            "rad" => Step::new(StepKind::Rad, &tools.vrad, args.clone()),
             "pack" => Step::pack(&plan.bsp_path(), StepAction::Pack { files: pack_files_of(&args, n)? }),
             "game" => {
                 let exe = tools
@@ -522,7 +478,9 @@ mod tests {
 
     fn tools(root: &Path) -> ToolPaths {
         ToolPaths {
-            compiler: root.join("hammerpro.exe"),
+            vbsp: root.join("vbsp.exe"),
+            vvis: root.join("vvis.exe"),
+            vrad: root.join("vrad.exe"),
             game_exe: Some(root.join("gmod.exe")),
             game_dir: root.join("garrysmod"),
             maps_dir: root.join("garrysmod").join("maps"),
@@ -549,15 +507,14 @@ mod tests {
         }
         let plan = plan_of(&default_profiles()[0], &target, &t).expect("plan");
         let kinds: Vec<StepKind> = plan.steps.iter().map(|s| s.kind).collect();
-        assert_eq!(kinds, [StepKind::Bsp, StepKind::Rad, StepKind::CopyToMaps, StepKind::LaunchGame]);
-        assert!(plan.steps[..2].iter().all(|s| s.exe == t.compiler));
-        assert_eq!(plan.steps[0].args[..2], [BSPC_ARG, "-vis"]);
-        assert_eq!(plan.steps[1].args[0], RAD_ARG);
+        assert_eq!(kinds, [StepKind::Bsp, StepKind::Vis, StepKind::Rad, StepKind::CopyToMaps, StepKind::LaunchGame]);
+        assert_eq!([&plan.steps[0].exe, &plan.steps[1].exe, &plan.steps[2].exe], [&t.vbsp, &t.vvis, &t.vrad]);
+        assert_eq!(plan.steps[0].args[0], "-game");
         assert_eq!(
             plan.steps[0].args.last().map(String::as_str),
             Some(target.build_dir.join("gm_x").to_string_lossy().as_ref())
         );
-        match &plan.steps[2].action {
+        match &plan.steps[3].action {
             StepAction::Copy { from, to } => {
                 assert_eq!(from, &target.build_dir.join("gm_x.bsp"));
                 assert_eq!(to, &t.maps_dir.join("gm_x.bsp"));
@@ -567,7 +524,7 @@ mod tests {
     }
 
     #[test]
-    fn old_compiler_actions_run_the_built_in_compiler() {
+    fn old_compiler_actions_run_the_configured_programs() {
         crate::register_translations();
         let root = std::path::absolute(crate::test_scratch("expert_old_actions")).expect("abs");
         let target = target(&root);
@@ -595,22 +552,23 @@ mod tests {
         };
         let plan = plan_of(&old, &target, &t).expect("plan");
         let kinds: Vec<StepKind> = plan.steps.iter().map(|s| s.kind).collect();
-        assert_eq!(kinds, [StepKind::Bsp, StepKind::Rad, StepKind::Pack, StepKind::Pack, StepKind::Rad]);
-        assert_eq!(plan.steps[0].args[..2], [BSPC_ARG, "-fastvis"]);
-        assert_eq!(plan.steps[0].args[2..8], ["-radius_override", "512", "-nosort", "-trace", "1", "2"]);
-        assert_eq!(plan.steps[0].args.iter().filter(|a| a.eq_ignore_ascii_case("-game")).count(), 1);
-        assert!(plan.steps.iter().filter(|s| s.kind != StepKind::Pack).all(|s| s.exe == t.compiler));
-        assert!(matches!(&plan.steps[2].action, StepAction::Pack { files } if files[0].0 == "materials/b.vmt"));
-        assert!(matches!(&plan.steps[3].action, StepAction::Pack { files } if files[0].0 == "materials/a.vmt"));
-        assert_eq!(plan.steps[4].args[..2], [RAD_ARG, "-final"]);
+        assert_eq!(kinds, [StepKind::Bsp, StepKind::Vis, StepKind::Rad, StepKind::Pack, StepKind::Pack, StepKind::Rad]);
+        assert_eq!(plan.steps[1].args[..7], ["-fast", "-radius_override", "512", "-nosort", "-trace", "1", "2"]);
+        assert_eq!(plan.steps[1].args.iter().filter(|a| a.eq_ignore_ascii_case("-game")).count(), 1);
+        assert_eq!([&plan.steps[0].exe, &plan.steps[1].exe, &plan.steps[2].exe], [&t.vbsp, &t.vvis, &t.vrad]);
+        assert!(matches!(&plan.steps[3].action, StepAction::Pack { files } if files[0].0 == "materials/b.vmt"));
+        assert!(matches!(&plan.steps[4].action, StepAction::Pack { files } if files[0].0 == "materials/a.vmt"));
+        assert_eq!(plan.steps[5].exe, t.vrad);
+        assert_eq!(plan.steps[5].args[0], "-final");
         let lone = CompileProfile { name: "x".into(), steps: vec![step("vvis", "")] };
-        assert!(plan_of(&lone, &target, &t).is_err());
+        assert!(plan_of(&lone, &target, &t).is_ok());
         assert_eq!(canonical_action("vbsp"), "bsp");
         assert_eq!(canonical_action("bspzip"), "pack");
         assert_eq!(canonical_action("copy"), "copy");
         let tokens = tokens_of(&target, &t);
-        assert_eq!(tokens.bsp_exe, t.compiler.to_string_lossy());
-        assert_eq!(tokens.light_exe, tokens.vis_exe);
+        assert_eq!(tokens.bsp_exe, t.vbsp.to_string_lossy());
+        assert_eq!(tokens.vis_exe, t.vvis.to_string_lossy());
+        assert_eq!(tokens.light_exe, t.vrad.to_string_lossy());
     }
 
     #[test]

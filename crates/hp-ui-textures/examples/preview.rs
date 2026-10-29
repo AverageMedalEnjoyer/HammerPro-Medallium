@@ -262,7 +262,7 @@ fn main() -> eframe::Result {
     if args.french {
         hp_app::i18n::set_lang(hp_app::i18n::Lang::Fr);
     }
-    let fs = match args.gmod.clone().or_else(hp_fs::detect_gmod_root) {
+    let fs = match args.gmod.clone() {
         Some(root) => {
             let opts = hp_fs::MountOptions { mount_workshop: false, ..hp_fs::MountOptions::default() };
             hp_fs::GameFs::for_gmod(&root, &opts).unwrap_or_default()

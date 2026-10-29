@@ -1,5 +1,4 @@
-use std::collections::BTreeMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -20,7 +19,6 @@ impl Default for CustomDirSetting {
 #[serde(default)]
 pub struct GameSettings {
     pub game: String,
-    pub game_dirs: BTreeMap<String, PathBuf>,
     #[serde(skip)]
     pub map_game: Option<String>,
     pub gmod_root: Option<PathBuf>,
@@ -39,8 +37,7 @@ pub struct GameSettings {
 impl Default for GameSettings {
     fn default() -> Self {
         Self {
-            game: hp_fs::GMOD_ID.to_owned(),
-            game_dirs: BTreeMap::new(),
+            game: String::new(),
             map_game: None,
             gmod_root: None,
             mount_addons: true,
@@ -58,16 +55,11 @@ impl Default for GameSettings {
 
 impl GameSettings {
     pub fn active_game(&self) -> &str {
-        let id = self.map_game.as_deref().unwrap_or(&self.game).trim();
-        if id.is_empty() { hp_fs::GMOD_ID } else { id }
+        self.map_game.as_deref().unwrap_or(&self.game).trim()
     }
 
     pub fn is_gmod(&self) -> bool {
-        self.active_game().eq_ignore_ascii_case(hp_fs::GMOD_ID)
-    }
-
-    pub fn game_dir_of(&self, id: &str) -> Option<&Path> {
-        self.game_dirs.get(id).map(PathBuf::as_path).filter(|p| !p.as_os_str().is_empty())
+        self.active_profile().is_some_and(|p| p.is_gmod())
     }
 
     pub fn active_profile(&self) -> Option<hp_fs::GameProfile> {
@@ -75,23 +67,8 @@ impl GameSettings {
     }
 }
 
-pub fn profile_of(g: &GameSettings, id: &str) -> Option<hp_fs::GameProfile> {
-    if id.eq_ignore_ascii_case(hp_fs::GMOD_ID) {
-        let known = hp_fs::known_game(hp_fs::GMOD_ID)?;
-        let root = g.gmod_root.clone().filter(|p| !p.as_os_str().is_empty()).or_else(hp_fs::detect_gmod_root);
-        let root = root.map(|r| {
-            if !r.join("garrysmod").is_dir() && r.file_name().is_some_and(|n| n.eq_ignore_ascii_case("garrysmod")) {
-                r.parent().map_or(r.clone(), Path::to_path_buf)
-            } else {
-                r
-            }
-        });
-        return Some(
-            root.and_then(|r| hp_fs::GameProfile::installed_in(known, &r))
-                .unwrap_or_else(|| hp_fs::GameProfile::not_installed(known)),
-        );
-    }
-    hp_fs::resolve_game(id, g.game_dir_of(id))
+pub fn profile_of(_g: &GameSettings, id: &str) -> Option<hp_fs::GameProfile> {
+    hp_fs::resolve_game(id)
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]

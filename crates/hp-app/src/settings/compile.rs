@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -116,8 +115,6 @@ pub struct CompileSettings {
     pub background_precompile: bool,
     pub pack_policy: PackPolicy,
     pub dev_addon: bool,
-    pub game_exe_path: Option<PathBuf>,
-    pub maps_dir_override: Option<PathBuf>,
     pub compile_cordon_only: bool,
     pub cordon_material: String,
     pub progressive: bool,
@@ -134,8 +131,6 @@ pub struct CompileSettings {
     pub window: Option<WindowPlacement>,
     #[serde(skip)]
     pub target: Option<String>,
-    #[serde(skip)]
-    pub target_dir: Option<PathBuf>,
 }
 
 pub fn background_precompile_default() -> bool {
@@ -171,10 +166,7 @@ impl Default for CompileSettings {
             background_precompile: background_precompile_default(),
             pack_policy: PackPolicy::ReleaseOnly,
             dev_addon: true,
-            game_exe_path: None,
-            maps_dir_override: None,
             target: None,
-            target_dir: None,
             compile_cordon_only: true,
             cordon_material: "TOOLS/TOOLSSKYBOX".to_owned(),
             progressive: false,
@@ -283,9 +275,8 @@ game_exe_path = "D:/game/gmod.exe"
         assert_eq!(s.preset, CompilePresetSetting::Final);
         assert_eq!(s.extra_bsp_args, "-leaktest");
         assert!(!s.low_priority);
-        assert_eq!(s.game_exe_path, Some(PathBuf::from("D:/game/gmod.exe")));
         let written = toml::to_string(&s).expect("write");
-        for gone in ["bsp_compiler", "compiler_policy", "compiler_dirs", "vbsp_path", "bspzip_path", "vis_radius"] {
+        for gone in ["bsp_compiler", "compiler_policy", "compiler_dirs", "vbsp_path", "bspzip_path", "vis_radius", "game_exe_path"] {
             assert!(!written.contains(gone), "{gone} is not written any more");
         }
         let file = format!("[compile]\n{old}");

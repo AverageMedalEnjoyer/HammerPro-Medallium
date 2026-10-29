@@ -18,7 +18,7 @@ mod visibility;
 mod workflow;
 
 pub use brush::BrushRuntime;
-pub use compile::{CompileBadge, CompileBrowse, CompileProgress, CompileRuntime};
+pub use compile::{CompileBadge, CompileProgress, CompileRuntime};
 pub use content::{
     AssetCollectRequest, AssetCollectSummary, CaptureState, CapturedImage, ChecklistRow, ContentRuntime,
     MapAssetsRuntime, ReleaseReport,

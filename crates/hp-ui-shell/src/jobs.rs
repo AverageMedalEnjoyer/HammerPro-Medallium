@@ -45,24 +45,24 @@ impl<T: Send + 'static> Job<T> {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PickTarget {
-    GmodRoot,
     ExtraGameDir,
     FgdOverride,
     ExtraFgds,
     CustomTextureDirs,
     MapDir,
-    GameDir,
+    ConfigFolder,
+    ConfigFile,
+    ConfigAddFile,
 }
 
 impl PickTarget {
     pub fn is_folder(self) -> bool {
         matches!(
             self,
-            PickTarget::GmodRoot
-                | PickTarget::ExtraGameDir
+            PickTarget::ExtraGameDir
                 | PickTarget::CustomTextureDirs
                 | PickTarget::MapDir
-                | PickTarget::GameDir
+                | PickTarget::ConfigFolder
         )
     }
 

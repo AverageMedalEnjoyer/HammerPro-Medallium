@@ -653,7 +653,7 @@ fn start_brushes_to_prop(app: &mut HammerProApp, ctx: &egui::Context) {
         app.state.notify(Severity::Warning, t!("lab.prop.select"));
         return;
     }
-    let Some(root) = app.state.settings.game.gmod_root.clone().or_else(hp_fs::detect_gmod_root) else {
+    let Some(root) = app.state.settings.game.gmod_root.clone() else {
         app.state.notify(Severity::Warning, t!("lab.prop.no_game"));
         return;
     };
@@ -738,7 +738,7 @@ fn poll_prop_job(app: &mut HammerProApp, ctx: &egui::Context) {
             }
             Ok(Err(e)) => app.state.notify(Severity::Error, e),
             Ok(Ok(prepared)) => {
-                let root = app.state.settings.game.gmod_root.clone().or_else(hp_fs::detect_gmod_root);
+                let root = app.state.settings.game.gmod_root.clone();
                 let Some(exe) = root.as_deref().and_then(hp_ui_entities::model_tools::studiomdl_exe) else {
                     app.state.notify(Severity::Warning, t!("lab.prop.no_studiomdl"));
                     return;

@@ -137,6 +137,7 @@ pub(crate) const TABLES: &[TrTable] = &[
     TR,
     general::TR,
     game::TR,
+    crate::gameconfig_ui::TR,
     viewport::TR,
     editing::TR,
     compile::TR,

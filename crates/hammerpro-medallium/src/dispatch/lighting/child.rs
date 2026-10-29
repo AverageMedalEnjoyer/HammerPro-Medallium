@@ -59,10 +59,10 @@ pub(crate) fn light(
     log: &mut dyn FnMut(&str),
 ) -> Result<LitResult, String> {
     let mut opts = options(hdr, quality, bounces, threads, prop_shadows, prop_lighting);
-    let world = crate::bspc_cli::world_lights_rad(bytes);
-    opts.texlights.files = crate::bspc_cli::light_files(game, None, None, world.as_deref(), None, log);
+    let world = crate::bake_support::world_lights_rad(bytes);
+    opts.texlights.files = crate::bake_support::light_files(game, None, None, world.as_deref(), None, log);
     let lit = if prop_shadows || prop_lighting {
-        let models = crate::bspc_cli::LazyModels::of_game(game.map(Path::to_path_buf));
+        let models = crate::bake_support::LazyModels::of_game(game.map(Path::to_path_buf));
         hp_bspc::rad::light_bsp_with(bytes, &opts, &models, log)?
     } else {
         hp_bspc::rad::light_bsp(bytes, &opts, log)?

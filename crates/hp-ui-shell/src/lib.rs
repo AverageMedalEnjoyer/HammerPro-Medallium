@@ -4,6 +4,7 @@ pub mod console_view;
 pub mod first_run;
 pub mod fuzzy;
 pub mod game_ui;
+pub mod gameconfig_ui;
 pub mod grids;
 pub mod help;
 pub mod jobs;

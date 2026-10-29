@@ -16,20 +16,16 @@ pub(crate) struct MountRequest {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct GameRef {
     pub id: String,
-    pub dir: Option<PathBuf>,
 }
 
 impl GameRef {
     pub(crate) fn of(settings: &Settings) -> Option<GameRef> {
         let g = &settings.game;
-        (!g.is_gmod()).then(|| GameRef {
-            id: g.active_game().to_owned(),
-            dir: g.game_dir_of(g.active_game()).map(Path::to_path_buf),
-        })
+        (!g.is_gmod() && !g.active_game().is_empty()).then(|| GameRef { id: g.active_game().to_owned() })
     }
 
     pub(crate) fn profile(&self) -> Option<hp_fs::GameProfile> {
-        hp_fs::resolve_game(&self.id, self.dir.as_deref())
+        hp_fs::resolve_game(&self.id)
     }
 }
 
@@ -106,7 +102,7 @@ pub(crate) fn run_mount(req: &MountRequest, progress: &hp_fs::MountProgress) -> 
         return run_game_mount(&profile, &req.opts, progress);
     }
     let start = std::time::Instant::now();
-    let root = match req.root.clone().or_else(hp_fs::detect_gmod_root) {
+    let root = match req.root.clone() {
         Some(r) => install_root(&r),
         None => return MountOutcome::NotConfigured,
     };
@@ -261,7 +257,7 @@ pub(crate) fn run_fgd(req: &FgdRequest) -> FgdOutcome {
     let ((paths, mut warnings), include_dirs) = match &profile {
         Some(p) => (game_fgd_paths(p, req.override_fgd.as_deref(), &req.extra), p.fgd_dirs.clone()),
         None => {
-            let root = req.root.clone().or_else(hp_fs::detect_gmod_root).map(|r| install_root(&r));
+            let root = req.root.clone().map(|r| install_root(&r));
             let found = fgd_paths(root.as_deref(), req.override_fgd.as_deref(), &req.extra);
             let dirs: Vec<PathBuf> = root.iter().map(|r| r.join("bin")).collect();
             (found, dirs)
@@ -479,10 +475,16 @@ mod tests {
         std::fs::write(root.join("bin/tf.fgd"), "@include \"base.fgd\"\n@PointClass = item_teamflag : \"Flag\" []\n@PointClass = env_cubemap : \"Cubemap\" [ cubemapsize(integer) : \"Size\" : 0 ]").unwrap();
         std::fs::write(root.join("bin/base.fgd"), "@PointClass = info_player_teamspawn : \"Spawn\" []").unwrap();
         let mut s = Settings::default();
-        s.game.game = "tf".to_owned();
-        s.game.game_dirs.insert("tf".to_owned(), game.clone());
+        let config = root.join("bin").join("GameConfig.txt");
+        std::fs::write(
+            &config,
+            format!("\"Configs\"\n{{\n\"Games\"\n{{\n\"TF\"\n{{\n\"GameDir\"\t\t\"{}\"\n\"Hammer\"\n{{\n\"GameData0\"\t\t\"{}\"\n}}\n}}\n}}\n}}\n", game.display(), root.join("bin").join("tf.fgd").display()),
+        )
+        .unwrap();
+        let id = hp_fs::gameconfig::ConfigId::new(&config, "TF").to_id();
+        s.game.game = id.clone();
         let req = MountRequest::from_settings(&s);
-        assert_eq!(req.game, Some(GameRef { id: "tf".to_owned(), dir: Some(game.clone()) }));
+        assert_eq!(req.game, Some(GameRef { id }));
         let MountOutcome::Mounted(data) = run_mount(&req, &hp_fs::MountProgress::new()) else { panic!("mount failed") };
         assert!(data.fs.exists("materials/tf/wall.vmt"));
         assert_eq!(data.fs.game_dir(), Some(game.as_path()));

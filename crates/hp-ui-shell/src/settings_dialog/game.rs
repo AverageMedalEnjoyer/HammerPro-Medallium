@@ -3,21 +3,17 @@ use hp_app::i18n::TrTable;
 use hp_app::{AppState, t};
 
 use crate::common::heading;
-use crate::game_ui::{
-    GameJobs, custom_dirs_list, default_is_gmod, game_section, gmod_root_section, mount_toggles, path_list, path_row,
-    request,
-};
+use crate::game_ui::{GameJobs, custom_dirs_list, mount_toggles, path_list, path_row, request};
 use crate::jobs::PickTarget;
 
 pub(super) fn page(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
     let ctx = ui.ctx().clone();
-    heading(ui, t!("shell.game.game"));
-    game_section(ui, state, jobs);
-    let gmod = default_is_gmod(state);
+    heading(ui, t!("shell.gc.list_heading"));
+    crate::gameconfig_ui::config_list(ui, state, jobs);
+    heading(ui, t!("shell.gc.editor_heading"));
+    crate::gameconfig_ui::configure_hammer(ui, state, jobs);
+    let gmod = state.settings.game.is_gmod();
     if gmod {
-        heading(ui, t!("shell.game.root"));
-        gmod_root_section(ui, state, jobs);
-
         heading(ui, t!("shell.game.content"));
         mount_toggles(ui, state);
         if ui
@@ -43,7 +39,7 @@ pub(super) fn page(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
         state.settings_dirty = true;
     }
     if add {
-        jobs.pick(&ctx, request(PickTarget::ExtraGameDir, state.settings.game.gmod_root.clone()));
+        jobs.pick(&ctx, request(PickTarget::ExtraGameDir, None));
     }
 
     heading(ui, t!("shell.game.fgds"));
@@ -71,22 +67,6 @@ pub(super) fn page(ui: &mut Ui, state: &mut AppState, jobs: &mut GameJobs) {
     }
     if add {
         jobs.pick(&ctx, request(PickTarget::ExtraFgds, None));
-    }
-
-    heading(ui, t!("shell.game.maps"));
-    let (out, _) = path_row(
-        ui,
-        t!("shell.game.map_dir"),
-        None,
-        &mut state.settings.game.map_dir,
-        t!("shell.game.map_dir_hint"),
-        !jobs.picking(),
-    );
-    if out.changed {
-        state.settings_dirty = true;
-    }
-    if out.browse {
-        jobs.pick(&ctx, request(PickTarget::MapDir, state.settings.game.map_dir.clone()));
     }
 
     if gmod {

@@ -419,7 +419,7 @@ mod tests {
 
     #[test]
     fn real_models_when_available() {
-        let Some(root) = hp_fs::detect_gmod_root() else { return };
+        let Some(root) = std::env::var_os("HAMMERPRO_TEST_GMOD").map(std::path::PathBuf::from) else { return };
         let opts = hp_fs::MountOptions { mount_workshop: false, mount_addons: false, ..Default::default() };
         let Ok(fs) = hp_fs::GameFs::for_gmod(&root, &opts) else { return };
         let path = "models/props_junk/wood_crate001a.mdl";

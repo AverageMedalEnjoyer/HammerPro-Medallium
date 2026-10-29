@@ -59,12 +59,9 @@ fn compiled_files(state: &AppState, ext: &str) -> Vec<PathBuf> {
         out.push(dir.join(BUILD_DIR).join(PORTAL_DIR).join(&name));
     }
     if ext == "bsp"
-        && let Some(maps) = state
-            .settings
-            .compile
-            .maps_dir_override
-            .clone()
-            .or_else(|| state.assets.fs().and_then(|fs| fs.root()).map(|r| r.join("garrysmod").join("maps")))
+        && let Some(maps) = hp_fs::gameconfig::build_tools(state.settings.game.active_game())
+            .and_then(|t| t.bsp_dir)
+            .or_else(|| state.assets.fs().and_then(|fs| fs.game_dir()).map(|d| d.join("maps")))
     {
         out.push(maps.join(&name));
     }
@@ -723,12 +720,16 @@ impl Portals {
     }
 
     fn tools(state: &AppState) -> Option<hp_compile::ToolPaths> {
-        let root = state
-            .assets
-            .fs()
-            .and_then(|fs| fs.root().map(Path::to_path_buf))
-            .or_else(|| state.settings.game.gmod_root.clone())?;
-        hp_compile::ToolPaths::detect(&root)
+        let found = hp_fs::gameconfig::build_tools(state.settings.game.active_game())?;
+        let mut tools = hp_compile::ToolPaths::for_game_dir(&found.game_dir);
+        tools.vbsp = found.vbsp.filter(|p| p.is_file())?;
+        tools.vvis = found.vvis.unwrap_or_default();
+        tools.vrad = found.vrad.unwrap_or_default();
+        tools.game_exe = found.game_exe;
+        if let Some(dir) = found.bsp_dir {
+            tools.maps_dir = dir;
+        }
+        Some(tools)
     }
 
     fn poll_build(&mut self, state: &mut AppState) {

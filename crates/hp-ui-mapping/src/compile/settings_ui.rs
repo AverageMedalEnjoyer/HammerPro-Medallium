@@ -16,32 +16,6 @@ use super::plan::{self, PlanExtras, effective_modes};
 use super::snapshot::{self, CompileSidecar, SnapshotInput, SnapshotOutput};
 use super::{CompileDialog, ToolProbe, game_root, history_file, is_iteration_preset};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum BrowseTarget {
-    GameExe,
-    MapsDir,
-}
-
-impl BrowseTarget {
-    pub(crate) fn title(self) -> String {
-        match self {
-            BrowseTarget::GameExe => t!("compile.browse_game_exe").to_owned(),
-            BrowseTarget::MapsDir => t!("compile.browse_maps_dir").to_owned(),
-        }
-    }
-
-    pub(crate) fn is_folder(self) -> bool {
-        self == BrowseTarget::MapsDir
-    }
-
-    pub(crate) fn apply(self, s: &mut CompileSettings, p: PathBuf) {
-        match self {
-            BrowseTarget::GameExe => s.game_exe_path = Some(p),
-            BrowseTarget::MapsDir => s.maps_dir_override = Some(p),
-        }
-    }
-}
-
 pub(crate) fn smart_applies(s: &CompileSettings) -> bool {
     s.smart_recompile && !s.expert && is_iteration_preset(s.preset) && effective_modes(s).bsp == BspMode::Full
 }
@@ -269,8 +243,6 @@ impl CompileDialog {
         if std::mem::take(&mut self.collapse_settings) {
             header = header.open(Some(false));
         }
-        let ctx = ui.ctx().clone();
-        let mut browse: Option<BrowseTarget> = None;
         let cordons = state.doc.cordon_box_count();
         let max_height = (ui.available_height() * 0.6).max(120.0);
         header.show(ui, |ui| {
@@ -278,13 +250,8 @@ impl CompileDialog {
                 let before = state.settings.compile.clone();
                 ui.add_enabled_ui(!running, |ui| {
                     self.main_grid(ui, state, cordons);
-                    ui.add_enabled_ui(!state.settings.compile.expert, |ui| {
-                        let s = &mut state.settings.compile;
-                        super::options_ui::step_menu(ui, s, StepKind::Bsp, "hp_compile_opts");
-                        super::options_ui::step_menu(ui, s, StepKind::Rad, "hp_compile_opts");
-                    });
                     egui::CollapsingHeader::new(t!("compile.advanced")).id_salt("hp_compile_advanced").show(ui, |ui| {
-                        browse = Self::advanced_ui(ui, state, &self.probe);
+                        Self::advanced_ui(ui, state);
                     });
                 });
                 if state.settings.compile != before {
@@ -294,9 +261,6 @@ impl CompileDialog {
                 self.tools_status_ui(ui);
             });
         });
-        if let Some(target) = browse {
-            self.browse(&ctx, target);
-        }
     }
 
     fn main_grid(&mut self, ui: &mut Ui, state: &mut AppState, cordons: usize) {
@@ -545,8 +509,7 @@ impl CompileDialog {
         });
     }
 
-    fn advanced_ui(ui: &mut Ui, state: &mut AppState, probe: &ToolProbe) -> Option<BrowseTarget> {
-        let mut browse = None;
+    fn advanced_ui(ui: &mut Ui, state: &mut AppState) {
         let s = &mut state.settings.compile;
         let seal = &mut state.settings.visibility.cordon_material;
         let mut seal_changed = false;
@@ -583,45 +546,10 @@ impl CompileDialog {
                 .changed();
             ui.end_row();
 
-            ui.label(t!("compile.game_exe"));
-            ui.horizontal(|ui| {
-                let detected =
-                    probe.result.as_ref().and_then(|r| r.resolved.as_ref()).and_then(|r| r.tools.game_exe.clone());
-                let text = match (&s.game_exe_path, detected) {
-                    (Some(p), _) if !p.as_os_str().is_empty() => p.display().to_string(),
-                    (_, Some(u)) => tf!("compile.automatic_path", u.display()),
-                    _ => t!("compile.game_exe_none").to_owned(),
-                };
-                if ui.button(t!("common.browse")).clicked() {
-                    browse = Some(BrowseTarget::GameExe);
-                }
-                if s.game_exe_path.is_some() && ui.small_button("✖").on_hover_text(t!("common.reset")).clicked() {
-                    s.game_exe_path = None;
-                }
-                ui.add(egui::Label::new(RichText::new(text).weak()).truncate());
-            });
-            ui.end_row();
-
-            ui.label(t!("compile.maps_dir"));
-            ui.horizontal(|ui| {
-                if ui.button(t!("common.browse")).clicked() {
-                    browse = Some(BrowseTarget::MapsDir);
-                }
-                if s.maps_dir_override.is_some() && ui.small_button("✖").on_hover_text(t!("common.reset")).clicked() {
-                    s.maps_dir_override = None;
-                }
-                let text = s
-                    .maps_dir_override
-                    .as_ref()
-                    .map_or_else(|| t!("compile.maps_dir_default").to_owned(), |p| p.display().to_string());
-                ui.add(egui::Label::new(RichText::new(text).weak()).truncate());
-            });
-            ui.end_row();
         });
         if seal_changed {
             state.settings_dirty = true;
         }
-        browse
     }
 
     fn tools_status_ui(&self, ui: &mut Ui) {

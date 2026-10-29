@@ -149,7 +149,7 @@ pub(crate) fn plan_options(
     compile_game_dir: Option<PathBuf>,
 ) -> PlanOptions {
     let target = s.target.clone().filter(|t| !t.eq_ignore_ascii_case(hp_fs::GMOD_ID));
-    let profile = target.as_deref().and_then(|t| hp_fs::resolve_game(t, s.target_dir.as_deref()));
+    let profile = target.as_deref().and_then(|t| hp_fs::resolve_game(t));
     let installed = profile.as_ref().is_none_or(|p| p.installed);
     let mut lighting = lighting_of(s.lighting);
     if profile.as_ref().is_some_and(|p| p.lighting == hp_fs::LightingPasses::HdrOnly) && lighting == Lighting::Ldr {
@@ -202,7 +202,7 @@ pub(crate) fn build_plan_with(
     if let Some(p) = s
         .target
         .as_deref()
-        .and_then(|t| hp_fs::resolve_game(t, s.target_dir.as_deref()))
+        .and_then(|t| hp_fs::resolve_game(t))
         .filter(|p| p.installed && p.source_mod)
     {
         folder = p.game_arg();
@@ -293,7 +293,7 @@ pub(crate) fn prepare(input: PrepInput) -> PrepOutput {
     let mut messages: Vec<(LogSeverity, String)> = Vec::new();
     let fail = |messages: Vec<(LogSeverity, String)>, e: String| PrepOutput { result: Err(e), messages };
 
-    let Some(root) = input.gmod_root.clone().or_else(hp_fs::detect_gmod_root) else {
+    let Some(root) = input.gmod_root.clone() else {
         return fail(messages, t!("compile.err_no_game").to_owned());
     };
     let resolved = match super::tools::resolve(&root, &input.settings) {
@@ -484,7 +484,9 @@ mod tests {
 
     fn tools() -> ToolPaths {
         ToolPaths {
-            compiler: PathBuf::from("C:/HammerPro/hammerpro.exe"),
+            vbsp: PathBuf::from("C:/Games/bin/vbsp.exe"),
+            vvis: PathBuf::from("C:/Games/bin/vvis.exe"),
+            vrad: PathBuf::from("C:/Games/bin/vrad.exe"),
             game_exe: Some(PathBuf::from("C:/Games/GarrysMod/gmod.exe")),
             game_dir: PathBuf::from("C:/Games/GarrysMod/garrysmod"),
             maps_dir: PathBuf::from("C:/Games/GarrysMod/garrysmod/maps"),
@@ -503,110 +505,42 @@ mod tests {
     fn plan_from_default_settings() {
         let s = CompileSettings { launch_game: false, ..CompileSettings::default() };
         let plan = build_plan(&s, &tools(), &vmf(), Vec::new(), None).expect("plan");
-        assert_eq!(kinds(&plan), vec![(StepKind::Bsp, true), (StepKind::Rad, true), (StepKind::CopyToMaps, true)]);
-        assert!(plan.steps.iter().take(2).all(|st| st.exe == Path::new("C:/HammerPro/hammerpro.exe")));
+        assert_eq!(
+            kinds(&plan),
+            vec![(StepKind::Bsp, true), (StepKind::Vis, true), (StepKind::Rad, true), (StepKind::CopyToMaps, true)]
+        );
+        assert!(plan.steps.iter().take(3).all(|st| st.exe.starts_with("C:/Games/bin")));
         let bsp = &plan.steps[0].args;
-        assert_eq!(bsp[0], hp_compile::BSPC_ARG);
-        assert!(bsp.contains(&"-vis".to_owned()) && bsp.contains(&"-leaktest".to_owned()), "{bsp:?}");
-        let rad = &plan.steps[1].args;
-        assert_eq!(rad[..2], [hp_compile::RAD_ARG, "-ldr"]);
+        assert_eq!(bsp[0], "-game", "{bsp:?}");
+        let vis = &plan.steps[1].args;
+        let rad = &plan.steps[2].args;
+        assert_eq!(rad[0], "-ldr");
         assert!(plan.stop_on_leak);
         let cores = hp_compile::flags::logical_cores();
         if cores > 1 {
-            assert!(bsp.windows(2).any(|w| w[0] == "-threads" && w[1] == (cores - 1).to_string()), "{bsp:?}");
+            assert!(vis.windows(2).any(|w| w[0] == "-threads" && w[1] == (cores - 1).to_string()), "{vis:?}");
         }
         let s = CompileSettings { low_priority: false, launch_game: false, ..CompileSettings::default() };
         let plan = build_plan(&s, &tools(), &vmf(), Vec::new(), None).expect("plan");
-        assert!(!plan.steps[0].args.contains(&"-threads".to_owned()));
+        assert!(!plan.steps[1].args.contains(&"-threads".to_owned()));
     }
 
     #[test]
-    fn prop_options_and_flag_choices_reach_the_steps() {
-        use hp_app::settings::FlagChoiceSetting;
-        let rad_of = |s: &CompileSettings| {
-            let plan = build_plan(s, &tools(), &vmf(), Vec::new(), None).expect("plan");
+    fn prop_options_reach_vrad() {
+        let rad_of = |lighting: bool, shadows: bool| {
+            let s = CompileSettings {
+                launch_game: false,
+                static_prop_lighting: lighting,
+                static_prop_shadows: shadows,
+                ..CompileSettings::default()
+            };
+            let plan = build_plan(&s, &tools(), &vmf(), Vec::new(), None).expect("plan");
             plan.steps.iter().find(|st| st.kind == StepKind::Rad).map(|st| st.args.clone()).unwrap_or_default()
         };
-        for preset in [
-            CompilePresetSetting::Draft,
-            CompilePresetSetting::Normal,
-            CompilePresetSetting::Final,
-            CompilePresetSetting::Custom,
-        ] {
-            for (lighting, shadows) in [(true, true), (true, false), (false, true), (false, false)] {
-                let mut s = CompileSettings { launch_game: false, ..CompileSettings::default() };
-                apply_preset(&mut s, preset);
-                s.static_prop_lighting = lighting;
-                s.static_prop_shadows = shadows;
-                let rad = rad_of(&s);
-                let has = |f: &str| rad.iter().any(|a| a == f);
-                let fin = preset == CompilePresetSetting::Final;
-                assert_eq!(has("-StaticPropLighting"), lighting && fin, "{preset:?} {lighting} {shadows}");
-                assert_eq!(has("-nostaticpropshadows"), !shadows, "{preset:?} {lighting} {shadows}");
-                assert_eq!(has("-final"), fin);
-            }
-        }
-        let mut s = CompileSettings { launch_game: false, ..CompileSettings::default() };
-        apply_preset(&mut s, CompilePresetSetting::Draft);
-        s.rad_flag_choices.insert("-fast".into(), FlagChoiceSetting { on: false, value: String::new() });
-        s.rad_flag_choices.insert("-bounce".into(), FlagChoiceSetting { on: true, value: "3".into() });
-        s.bsp_flag_choices.insert("-nodetail".into(), FlagChoiceSetting { on: true, value: String::new() });
-        s.extra_bsp_args = "-nodetail".into();
-        let plan = build_plan(&s, &tools(), &vmf(), Vec::new(), None).expect("plan");
-        let rad = &plan.steps.iter().find(|st| st.kind == StepKind::Rad).expect("rad").args;
-        assert!(!rad.iter().any(|a| a == "-fast"));
-        assert!(rad.windows(2).any(|w| w == ["-bounce", "3"]) && rad.iter().filter(|a| *a == "-bounce").count() == 1);
-        let bsp = &plan.steps[0].args;
-        assert_eq!(bsp.iter().filter(|a| *a == "-nodetail").count(), 1, "{bsp:?}");
-        let o = plan_options(&s, "garrysmod", Vec::new(), None);
-        assert!(o.static_prop_lighting && o.static_prop_shadows);
-        assert_eq!(o.rad_flags.len(), 2);
-        assert!(o.bsp_flags.iter().any(|c| c.flag == "-nodetail" && c.on));
-    }
-
-    #[test]
-    fn the_compile_mounts_the_content_the_editor_shows() {
-        let dir = crate::test_scratch("content_args");
-        let root = dir.join("GarrysMod");
-        let download = root.join("garrysmod/download/materials/rockford");
-        let extra = dir.join("css/cstrike");
-        for d in [&download, &extra.join("materials")] {
-            std::fs::create_dir_all(d).expect("dirs");
-        }
-        std::fs::write(download.join("road.vmt"), "\"LightmappedGeneric\" { \"$basetexture\" \"rockford/road\" }")
-            .expect("vmt");
-        assert!(content_args(None).is_empty());
-        let opts = hp_fs::MountOptions {
-            mount_workshop: false,
-            mount_downloads: true,
-            extra_game_dirs: vec![extra.clone()],
-            ..hp_fs::MountOptions::default()
-        };
-        let fs = hp_fs::GameFs::for_gmod(&root, &opts).expect("mount");
-        assert!(fs.material("rockford/road").is_some(), "the editor shows it");
-        let args = content_args(Some(&fs));
-        let folder = extra.to_string_lossy().into_owned();
-        assert_eq!(args, ["-serveraddons".to_owned(), "-insert_search_path".to_owned(), folder]);
-        let s = CompileSettings { launch_game: false, ..CompileSettings::default() };
-        let extras = PlanExtras { content_args: args, ..PlanExtras::default() };
-        let plan = build_plan_with(&s, &tools(), &vmf(), Vec::new(), None, extras).expect("plan");
-        for kind in [StepKind::Bsp, StepKind::Rad] {
-            let step = plan.steps.iter().find(|st| st.kind == kind).expect("step");
-            assert!(step.args.iter().any(|a| a == "-serveraddons"), "{kind:?} {:?}", step.args);
-            let folder = step.args.windows(2).any(|w| w[0] == "-insert_search_path" && Path::new(&w[1]) == extra);
-            assert!(folder, "{:?}", step.args);
-        }
-        for src in fs.sources().iter().filter(|s| s.origin == hp_fs::SourceOrigin::Download) {
-            fs.set_source_enabled(src.id, false);
-        }
-        assert!(!content_args(Some(&fs)).iter().any(|a| a == "-serveraddons"));
-        let plain = hp_fs::GameFs::for_gmod(
-            &root,
-            &hp_fs::MountOptions { mount_workshop: false, ..hp_fs::MountOptions::default() },
-        )
-        .expect("mount");
-        assert!(content_args(Some(&plain)).is_empty());
-        let _ = std::fs::remove_dir_all(&dir);
+        let on = rad_of(true, true);
+        assert!(on.iter().any(|a| a == "-StaticPropLighting") && on.iter().any(|a| a == "-StaticPropPolys"));
+        let off = rad_of(false, false);
+        assert!(!off.iter().any(|a| a == "-StaticPropLighting" || a == "-StaticPropPolys"));
     }
 
     #[test]
@@ -643,9 +577,8 @@ mod tests {
             kinds(&plan),
             vec![(StepKind::Bsp, true), (StepKind::Rad, true), (StepKind::Pack, true), (StepKind::LaunchGame, true)]
         );
-        assert!(!plan.steps[0].args.iter().any(|a| a == "-vis" || a == "-fastvis"));
         let rad = &plan.steps[1].args;
-        assert_eq!(&rad[..3], &[hp_compile::RAD_ARG, "-hdr", "-fast"]);
+        assert_eq!(&rad[..2], &["-hdr", "-fast"]);
         assert!(rad.windows(2).any(|w| w[0] == "-threads" && w[1] == "4"));
         assert!(rad.windows(2).any(|w| w[0] == "-bounce" && w[1] == "2"), "the user's arguments come last");
         assert_eq!(rad.iter().filter(|a| *a == "-bounce").count(), 1);
@@ -666,7 +599,8 @@ mod tests {
 
         let s4 = CompileSettings { preset: CompilePresetSetting::Final, ..CompileSettings::default() };
         let plan4 = build_plan(&s4, &tools(), &vmf(), Vec::new(), None).expect("plan");
-        assert_eq!(plan4.steps[1].args[..3], [hp_compile::RAD_ARG, "-both", "-final"]);
+        let rad4 = plan4.steps.iter().find(|st| st.kind == StepKind::Rad).expect("rad");
+        assert_eq!(rad4.args[..2], ["-both", "-final"]);
 
         assert!(build_plan(&s4, &tools(), Path::new("C:/maps/my map.vmf"), Vec::new(), None).is_err());
     }

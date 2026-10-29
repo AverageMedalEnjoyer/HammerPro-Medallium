@@ -203,7 +203,9 @@ fn context_hash(
         format!("{:?}", s.bsp_flag_choices),
         format!("{:?}", s.rad_flag_choices),
         format!("props {} {}", s.static_prop_lighting, s.static_prop_shadows),
-        stamp_text(&tools.compiler),
+        stamp_text(&tools.vbsp),
+        stamp_text(&tools.vvis),
+        stamp_text(&tools.vrad),
         stamp_text(&game_dir.join("gameinfo.txt")),
     ];
     let mut staged: Vec<String> = staged.iter().map(|p| stamp_text(p)).collect();
@@ -268,7 +270,7 @@ pub(crate) fn prepare_snapshot(input: SnapshotInput) -> SnapshotOutput {
     }
 
     let s = &input.settings;
-    let Some(root) = input.gmod_root.clone().or_else(hp_fs::detect_gmod_root) else {
+    let Some(root) = input.gmod_root.clone() else {
         return fail(messages, t!("compile.err_no_game").to_owned());
     };
     let t_tools = Instant::now();

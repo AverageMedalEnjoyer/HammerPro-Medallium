@@ -3,9 +3,7 @@
 
 mod app;
 mod autosave;
-mod bspc_cli;
-mod bspc_game;
-mod bspc_instances;
+mod bake_support;
 mod crash;
 mod discord;
 mod dispatch;
@@ -142,14 +140,6 @@ fn pick_adapter(adapters: &[wgpu::Adapter], surface: Option<&wgpu::Surface<'_>>)
 }
 
 fn main() -> eframe::Result<()> {
-    if std::env::args().nth(1).as_deref() == Some(bspc_cli::BSPC_ARG) {
-        let args: Vec<String> = std::env::args().skip(2).collect();
-        std::process::exit(bspc_cli::run(&args));
-    }
-    if std::env::args().nth(1).as_deref() == Some(bspc_cli::RAD_ARG) {
-        let args: Vec<String> = std::env::args().skip(2).collect();
-        std::process::exit(bspc_cli::run_rad(&args));
-    }
     if std::env::args().nth(1).as_deref() == Some(dispatch::lighting::child::LIGHT_ARG) {
         let args: Vec<String> = std::env::args().skip(2).collect();
         std::process::exit(dispatch::lighting::child::run(&args));

@@ -541,7 +541,7 @@ fn material_editor_edits_files_and_virtual_materials() {
 
 fn gmod_root() -> Option<PathBuf> {
     let p = PathBuf::from(r"D:\SteamLibrary\steamapps\common\GarrysMod");
-    if p.join("garrysmod").is_dir() { Some(p) } else { hp_fs::detect_gmod_root() }
+    p.join("garrysmod").is_dir().then_some(p)
 }
 
 #[test]

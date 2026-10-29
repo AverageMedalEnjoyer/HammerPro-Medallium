@@ -1,12 +1,34 @@
-use crate::settings::MapGame;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+
+use hp_fs::gameconfig::{self, ConfigEntry};
+use parking_lot::Mutex;
+
+use crate::settings::{MapGame, Settings};
 use crate::{AppState, Severity, tf};
 
 fn remount(state: &mut AppState) {
+    hp_fs::gameconfig::invalidate();
+    adopt_active(state);
     state.assets.remount(&state.settings);
     state.assets.reload_fgd(&state.settings);
     let name =
         state.settings.game.active_profile().map_or_else(|| state.settings.game.active_game().to_owned(), |p| p.name);
     state.log(Severity::Info, tf!("app.game_switched", name));
+}
+
+/// Copies what the active game configuration says into the settings the rest of the editor reads:
+/// the game root (Garry's Mod mounting) and the folder maps are saved in.
+pub fn adopt_active(state: &mut AppState) {
+    let profile = state.settings.game.active_profile();
+    let tools = gameconfig::build_tools(state.settings.game.active_game());
+    let g = &mut state.settings.game;
+    g.gmod_root = profile.as_ref().filter(|p| p.is_gmod() && !p.root.as_os_str().is_empty()).map(|p| p.root.clone());
+    if let Some(dir) = tools.and_then(|t| t.map_dir).filter(|d| !d.as_os_str().is_empty()) {
+        g.map_dir = Some(dir);
+    }
+    state.settings.sync_game();
 }
 
 pub fn apply_map_game(state: &mut AppState) -> bool {
@@ -40,67 +62,161 @@ pub fn choose_game(state: &mut AppState, id: &str, for_map: bool) -> bool {
     changed
 }
 
-pub fn catalogue(ctx: Option<&egui::Context>) -> Option<Vec<hp_fs::GameProfile>> {
-    let mut slot = CATALOGUE.lock();
-    match &*slot {
-        Catalogue::Ready(list) => Some(list.clone()),
-        Catalogue::Searching => None,
-        Catalogue::Idle => {
-            *slot = Catalogue::Searching;
-            let ctx = ctx.cloned();
-            let spawned = std::thread::Builder::new().name("hp-games".into()).spawn(move || {
-                let list = hp_fs::game_catalogue();
-                *CATALOGUE.lock() = Catalogue::Ready(list);
-                if let Some(c) = ctx {
+/// Re-reads the active configuration after it was edited and saved, and remounts its content.
+pub fn reload_active(state: &mut AppState) {
+    refresh_entries();
+    remount(state);
+}
+
+#[derive(Default)]
+struct Scan {
+    files: Vec<PathBuf>,
+    entries: Vec<ConfigEntry>,
+    scanning: bool,
+    started: bool,
+    cancel: Option<Arc<AtomicBool>>,
+}
+
+static SCAN: Mutex<Scan> = Mutex::new(Scan { files: Vec::new(), entries: Vec::new(), scanning: false, started: false, cancel: None });
+
+#[derive(Clone, Debug, Default)]
+pub struct ConfigList {
+    pub entries: Vec<ConfigEntry>,
+    pub files: usize,
+    pub scanning: bool,
+}
+
+fn cache_path() -> PathBuf {
+    Settings::default_path().with_file_name("gameconfigs.txt")
+}
+
+fn load_cache() -> Vec<PathBuf> {
+    let Ok(text) = std::fs::read_to_string(cache_path()) else { return Vec::new() };
+    text.lines().map(str::trim).filter(|l| !l.is_empty()).map(PathBuf::from).filter(|p| p.is_file()).collect()
+}
+
+fn save_cache(files: &[PathBuf]) {
+    let text: String = files.iter().map(|p| format!("{}\n", p.display())).collect();
+    let path = cache_path();
+    if let Some(dir) = path.parent() {
+        let _ = std::fs::create_dir_all(dir);
+    }
+    let _ = std::fs::write(path, text);
+}
+
+fn add_file_locked(scan: &mut Scan, file: PathBuf) -> bool {
+    let key = file.to_string_lossy().to_ascii_lowercase();
+    if scan.files.iter().any(|f| f.to_string_lossy().to_ascii_lowercase() == key) {
+        return false;
+    }
+    scan.entries.extend(gameconfig::entries_of_file(&file));
+    scan.files.push(file);
+    true
+}
+
+fn refresh_entries() {
+    let mut scan = SCAN.lock();
+    let files = scan.files.clone();
+    scan.entries = gameconfig::entries_of_files(&files);
+}
+
+fn start_scan(ctx: Option<egui::Context>) {
+    let cancel = Arc::new(AtomicBool::new(false));
+    {
+        let mut scan = SCAN.lock();
+        if scan.scanning {
+            return;
+        }
+        scan.scanning = true;
+        scan.started = true;
+        scan.cancel = Some(cancel.clone());
+    }
+    let worker = std::thread::Builder::new().name("hp-gameconfigs".into()).spawn({
+        let cancel = cancel.clone();
+        let ctx = ctx.clone();
+        move || {
+            gameconfig::scan_computer(&cancel, &mut |file| {
+                add_file_locked(&mut SCAN.lock(), file);
+                if let Some(c) = &ctx {
                     c.request_repaint();
                 }
             });
-            if spawned.is_err() {
-                let list = hp_fs::game_catalogue();
-                *slot = Catalogue::Ready(list.clone());
-                return Some(list);
+            let files = {
+                let mut scan = SCAN.lock();
+                scan.scanning = false;
+                scan.files.clone()
+            };
+            if !cancel.load(Ordering::Relaxed) {
+                save_cache(&files);
             }
-            None
+            if let Some(c) = &ctx {
+                c.request_repaint();
+            }
         }
+    });
+    if worker.is_err() {
+        SCAN.lock().scanning = false;
     }
 }
 
-pub fn refresh_catalogue() {
-    hp_fs::refresh_games();
-    *CATALOGUE.lock() = Catalogue::Idle;
-}
-
-enum Catalogue {
-    Idle,
-    Searching,
-    Ready(Vec<hp_fs::GameProfile>),
-}
-
-static CATALOGUE: parking_lot::Mutex<Catalogue> = parking_lot::Mutex::new(Catalogue::Idle);
-
-pub fn game_label(p: &hp_fs::GameProfile) -> String {
-    if p.installed { p.name.clone() } else { tf!("app.game_not_installed", p.name) }
-}
-
-pub fn game_combo(ui: &mut egui::Ui, id_salt: &str, current: &str, list: &[hp_fs::GameProfile]) -> Option<String> {
-    let shown = list.iter().find(|p| p.id.eq_ignore_ascii_case(current)).map_or_else(|| current.to_owned(), game_label);
-    let mut picked = None;
-    egui::ComboBox::from_id_salt(id_salt).selected_text(shown).width(320.0).show_ui(ui, |ui| {
-        let mut was_installed = true;
-        for p in list.iter().filter(|p| p.is_supported()) {
-            if was_installed && !p.installed {
-                ui.separator();
-                was_installed = false;
+/// The game configurations found on this computer. The first call loads the list of the previous
+/// run (or starts the search when there is none); `rescan` searches again.
+pub fn configs(ctx: Option<&egui::Context>) -> ConfigList {
+    let first = {
+        let mut scan = SCAN.lock();
+        let first = !scan.started && !scan.scanning;
+        if first {
+            scan.started = true;
+            for f in load_cache() {
+                add_file_locked(&mut scan, f);
             }
-            let selected = p.id.eq_ignore_ascii_case(current);
-            let r = ui.add(egui::Button::selectable(selected, game_label(p)));
-            let r = if p.installed {
-                r.on_hover_text(p.game_dir.display().to_string())
-            } else {
-                r.on_hover_text(crate::t!("app.game_not_installed_tip"))
-            };
+        }
+        first
+    };
+    if first && SCAN.lock().files.is_empty() {
+        start_scan(ctx.cloned());
+    }
+    let scan = SCAN.lock();
+    ConfigList { entries: scan.entries.clone(), files: scan.files.len(), scanning: scan.scanning }
+}
+
+pub fn rescan(ctx: Option<&egui::Context>) {
+    {
+        let mut scan = SCAN.lock();
+        if scan.scanning {
+            return;
+        }
+        scan.files.clear();
+        scan.entries.clear();
+    }
+    start_scan(ctx.cloned());
+}
+
+pub fn add_config_file(path: &Path) -> bool {
+    let added = add_file_locked(&mut SCAN.lock(), path.to_path_buf());
+    if added {
+        let files = SCAN.lock().files.clone();
+        save_cache(&files);
+    }
+    added
+}
+
+pub fn entry_label(e: &ConfigEntry) -> String {
+    format!("{} - {}", e.id.name, e.dir.display())
+}
+
+pub fn config_combo(ui: &mut egui::Ui, id_salt: &str, current: &str, list: &[ConfigEntry]) -> Option<String> {
+    let shown = list.iter().find(|e| e.key() == current).map_or_else(
+        || gameconfig::ConfigId::parse(current).map_or_else(|| current.to_owned(), |c| c.name),
+        |e| e.id.name.clone(),
+    );
+    let mut picked = None;
+    egui::ComboBox::from_id_salt(id_salt).selected_text(shown).width(360.0).show_ui(ui, |ui| {
+        for e in list {
+            let selected = e.key() == current;
+            let r = ui.add(egui::Button::selectable(selected, e.label())).on_hover_text(e.dir.display().to_string());
             if r.clicked() && !selected {
-                picked = Some(p.id.clone());
+                picked = Some(e.key());
             }
         }
     });
@@ -108,12 +224,6 @@ pub fn game_combo(ui: &mut egui::Ui, id_salt: &str, current: &str, list: &[hp_fs
 }
 
 pub(crate) const TR: crate::i18n::TrTable = &[
-    ("app.game_not_installed", "{0} (not installed)", "{0} (non installé)"),
-    (
-        "app.game_not_installed_tip",
-        "Not found on this computer: maps compile in its format and limits with the content mounted now (choose its folder in Settings > Game if it is installed elsewhere).",
-        "Introuvable sur cet ordinateur : les maps se compilent dans son format et ses limites avec le contenu monté actuellement (choisissez son dossier dans Paramètres > Jeu s'il est installé ailleurs).",
-    ),
     (
         "app.game_switched",
         "Game: {0}. Its content and entity definitions are loading.",
@@ -126,25 +236,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_map_and_the_default_game() {
+    fn choosing_a_game_for_the_map_does_not_change_the_default() {
         let mut state = crate::testing::test_state();
-        assert!(state.settings.game.is_gmod());
-        assert_eq!(state.settings.compile.target, None);
-        assert!(choose_game(&mut state, "tf", true));
-        assert_eq!(state.settings.game.active_game(), "tf");
-        assert_eq!(state.settings.compile.target.as_deref(), Some("tf"));
-        assert_eq!(state.sidecar.get::<MapGame>().id, "tf");
-        assert_eq!(state.settings.game.game, "gmod", "the default stays");
+        assert!(state.settings.game.active_game().is_empty());
+        assert!(choose_game(&mut state, "cfg:/x/GameConfig.txt|One", false));
+        assert_eq!(state.settings.game.game, "cfg:/x/GameConfig.txt|One");
+        assert!(choose_game(&mut state, "cfg:/x/GameConfig.txt|Two", true));
+        assert_eq!(state.settings.game.active_game(), "cfg:/x/GameConfig.txt|Two");
+        assert_eq!(state.settings.game.game, "cfg:/x/GameConfig.txt|One", "the default stays");
+        assert_eq!(state.sidecar.get::<MapGame>().id, "cfg:/x/GameConfig.txt|Two");
         state.sidecar = crate::sidecar::Sidecar::in_memory();
         assert!(apply_map_game(&mut state));
-        assert!(state.settings.game.is_gmod());
-        assert_eq!(state.settings.compile.target, None);
-        assert!(choose_game(&mut state, "portal2", false));
-        assert_eq!(state.settings.game.game, "portal2");
-        assert_eq!(state.settings.compile.target.as_deref(), Some("portal2"));
-        assert!(state.settings_dirty);
-        assert!(!choose_game(&mut state, "portal2", true));
-        assert_eq!(state.sidecar.get::<MapGame>().id, "");
-        assert!(!apply_map_game(&mut state));
+        assert_eq!(state.settings.game.active_game(), "cfg:/x/GameConfig.txt|One");
     }
 }

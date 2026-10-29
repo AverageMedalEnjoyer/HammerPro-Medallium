@@ -4,34 +4,27 @@ use serde::{Deserialize, Serialize};
 
 use crate::{CompileError, Result};
 
-pub const BSPC_ARG: &str = "--bspc";
-
-pub const RAD_ARG: &str = "--rad";
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ToolPaths {
-    pub compiler: PathBuf,
+    pub vbsp: PathBuf,
+    pub vvis: PathBuf,
+    pub vrad: PathBuf,
     pub game_exe: Option<PathBuf>,
     pub game_dir: PathBuf,
     pub maps_dir: PathBuf,
 }
 
 impl ToolPaths {
-    pub fn detect(gmod_root: &Path) -> Option<ToolPaths> {
-        let compiler = std::env::current_exe().ok()?;
-        Self::with_compiler(compiler, gmod_root)
-    }
-
-    pub fn with_compiler(compiler: PathBuf, gmod_root: &Path) -> Option<ToolPaths> {
-        let (root, game_dir) = resolve_root(gmod_root)?;
-        let mut tools = Self::for_game_dir(compiler, &game_dir);
-        tools.game_exe = find_game_exe(&root);
-        Some(tools)
-    }
-
-    pub fn for_game_dir(compiler: PathBuf, game_dir: &Path) -> ToolPaths {
+    pub fn for_game_dir(game_dir: &Path) -> ToolPaths {
         let game_dir = strip_trailing_separators(game_dir);
-        ToolPaths { compiler, game_exe: None, maps_dir: game_dir.join("maps"), game_dir }
+        ToolPaths {
+            vbsp: PathBuf::new(),
+            vvis: PathBuf::new(),
+            vrad: PathBuf::new(),
+            game_exe: None,
+            maps_dir: game_dir.join("maps"),
+            game_dir,
+        }
     }
 
     pub fn gmod_root(&self) -> Option<PathBuf> {
@@ -39,11 +32,22 @@ impl ToolPaths {
         (!parent.as_os_str().is_empty()).then(|| parent.to_path_buf())
     }
 
+    pub fn build_tools(&self) -> [(&'static str, &Path); 3] {
+        [("vbsp", self.vbsp.as_path()), ("vvis", self.vvis.as_path()), ("vrad", self.vrad.as_path())]
+    }
+
+    pub fn unset_tools(&self) -> Vec<&'static str> {
+        self.build_tools().into_iter().filter(|(_, p)| p.as_os_str().is_empty()).map(|(n, _)| n).collect()
+    }
+
     pub fn missing_files(&self) -> Vec<PathBuf> {
-        let mut missing = Vec::new();
-        if !self.compiler.is_file() {
-            missing.push(self.compiler.clone());
-        }
+        let mut missing: Vec<PathBuf> = self
+            .build_tools()
+            .into_iter()
+            .map(|(_, p)| p)
+            .filter(|p| !p.as_os_str().is_empty() && !p.is_file())
+            .map(Path::to_path_buf)
+            .collect();
         let gameinfo = self.game_dir.join("gameinfo.txt");
         if !gameinfo.is_file() {
             missing.push(gameinfo);
@@ -84,31 +88,6 @@ pub fn pack_files_from_dir(root: &Path) -> Result<Vec<(String, PathBuf)>> {
     Ok(out)
 }
 
-fn resolve_root(path: &Path) -> Option<(PathBuf, PathBuf)> {
-    let path = strip_trailing_separators(path);
-    let game_dir = path.join("garrysmod");
-    if game_dir.join("gameinfo.txt").is_file() {
-        return Some((path, game_dir));
-    }
-    if path.join("gameinfo.txt").is_file() {
-        let root = path.parent()?.to_path_buf();
-        return Some((root, path));
-    }
-    None
-}
-
-fn find_game_exe(root: &Path) -> Option<PathBuf> {
-    [
-        root.join("bin").join("win64").join("gmod.exe"),
-        root.join("gmod.exe"),
-        root.join("hl2.exe"),
-        root.join("hl2_linux"),
-        root.join("hl2.sh"),
-    ]
-    .into_iter()
-    .find(|p| p.is_file())
-}
-
 pub(crate) fn strip_trailing_separators(path: &Path) -> PathBuf {
     let s = path.as_os_str().to_string_lossy();
     let trimmed = s.trim_end_matches(['/', '\\']);
@@ -123,47 +102,20 @@ mod tests {
     use super::*;
     use crate::test_util::scratch;
 
-    const GMOD: &str = r"D:\SteamLibrary\steamapps\common\GarrysMod";
-
     #[test]
-    fn detect_real_install() {
-        if !Path::new(GMOD).join("garrysmod/gameinfo.txt").is_file() {
-            eprintln!("Garry's Mod not found, skipping");
-            return;
-        }
-        let tools = ToolPaths::detect(Path::new(GMOD)).unwrap();
-        assert_eq!(tools.compiler, std::env::current_exe().unwrap());
-        assert!(tools.game_dir.join("gameinfo.txt").is_file());
-        assert!(tools.missing_files().is_empty());
-        assert_eq!(tools.gmod_root().as_deref(), Some(Path::new(GMOD)));
-        let via_mod = ToolPaths::detect(&Path::new(GMOD).join("garrysmod")).unwrap();
-        assert_eq!(via_mod.game_dir, tools.game_dir);
-    }
-
-    #[test]
-    fn detect_fake_install() {
-        let root = scratch("fake_gmod");
-        let exe = root.join("hammerpro.exe");
-        assert!(ToolPaths::with_compiler(exe.clone(), &root).is_none());
-        let game = root.join("garrysmod");
+    fn tools_are_reported_when_unset_or_missing() {
+        let root = scratch("tools_missing");
+        let game = root.join("game");
         std::fs::create_dir_all(&game).unwrap();
-        std::fs::write(game.join("gameinfo.txt"), "\"GameInfo\" {}").unwrap();
-        std::fs::write(root.join("hl2.exe"), b"MZ").unwrap();
-        let tools = ToolPaths::with_compiler(exe.clone(), &root).unwrap();
-        assert_eq!(tools.compiler, exe);
-        assert_eq!(tools.game_exe, Some(root.join("hl2.exe")));
-        assert_eq!(tools.maps_dir, game.join("maps"));
-        assert_eq!(tools.missing_files(), vec![exe.clone()], "the compiler is not there");
-        std::fs::write(&exe, b"MZ").unwrap();
-        assert!(tools.missing_files().is_empty());
-        std::fs::write(root.join("gmod.exe"), b"MZ").unwrap();
-        assert_eq!(ToolPaths::with_compiler(exe.clone(), &root).unwrap().game_exe, Some(root.join("gmod.exe")));
-        std::fs::create_dir_all(root.join("bin").join("win64")).unwrap();
-        std::fs::write(root.join("bin").join("win64").join("gmod.exe"), b"MZ").unwrap();
-        assert_eq!(
-            ToolPaths::with_compiler(exe, &root).unwrap().game_exe,
-            Some(root.join("bin").join("win64").join("gmod.exe"))
-        );
+        std::fs::write(game.join("gameinfo.txt"), "x").unwrap();
+        let mut t = ToolPaths::for_game_dir(&game);
+        assert_eq!(t.unset_tools(), vec!["vbsp", "vvis", "vrad"]);
+        assert!(t.missing_files().is_empty());
+        t.vbsp = root.join("vbsp.exe");
+        assert_eq!(t.missing_files(), vec![root.join("vbsp.exe")]);
+        std::fs::write(root.join("vbsp.exe"), b"MZ").unwrap();
+        assert!(t.missing_files().is_empty());
+        assert_eq!(t.maps_dir, game.join("maps"));
     }
 
     #[test]

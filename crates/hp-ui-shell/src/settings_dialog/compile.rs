@@ -1,14 +1,13 @@
 use egui::{RichText, Ui};
 use hp_app::extend::SettingsPage;
 use hp_app::i18n::TrTable;
-use hp_app::runtime::CompileBrowse;
 use hp_app::settings::{
     CompilePresetSetting, CompileSettings, LightingSetting, PackPolicy, background_precompile_default,
 };
 use hp_app::{AppState, t, tf};
 
 use crate::common::heading;
-use crate::game_ui::{GameJobs, optional_path_edit, path_row};
+use crate::game_ui::GameJobs;
 
 fn preset_label(p: CompilePresetSetting) -> &'static str {
     match p {
@@ -203,29 +202,24 @@ fn after(ui: &mut Ui, c: &mut CompileSettings) {
 
 fn compiler(ui: &mut Ui, state: &mut AppState) {
     heading(ui, t!("shell.compile.compiler"));
-    ui.label(tf!("shell.compile.compiler_builtin", env!("CARGO_PKG_VERSION")));
     ui.label(RichText::new(t!("shell.compile.compiler_tip")).small().weak());
     ui.add_space(4.0);
-    let c = &mut state.settings.compile;
-    let (out, _) = path_row(
-        ui,
-        t!("shell.compile.game_exe"),
-        Some(64.0),
-        &mut c.game_exe_path,
-        t!("shell.compile.game_exe_auto"),
-        true,
-    );
-    if out.browse {
-        state.runtime.compile.browse_request = Some(CompileBrowse::GameExe);
-    }
-    let c = &mut state.settings.compile;
-    ui.horizontal(|ui| {
-        ui.label(t!("shell.compile.maps_dir"));
-        optional_path_edit(ui, &mut c.maps_dir_override, t!("shell.compile.maps_dir_hint"), 300.0);
-        if ui.button(t!("common.browse")).clicked() {
-            state.runtime.compile.browse_request = Some(CompileBrowse::MapsDir);
-        }
-    });
+    let Some(tools) = hp_fs::gameconfig::build_tools(state.settings.game.active_game()) else {
+        ui.label(RichText::new(t!("shell.compile.no_config")).weak());
+        return;
+    };
+    let show = |ui: &mut Ui, label: &str, path: Option<&std::path::Path>| {
+        let text = path.map_or_else(|| t!("shell.compile.tool_unset").to_owned(), |p| p.display().to_string());
+        ui.horizontal(|ui| {
+            ui.label(RichText::new(label).strong());
+            ui.label(RichText::new(text).monospace().small());
+        });
+    };
+    show(ui, "vbsp", tools.vbsp.as_deref());
+    show(ui, "vvis", tools.vvis.as_deref());
+    show(ui, "vrad", tools.vrad.as_deref());
+    show(ui, t!("shell.compile.game_exe"), tools.game_exe.as_deref());
+    show(ui, t!("shell.compile.maps_dir"), tools.bsp_dir.as_deref());
 }
 
 pub(super) fn reset(state: &mut AppState) {
@@ -358,19 +352,15 @@ pub(crate) const TR: TrTable = &[
         "Added to the lighting step (hammerpro --rad), for example -bounce 4.",
         "Ajoutés à l'étape d'éclairage (hammerpro --rad), par exemple -bounce 4.",
     ),
-    ("shell.compile.compiler", "Compiler", "Compilateur"),
-    (
-        "shell.compile.compiler_builtin",
-        "Hammer Pro {0} compiles the maps itself.",
-        "Hammer Pro {0} compile lui-même les maps.",
-    ),
+    ("shell.compile.compiler", "Build programs", "Programmes de compilation"),
     (
         "shell.compile.compiler_tip",
-        "The geometry, portals, leak test and visibility (hammerpro --bspc), the lighting (hammerpro --rad) and the packing all run in Hammer Pro: no other program is needed.",
-        "La géométrie, les portails, la recherche de fuites et la visibilité (hammerpro --bspc), l'éclairage (hammerpro --rad) et l'empaquetage tournent dans Hammer Pro : aucun autre programme n'est nécessaire.",
+        "Compiling runs the vbsp, vvis and vrad of the selected game configuration. Change them in Options > Game > Build Programs.",
+        "La compilation lance les vbsp, vvis et vrad de la configuration de jeu choisie. Modifiez-les dans Options > Jeu > Programmes de compilation.",
     ),
+    ("shell.compile.no_config", "No game configuration is selected.", "Aucune configuration de jeu n'est choisie."),
+    ("shell.compile.tool_unset", "not set", "non défini"),
     ("shell.compile.game_exe", "Game", "Jeu"),
-    ("shell.compile.game_exe_auto", "Detected automatically", "Détecté automatiquement"),
     ("shell.compile.maps_dir", "Maps folder", "Dossier des maps"),
     ("shell.compile.maps_dir_hint", "garrysmod/maps of the game", "garrysmod/maps du jeu"),
 ];

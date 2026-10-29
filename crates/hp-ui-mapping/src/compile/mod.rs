@@ -92,6 +92,7 @@ const EVENTS_PER_FRAME: usize = 20_000;
 pub(crate) fn step_name(kind: StepKind) -> &'static str {
     match kind {
         StepKind::Bsp => t!("compile.step.bsp"),
+        StepKind::Vis => t!("compile.step.vis"),
         StepKind::Rad => t!("compile.step.rad"),
         StepKind::Pack => t!("compile.step.pack"),
         StepKind::CopyToMaps => t!("compile.step.copy"),
@@ -236,8 +237,7 @@ enum Pending {
 #[derive(Clone, Debug, PartialEq)]
 struct ProbeKey {
     root: Option<PathBuf>,
-    game_exe: Option<PathBuf>,
-    maps_dir: Option<PathBuf>,
+    target: Option<String>,
 }
 
 #[derive(Clone, Debug)]
@@ -261,8 +261,7 @@ impl ToolProbe {
         let s = &state.settings.compile;
         let key = ProbeKey {
             root: game_root(state),
-            game_exe: s.game_exe_path.clone(),
-            maps_dir: s.maps_dir_override.clone(),
+            target: s.target.clone(),
         };
         if self.key.as_ref() != Some(&key) && self.rx.is_none() {
             let settings = s.clone();
@@ -270,7 +269,7 @@ impl ToolProbe {
             let ctx = ctx.clone();
             let k = key.clone();
             let spawned = std::thread::Builder::new().name("hp-compile-probe".into()).spawn(move || {
-                let root = k.root.or_else(hp_fs::detect_gmod_root);
+                let root = k.root;
                 let (resolved, error) = match &root {
                     Some(r) => match tools::resolve(r, &settings) {
                         Ok(res) => (Some(res), None),
@@ -341,7 +340,6 @@ pub struct CompileDialog {
     pack_wait: Option<(snapshot::PackJob, Vec<String>, Instant)>,
     log_view: LogView,
     probe: ToolProbe,
-    browse: Option<(settings_ui::BrowseTarget, Receiver<Option<PathBuf>>)>,
     no_auto_scroll: bool,
     collapse_settings: bool,
     tab: Tab,
@@ -426,17 +424,6 @@ impl CompileDialog {
             state.ui.show_compile = true;
             self.open_on_tab = Some(Tab::History);
         }
-        if let Some(b) = state.runtime.compile.browse_request.take() {
-            use hp_app::runtime::CompileBrowse;
-            self.browse(
-                ctx,
-                match b {
-                    CompileBrowse::GameExe => settings_ui::BrowseTarget::GameExe,
-                    CompileBrowse::MapsDir => settings_ui::BrowseTarget::MapsDir,
-                },
-            );
-        }
-        self.poll_browse(state);
         if !state.ui.show_compile {
             if self.waiting_for_save() {
                 self.cancel(state);
@@ -957,41 +944,6 @@ impl CompileDialog {
         run.set_plan(plan);
         run.vmf = Some(plan.vmf_path.clone());
         self.run = Some(run);
-    }
-
-    fn poll_browse(&mut self, state: &mut AppState) {
-        let Some((target, rx)) = &self.browse else { return };
-        match rx.try_recv() {
-            Ok(path) => {
-                if let Some(p) = path {
-                    target.apply(&mut state.settings.compile, p);
-                    state.settings_dirty = true;
-                }
-                self.browse = None;
-            }
-            Err(TryRecvError::Disconnected) => self.browse = None,
-            Err(TryRecvError::Empty) => {}
-        }
-    }
-
-    fn browse(&mut self, ctx: &egui::Context, target: settings_ui::BrowseTarget) {
-        if self.browse.is_some() {
-            return;
-        }
-        let (tx, rx) = mpsc::channel();
-        let ctx = ctx.clone();
-        let title = target.title();
-        let filter = t!("compile.exe_filter").to_owned();
-        let folder = target.is_folder();
-        let spawned = std::thread::Builder::new().name("hp-compile-browse".into()).spawn(move || {
-            let dialog = rfd::FileDialog::new().set_title(title);
-            let picked = if folder { dialog.pick_folder() } else { dialog.add_filter(filter, &["exe"]).pick_file() };
-            let _ = tx.send(picked);
-            ctx.request_repaint();
-        });
-        if spawned.is_ok() {
-            self.browse = Some((target, rx));
-        }
     }
 
     fn window_ui(&mut self, ui: &mut Ui, state: &mut AppState) {

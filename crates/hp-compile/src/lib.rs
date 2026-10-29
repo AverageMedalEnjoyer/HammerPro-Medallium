@@ -38,7 +38,7 @@ pub use plan::{
 };
 pub use pointfile::{find_pointfile, parse_pointfile, read_pointfile};
 pub use runner::{CompileEvent, CompileHandle, start, start_with_waker};
-pub use tools::{BSPC_ARG, RAD_ARG, ToolPaths, default_threads, pack_files_from_dir};
+pub use tools::{ToolPaths, default_threads, pack_files_from_dir};
 
 use std::path::PathBuf;
 

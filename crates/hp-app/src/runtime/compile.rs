@@ -11,12 +11,6 @@ pub enum CompileBadge {
     Failed,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum CompileBrowse {
-    GameExe,
-    MapsDir,
-}
-
 #[derive(Debug, Default)]
 pub struct CompileRuntime {
     pub progress: Option<CompileProgress>,
@@ -25,5 +19,4 @@ pub struct CompileRuntime {
     pub auto_label: Option<String>,
     pub show_history: bool,
     pub show_batch: bool,
-    pub browse_request: Option<CompileBrowse>,
 }

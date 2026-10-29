@@ -476,24 +476,24 @@ fn compile_window_keeps_its_size() {
 }
 
 #[test]
-fn compiler_line_is_translated() {
+fn tools_line_is_translated() {
     let _lang = crate::lang_lock();
     crate::register_translations();
     let tools = ToolPaths {
-        compiler: PathBuf::from("C:/HammerPro/hammerpro.exe"),
+        vbsp: PathBuf::from("C:/Games/bin/vbsp.exe"),
+        vvis: PathBuf::from("C:/Games/bin/vvis.exe"),
+        vrad: PathBuf::from("C:/Games/bin/vrad.exe"),
         game_exe: None,
         game_dir: PathBuf::from("C:/Games/GarrysMod/garrysmod"),
         maps_dir: PathBuf::from("C:/Games/GarrysMod/garrysmod/maps"),
     };
-    let dir = tools.game_dir.display().to_string();
-    let version = env!("CARGO_PKG_VERSION");
     hp_app::i18n::set_lang(hp_app::i18n::Lang::En);
     let en = tools::tools_text(&tools);
     hp_app::i18n::set_lang(hp_app::i18n::Lang::Fr);
     let fr = tools::tools_text(&tools);
     hp_app::i18n::set_lang(hp_app::i18n::Lang::En);
-    assert_eq!(en, format!("Compiler: Hammer Pro {version} (built in), game: {dir}"));
-    assert_eq!(fr, format!("Compilateur : Hammer Pro {version} (intégré), jeu : {dir}"));
+    assert!(en.starts_with("Build programs from the game configuration") && en.contains("vbsp.exe"), "{en}");
+    assert!(fr.starts_with("Programmes de compilation de la configuration") && fr.contains("vrad.exe"), "{fr}");
 }
 
 #[test]

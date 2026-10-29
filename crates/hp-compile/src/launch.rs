@@ -269,7 +269,9 @@ mod tests {
     #[test]
     fn launch_step_uses_the_exe_or_the_url() {
         let mut tools = ToolPaths {
-            compiler: "hammerpro.exe".into(),
+            vbsp: "vbsp.exe".into(),
+            vvis: "vvis.exe".into(),
+            vrad: "vrad.exe".into(),
             game_exe: Some("gmod.exe".into()),
             game_dir: "garrysmod".into(),
             maps_dir: "garrysmod/maps".into(),

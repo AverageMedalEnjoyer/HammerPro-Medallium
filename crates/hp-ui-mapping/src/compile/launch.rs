@@ -194,6 +194,7 @@ mod tests {
     #[test]
     fn launch_decisions() {
         let mut state = hp_app::testing::test_state();
+        hp_app::testing::use_gmod_config(&mut state);
         state.settings.compile.launch_game = true;
         assert!(!launches_itself(&state.settings), "after the compile: the plan launches");
         state.settings.launch.timing = LaunchTiming::AtStart;
@@ -214,6 +215,7 @@ mod tests {
     fn the_launch_is_left_to_the_binary_when_the_game_boots_during_the_compile() {
         crate::register_translations();
         let mut state = hp_app::testing::test_state();
+        hp_app::testing::use_gmod_config(&mut state);
         state.settings.game.gmod_root = Some(crate::test_scratch("launch_deferred").join("no_game"));
         let dir = crate::test_scratch("launch_deferred_map");
         state.doc.set_path(Some(dir.join("gm_play.vmf")));

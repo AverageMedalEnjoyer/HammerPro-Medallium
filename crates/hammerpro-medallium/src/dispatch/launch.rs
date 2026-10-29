@@ -93,7 +93,9 @@ fn extra_flags(state: &AppState) -> Vec<&'static str> {
 }
 
 fn chosen_exe(state: &AppState) -> Option<PathBuf> {
-    state.settings.compile.game_exe_path.clone().filter(|p| !p.as_os_str().is_empty())
+    hp_fs::gameconfig::build_tools(state.settings.game.active_game())
+        .and_then(|t| t.game_exe)
+        .filter(|p| !p.as_os_str().is_empty())
 }
 
 fn placement(state: &AppState) -> Option<([f64; 3], [f64; 3])> {
