@@ -484,6 +484,7 @@ mod tests {
     #[test]
     fn profile_follows_the_setting() {
         let mut state = crate::testing::test_state();
+        crate::testing::use_gmod_config(&mut state);
         assert_eq!(HealthRuntime::profile_for(&state), LimitProfile::Gmod64);
         state.settings.game.map_game = Some("tf".to_owned());
         assert_eq!(HealthRuntime::profile_for(&state), LimitProfile::Stock, "another game: Valve's limits");

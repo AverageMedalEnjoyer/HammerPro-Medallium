@@ -110,22 +110,25 @@ impl SettingsPage for PlacementPage {
         let mut changed = false;
         let mut rescan = false;
         heading(ui, t!("shell.placement.prefabs"));
-        let library = state.settings.placement.library_dir();
+        let library = hp_app::games::prefab_library_dir(&state.settings);
+        let from_config = hp_app::games::config_prefab_dir(&state.settings).is_some();
         ui.horizontal(|ui| {
             ui.label(t!("shell.placement.library"));
             ui.label(egui::RichText::new(library.display().to_string()).monospace())
                 .on_hover_text(t!("shell.placement.library_tip"));
         });
-        ui.horizontal(|ui| {
-            if ui.add_enabled(self.picking.is_none(), egui::Button::new(t!("shell.placement.browse"))).clicked() {
-                self.browse(ui, Pick::Library, Some(library.clone()));
-            }
-            if state.settings.placement.prefab_library.is_some() && ui.button(t!("shell.placement.default")).clicked() {
-                state.settings.placement.prefab_library = None;
-                changed = true;
-                rescan = true;
-            }
-        });
+        if !from_config {
+            ui.horizontal(|ui| {
+                if ui.add_enabled(self.picking.is_none(), egui::Button::new(t!("shell.placement.browse"))).clicked() {
+                    self.browse(ui, Pick::Library, Some(library.clone()));
+                }
+                if state.settings.placement.prefab_library.is_some() && ui.button(t!("shell.placement.default")).clicked() {
+                    state.settings.placement.prefab_library = None;
+                    changed = true;
+                    rescan = true;
+                }
+            });
+        }
         ui.add_space(4.0);
         ui.label(t!("shell.placement.extra_dirs"));
         if folder_list(ui, "hp_shell_placement_dirs", &mut state.settings.placement.prefab_dirs) {

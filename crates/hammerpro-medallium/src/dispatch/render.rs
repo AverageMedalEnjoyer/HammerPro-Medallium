@@ -20,8 +20,6 @@ pub(crate) struct State {
     bg: bgimages::BgImages,
 }
 
-const FAR_STEP: f32 = 1.5;
-const FAR_RANGE: (f32, f32) = (256.0, 1.0e6);
 const MAX_SLEEP: Duration = Duration::from_millis(100);
 
 const HANDLED: &[Action] = &[
@@ -33,8 +31,6 @@ const HANDLED: &[Action] = &[
     Action::ToggleModels,
     Action::ToggleToolTextures,
     Action::ToggleGrid3d,
-    Action::FarPlaneCloser,
-    Action::FarPlaneFarther,
     Action::RenderUnshaded,
     Action::RenderSmoothingGroups,
     Action::ToggleRenderEffects,
@@ -82,11 +78,6 @@ impl Package for Render {
                 state.settings.view.show_tool_textures = !state.settings.view.show_tool_textures;
             }
             Action::ToggleGrid3d => r.grid_3d = !r.grid_3d,
-            Action::FarPlaneCloser | Action::FarPlaneFarther => {
-                let far = step_far_plane(state.settings.view.far_plane, action == Action::FarPlaneFarther);
-                state.settings.view.far_plane = far;
-                state.notify(Severity::Info, tf!("render.draw_distance", format!("{far:.0}")));
-            }
             Action::ToggleRenderEffects => r.render_effects = !r.render_effects,
             Action::ToggleSkyPreview => r.sky_preview = !r.sky_preview,
             Action::ToggleSkybox3d => {
@@ -217,12 +208,6 @@ fn set_render_mode(state: &mut AppState, mode: RenderModeSetting) {
     state.settings.view.render_mode = mode;
 }
 
-fn step_far_plane(far: f32, farther: bool) -> f32 {
-    let far = if far.is_finite() { far.clamp(FAR_RANGE.0, FAR_RANGE.1) } else { 32768.0 };
-    let next = if farther { far * FAR_STEP } else { far / FAR_STEP };
-    next.clamp(FAR_RANGE.0, FAR_RANGE.1).round()
-}
-
 fn frame_wait(last: Option<Instant>, now: Instant, cap: u32) -> Option<Duration> {
     if cap == 0 {
         return None;
@@ -350,7 +335,6 @@ fn tools_menu(ui: &mut egui::Ui, state: &mut AppState) {
 }
 
 const TR: TrTable = &[
-    ("render.draw_distance", "Draw distance: {0} units", "Distance d'affichage : {0} unités"),
     ("render.skybox_3d_on", "3D skybox shown", "Skybox 3D affichée"),
     (
         "render.cubemaps_no_map",
@@ -415,15 +399,6 @@ mod tests {
     #[test]
     fn table_is_clean() {
         assert!(hp_app::i18n::lint_table(TR).is_empty(), "{:#?}", hp_app::i18n::lint_table(TR));
-    }
-
-    #[test]
-    fn far_plane_steps_stay_in_range() {
-        assert_eq!(step_far_plane(32768.0, true), 49152.0);
-        assert_eq!(step_far_plane(32768.0, false), 21845.0);
-        assert_eq!(step_far_plane(300.0, false), 256.0);
-        assert_eq!(step_far_plane(9.0e5, true), 1.0e6);
-        assert_eq!(step_far_plane(f32::NAN, true), 49152.0);
     }
 
     #[test]

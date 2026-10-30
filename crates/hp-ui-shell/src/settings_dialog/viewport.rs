@@ -167,9 +167,6 @@ pub(super) fn page(ui: &mut Ui, state: &mut AppState) {
                 }
             });
         ui.end_row();
-        ui.label(t!("shell.view.far_plane"));
-        changed |= ui.add(egui::DragValue::new(&mut v.far_plane).range(2048.0..=262144.0).speed(64.0)).changed();
-        ui.end_row();
         ui.label(t!("shell.view.zoom_to_cursor"));
         changed |= ui.checkbox(&mut v.zoom_to_cursor, "").changed();
         ui.end_row();
@@ -246,7 +243,6 @@ pub(crate) const TR: TrTable = &[
         "Auto : selon la position des touches (ZQSD sur un clavier AZERTY, WASD en QWERTY). AZERTY ou QWERTY : selon les lettres des touches. Descendre : A en AZERTY, Q en QWERTY ; monter : E ou Espace. Vue souris (le Z de Hammer) : la touche à la place du Z QWERTY en Auto (W en AZERTY), Z avec QWERTY, W avec AZERTY. Ctrl ne fait pas voler : Ctrl + clic ajoute ou retire de la sélection.",
     ),
     ("shell.view.layout_auto", "Auto (keyboard)", "Auto (clavier)"),
-    ("shell.view.far_plane", "View distance", "Distance d'affichage"),
     ("shell.view.zoom_to_cursor", "Zoom toward the cursor", "Zoomer vers le curseur"),
     ("shell.view.hover_outline", "Outline objects under the mouse", "Contour des objets sous la souris"),
     (

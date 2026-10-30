@@ -201,6 +201,17 @@ pub fn add_config_file(path: &Path) -> bool {
     added
 }
 
+/// The `PrefabDir` of the selected game configuration, when it has one.
+pub fn config_prefab_dir(settings: &Settings) -> Option<PathBuf> {
+    gameconfig::prefab_dir(settings.game.active_game())
+}
+
+/// Where prefabs live: the configuration's `PrefabDir`, or the editor's own folder when the
+/// configuration has none.
+pub fn prefab_library_dir(settings: &Settings) -> PathBuf {
+    config_prefab_dir(settings).unwrap_or_else(|| settings.placement.library_dir())
+}
+
 pub fn entry_label(e: &ConfigEntry) -> String {
     format!("{} - {}", e.id.name, e.dir.display())
 }

@@ -5,8 +5,6 @@ use crate::state::AppState;
 
 action_list! { render_actions {
     ToggleGrid3d => "toggle_grid_3d", Map, MapGrid, sc(NONE, Key::P), Ready;
-    FarPlaneCloser => "far_plane_closer", View, ViewNav, None, Ready;
-    FarPlaneFarther => "far_plane_farther", View, ViewNav, None, Ready;
     RenderUnshaded => "render_unshaded", View, ViewRender, sc(ALT, Key::Num6), Ready;
     RenderSmoothingGroups => "render_smoothing_groups", View, ViewRender, sc(ALT, Key::Num7), Ready;
     ToggleRenderEffects => "toggle_render_effects", View, ViewDisplay, None, Ready;
@@ -33,7 +31,7 @@ action_list! { render_actions {
     WriteCubemaps => "write_cubemaps", Map, MapLighting, None, Ready;
 }}
 
-pub(super) const REPEATS: &[Action] = &[Action::FarPlaneCloser, Action::FarPlaneFarther];
+pub(super) const REPEATS: &[Action] = &[];
 
 pub(super) fn enabled(state: &AppState, action: Action) -> Option<bool> {
     match action {
@@ -94,8 +92,6 @@ pub(super) const TR: TrTable = &[
     ("action.write_cubemaps", "Write cubemaps into the compiled map", "Écrire les cubemaps dans la map compilée"),
     ("action.toggle_nodraw", "Show nodraw faces", "Afficher le nodraw"),
     ("action.toggle_grid_3d", "3D grid on faces", "Grille 3D sur les faces"),
-    ("action.far_plane_closer", "Shorter draw distance", "Distance d'affichage plus courte"),
-    ("action.far_plane_farther", "Longer draw distance", "Distance d'affichage plus longue"),
     ("action.render_unshaded", "Textured, unshaded", "Texturé sans ombrage"),
     ("action.render_smoothing_groups", "Smoothing groups", "Groupes de lissage"),
     ("action.toggle_render_effects", "Render effects", "Effets de rendu"),

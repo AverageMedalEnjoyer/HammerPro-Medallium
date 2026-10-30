@@ -131,6 +131,11 @@ pub struct Camera3d {
     pub far: f64,
 }
 
+impl Camera3d {
+    /// The 3D view never stops drawing at a distance: nothing is clipped before this.
+    pub const UNLIMITED_FAR: f64 = 1.0e8;
+}
+
 impl Default for Camera3d {
     fn default() -> Self {
         Self {
@@ -139,7 +144,7 @@ impl Default for Camera3d {
             pitch_deg: -25.0,
             fov_y_deg: 75.0,
             near: 1.0,
-            far: 32768.0,
+            far: Camera3d::UNLIMITED_FAR,
         }
     }
 }

@@ -33,7 +33,11 @@ pub(crate) struct Library {
 
 pub(crate) fn roots(settings: &Settings) -> Vec<PrefabRoot> {
     let p = &settings.placement;
-    let mut out = vec![PrefabRoot { path: p.library_dir(), label_key: "prefabs.root.library", writable: true }];
+    let (main, label_key) = match hp_app::games::config_prefab_dir(settings) {
+        Some(dir) => (dir, "prefabs.root.config"),
+        None => (p.library_dir(), "prefabs.root.library"),
+    };
+    let mut out = vec![PrefabRoot { path: main, label_key, writable: true }];
     for d in &p.prefab_dirs {
         out.push(PrefabRoot { path: d.clone(), label_key: "prefabs.root.extra", writable: false });
     }

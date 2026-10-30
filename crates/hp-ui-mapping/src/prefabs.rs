@@ -22,14 +22,13 @@ pub(crate) fn dialogs() -> Vec<Box<dyn MapDialog>> {
 const LABEL_HEIGHT: f32 = 18.0;
 const GAP: f32 = 6.0;
 
-type ShownKey = (String, Option<(usize, String)>, usize);
+type ShownKey = (String, usize);
 
 pub struct PrefabTab {
     library: Arc<Library>,
     scanning: Option<Receiver<Library>>,
     scanned: Option<(Vec<PrefabRoot>, u64)>,
     search: String,
-    category: Option<(usize, String)>,
     shown: Vec<usize>,
     shown_key: Option<ShownKey>,
     thumbs: Thumbs,
@@ -52,7 +51,6 @@ impl PrefabTab {
             scanning: None,
             scanned: None,
             search: String::new(),
-            category: None,
             shown: Vec::new(),
             shown_key: None,
             thumbs,
@@ -92,9 +90,6 @@ impl PrefabTab {
                     {
                         state.runtime.placement.selected_prefab = None;
                     }
-                    if self.category.as_ref().is_some_and(|c| !lib.categories.contains(c)) {
-                        self.category = None;
-                    }
                     self.library = Arc::new(lib);
                     self.shown_key = None;
                 }
@@ -121,7 +116,7 @@ impl PrefabTab {
     }
 
     fn update_shown(&mut self) {
-        let key = (self.search.trim().to_lowercase(), self.category.clone(), Arc::as_ptr(&self.library) as usize);
+        let key = (self.search.trim().to_lowercase(), Arc::as_ptr(&self.library) as usize);
         if self.shown_key.as_ref() == Some(&key) {
             return;
         }
@@ -131,7 +126,6 @@ impl PrefabTab {
             .entries
             .iter()
             .enumerate()
-            .filter(|(_, e)| self.category.as_ref().is_none_or(|(r, f)| e.root == *r && e.folder == *f))
             .filter(|(_, e)| words.iter().all(|w| e.search_key.contains(w)))
             .map(|(i, _)| i)
             .collect();
@@ -140,7 +134,8 @@ impl PrefabTab {
 
     fn category_label(lib: &Library, root: usize, folder: &str) -> String {
         let root_label = lib.roots.get(root).map_or("?", |r| t!(r.label_key));
-        if folder.is_empty() { root_label.to_owned() } else { format!("{root_label} / {folder}") }
+        let name = if folder.is_empty() { t!("prefabs.uncategorized").to_owned() } else { folder.replace('/', " / ") };
+        if lib.roots.len() > 1 { format!("{root_label} / {name}") } else { name }
     }
 
     pub fn ui(&mut self, ui: &mut Ui, state: &mut AppState) {
@@ -177,7 +172,7 @@ impl PrefabTab {
                 state.runtime.placement.library_serial = state.runtime.placement.library_serial.wrapping_add(1);
             }
             if ui.small_button("📂").on_hover_text(t!("prefabs.open_folder_tip")).clicked() {
-                state.runtime.placement.open_path = Some(state.settings.placement.library_dir());
+                state.runtime.placement.open_path = Some(hp_app::games::prefab_library_dir(&state.settings));
             }
             let mut tile = state.settings.placement.tile_size();
             let r = ui
@@ -201,23 +196,6 @@ impl PrefabTab {
                 hp_app::widgets::search_box(ui, &mut self.search, t!("prefabs.search"));
             });
         });
-        let lib = Arc::clone(&self.library);
-        if !lib.categories.is_empty() {
-            let shown = match &self.category {
-                Some((r, f)) => Self::category_label(&lib, *r, f),
-                None => t!("prefabs.all").to_owned(),
-            };
-            egui::ComboBox::from_id_salt("hp_prefabs_category")
-                .selected_text(shown)
-                .width(ui.available_width().min(320.0))
-                .show_ui(ui, |ui| {
-                    ui.selectable_value(&mut self.category, None, t!("prefabs.all"));
-                    for (r, f) in &lib.categories {
-                        let label = Self::category_label(&lib, *r, f);
-                        ui.selectable_value(&mut self.category, Some((*r, f.clone())), label);
-                    }
-                });
-        }
     }
 
     fn empty_ui(&mut self, ui: &mut Ui, state: &mut AppState) {
@@ -235,34 +213,60 @@ impl PrefabTab {
             None => ui.label(t!("prefabs.empty_create_menu")),
         };
         ui.add_space(4.0);
-        ui.label(egui::RichText::new(state.settings.placement.library_dir().display().to_string()).weak().small());
+        if hp_app::games::config_prefab_dir(&state.settings).is_none() {
+            ui.label(egui::RichText::new(t!("prefabs.no_prefab_dir")).weak().small());
+        }
+        ui.label(egui::RichText::new(hp_app::games::prefab_library_dir(&state.settings).display().to_string()).weak().small());
     }
 
     fn grid(&mut self, ui: &mut Ui, state: &mut AppState, lib: &Library) {
         let tile = state.settings.placement.tile_size();
         let bar = ui.spacing().scroll.allocated_width().max(ui.spacing().scroll.bar_width) + 2.0;
-        let width = (ui.available_width() - bar).max(tile);
+        let indent = ui.spacing().indent + ui.spacing().item_spacing.x;
+        let width = (ui.available_width() - bar - indent).max(tile);
         let cols = (((width + GAP) / (tile + GAP)).floor() as usize).max(1);
-        let rows = self.shown.len().div_ceil(cols);
         let row_h = tile + LABEL_HEIGHT + GAP;
         let ctx = ui.ctx().clone();
-        egui::ScrollArea::vertical().id_salt("hp_prefabs_grid").auto_shrink([false, false]).show_rows(
-            ui,
-            row_h,
-            rows,
-            |ui, range| {
-                for row in range {
-                    ui.horizontal(|ui| {
-                        ui.spacing_mut().item_spacing.x = GAP;
-                        for col in 0..cols {
-                            let Some(&i) = self.shown.get(row * cols + col) else { break };
-                            let Some(entry) = lib.entries.get(i) else { continue };
-                            self.tile(ui, &ctx, state, lib, entry, tile);
-                        }
-                    });
+        let mut groups: Vec<((usize, String), Vec<usize>)> = Vec::new();
+        for &i in &self.shown {
+            let Some(e) = lib.entries.get(i) else { continue };
+            let key = (e.root, e.folder.clone());
+            match groups.last_mut() {
+                Some((k, v)) if *k == key => v.push(i),
+                _ => groups.push((key, vec![i])),
+            }
+        }
+        let searching = !self.search.trim().is_empty();
+        let only_one = groups.len() == 1;
+        egui::ScrollArea::vertical().id_salt("hp_prefabs_grid").auto_shrink([false, false]).show(ui, |ui| {
+            for ((root, folder), idxs) in &groups {
+                let title = format!("{} ({})", Self::category_label(lib, *root, folder), idxs.len());
+                let mut header = egui::CollapsingHeader::new(title)
+                    .id_salt(("hp_prefab_category", *root, folder.as_str()))
+                    .default_open(only_one);
+                if searching {
+                    header = header.open(Some(true));
                 }
-            },
-        );
+                header.show(ui, |ui| {
+                    for row in 0..idxs.len().div_ceil(cols) {
+                        let (rect, _) = ui.allocate_exact_size(vec2(width, row_h), Sense::hover());
+                        if !ui.is_rect_visible(rect) {
+                            continue;
+                        }
+                        ui.scope_builder(egui::UiBuilder::new().max_rect(rect), |ui| {
+                            ui.horizontal(|ui| {
+                                ui.spacing_mut().item_spacing.x = GAP;
+                                for col in 0..cols {
+                                    let Some(&i) = idxs.get(row * cols + col) else { break };
+                                    let Some(entry) = lib.entries.get(i) else { continue };
+                                    self.tile(ui, &ctx, state, lib, entry, tile);
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
         ui.horizontal(|ui| {
             let mut text = tf!("prefabs.count", self.shown.len(), lib.entries.len());
             if lib.truncated {

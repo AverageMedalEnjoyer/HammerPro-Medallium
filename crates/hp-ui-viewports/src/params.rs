@@ -14,7 +14,6 @@ pub const VERTEX_DOTS_MIN_ZOOM: f32 = 0.75;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RenderConfig {
     pub fov_deg: f64,
-    pub far: f64,
     pub grid: Option<GridParams>,
     pub grid_size: f64,
     pub frames: [GridFrame; 4],
@@ -50,7 +49,6 @@ impl RenderConfig {
         let frames = FRAME_KINDS.map(|k| state.display_grid_frame(k));
         let grid_size = frames[0].nominal();
         let fov = f64::from(v.fov_deg);
-        let far = f64::from(v.far_plane);
         let sel = rgb_f32(v.selection_color);
         let r = &state.settings.render;
         let finite = |x: f32, d: f32| if x.is_finite() { x } else { d };
@@ -109,7 +107,6 @@ impl RenderConfig {
         };
         Self {
             fov_deg: if fov.is_finite() { fov.clamp(10.0, 150.0) } else { 75.0 },
-            far: if far.is_finite() { far.clamp(256.0, 1.0e6) } else { 32768.0 },
             grid: e.show_grid.then_some(GridParams {
                 size: grid_size as f32,
                 major_every: v.grid_highlight_every.max(1),
@@ -153,7 +150,7 @@ pub fn view_info(
     let mut cam3d = cameras.cam3d;
     cam3d.fov_y_deg = cfg.fov_deg;
     cam3d.near = if cfg.near.is_finite() && cfg.near > 0.0 { cfg.near } else { 1.0 };
-    cam3d.far = cfg.far.max(cam3d.near * 2.0);
+    cam3d.far = hp_app::view::Camera3d::UNLIMITED_FAR;
     ViewInfo {
         index,
         kind,

@@ -2,6 +2,13 @@ use hp_app::i18n::TrTable;
 
 pub const TR: TrTable = &[
     ("prefabs.tab", "Prefabs", "Prefabs"),
+    ("prefabs.root.config", "Game prefabs", "Prefabs du jeu"),
+    ("prefabs.uncategorized", "Other", "Autres"),
+    (
+        "prefabs.no_prefab_dir",
+        "The selected game configuration has no PrefabDir. Set one in Options > Game.",
+        "La configuration de jeu choisie n'a pas de PrefabDir. Indiquez-en un dans Options > Jeu.",
+    ),
     ("prefabs.root.library", "My prefabs", "Mes prefabs"),
     ("prefabs.root.extra", "Prefab folder", "Dossier de prefabs"),
     ("prefabs.root.game", "Garry's Mod", "Garry's Mod"),

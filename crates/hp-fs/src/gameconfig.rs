@@ -395,6 +395,13 @@ fn config_of(id: &str) -> Option<(ConfigId, ConfigFile, GameConfig)> {
     Some((cid, file, cfg))
 }
 
+/// The folder prefabs are read from and saved to: the `PrefabDir` of the configuration.
+pub fn prefab_dir(id: &str) -> Option<PathBuf> {
+    let (cid, _, cfg) = config_of(id)?;
+    let dir = expand_vars(&cfg.prefab_dir, &cid.file);
+    (!dir.is_empty()).then(|| PathBuf::from(dir))
+}
+
 pub fn build_tools(id: &str) -> Option<BuildTools> {
     let (cid, _, cfg) = config_of(id)?;
     Some(build_tools_of(&cid.file, &cfg))

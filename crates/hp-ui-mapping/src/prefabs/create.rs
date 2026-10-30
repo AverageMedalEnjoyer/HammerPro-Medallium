@@ -21,7 +21,7 @@ pub(crate) struct CreatePrefabDialog {
 
 impl CreatePrefabDialog {
     fn open(&mut self, state: &AppState) {
-        let lib = state.settings.placement.library_dir();
+        let lib = hp_app::games::prefab_library_dir(&state.settings);
         self.folders = subfolders(&lib);
         self.folder = state
             .runtime
@@ -40,7 +40,7 @@ impl CreatePrefabDialog {
     }
 
     fn target(&self, state: &AppState) -> Option<PathBuf> {
-        prefab_path(&state.settings.placement.library_dir(), &self.folder, &self.name)
+        prefab_path(&hp_app::games::prefab_library_dir(&state.settings), &self.folder, &self.name)
     }
 
     fn target_exists(&mut self, target: &PathBuf) -> bool {
