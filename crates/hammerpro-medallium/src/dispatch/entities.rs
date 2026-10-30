@@ -17,6 +17,9 @@ type FileStamp = (std::path::PathBuf, Option<std::time::SystemTime>);
 const FGD_WATCH_EVERY: std::time::Duration = std::time::Duration::from_secs(2);
 
 fn watch_fgd(app: &mut HammerProApp) {
+    if !hp_app::background::app_active() {
+        return;
+    }
     let now = std::time::Instant::now();
     let watch = &mut app.pkg.entities.fgd_watch;
     if watch.as_ref().is_some_and(|(at, _)| now.duration_since(*at) < FGD_WATCH_EVERY) {

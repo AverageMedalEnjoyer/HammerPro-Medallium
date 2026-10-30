@@ -110,30 +110,7 @@ impl SettingsDialog {
         self.background_section(ui, state);
 
         heading(ui, t!("shell.settings.autosave"));
-        egui::Grid::new("hp_shell_settings_autosave").num_columns(2).spacing([16.0, 8.0]).show(ui, |ui| {
-            let e = &mut state.settings.edit;
-            let mut changed = false;
-            ui.label(t!("shell.settings.autosave_every"));
-            ui.horizontal(|ui| {
-                changed |=
-                    ui.add(egui::DragValue::new(&mut e.autosave_minutes).range(0..=120).suffix(" min")).changed();
-                if e.autosave_minutes == 0 {
-                    ui.label(RichText::new(t!("common.disabled")).small().color(ui.visuals().weak_text_color()));
-                }
-            });
-            ui.end_row();
-            ui.label(t!("shell.settings.autosave_keep"));
-            changed |= ui.add(egui::DragValue::new(&mut e.autosave_keep).range(1..=100)).changed();
-            ui.end_row();
-            if changed {
-                state.settings_dirty = true;
-            }
-        });
-        ui.label(
-            RichText::new(tf!("shell.settings.autosave_folder", hp_app::settings::Settings::autosave_dir().display()))
-                .small()
-                .color(ui.visuals().weak_text_color()),
-        );
+        self.autosave_section(ui, state);
 
         heading(ui, t!("shell.settings.maps"));
         if ui
@@ -187,6 +164,65 @@ fn accent_swatch(ui: &mut Ui, rgb: [u8; 3], selected: bool) -> egui::Response {
 }
 
 impl SettingsDialog {
+    fn autosave_section(&mut self, ui: &mut Ui, state: &mut AppState) {
+        if let Some(rx) = &self.autosave_pick {
+            match rx.try_recv() {
+                Ok(picked) => {
+                    self.autosave_pick = None;
+                    if let Some(dir) = picked {
+                        state.settings.edit.autosave_folder = Some(dir);
+                        state.settings_dirty = true;
+                    }
+                }
+                Err(std::sync::mpsc::TryRecvError::Empty) => {
+                    ui.ctx().request_repaint_after(std::time::Duration::from_millis(100));
+                }
+                Err(std::sync::mpsc::TryRecvError::Disconnected) => self.autosave_pick = None,
+            }
+        }
+        hp_app::settings::Settings::set_autosave_folder(state.settings.edit.autosave_folder.clone());
+        let mut changed = false;
+        changed |= ui.checkbox(&mut state.settings.edit.autosave_enabled, t!("shell.settings.autosave_enabled")).changed();
+        let on = state.settings.edit.autosave_enabled;
+        ui.add_enabled_ui(on, |ui| {
+            egui::Grid::new("hp_shell_settings_autosave").num_columns(2).spacing([16.0, 8.0]).show(ui, |ui| {
+                let e = &mut state.settings.edit;
+                ui.label(t!("shell.settings.autosave_every"));
+                changed |= ui.add(egui::DragValue::new(&mut e.autosave_minutes).range(1..=720).suffix(" min")).changed();
+                ui.end_row();
+                ui.label(t!("shell.settings.autosave_keep"));
+                changed |= ui.add(egui::DragValue::new(&mut e.autosave_keep).range(1..=100)).changed();
+                ui.end_row();
+            });
+            ui.horizontal(|ui| {
+                ui.label(t!("shell.settings.autosave_where"));
+                let shown = hp_app::settings::Settings::autosave_dir().display().to_string();
+                ui.label(RichText::new(shown).monospace().small());
+            });
+            ui.horizontal(|ui| {
+                if ui.add_enabled(self.autosave_pick.is_none(), egui::Button::new(t!("shell.settings.autosave_browse"))).clicked() {
+                    let (tx, rx) = std::sync::mpsc::channel();
+                    let start = hp_app::settings::Settings::autosave_dir();
+                    let dialog = rfd::FileDialog::new().set_title(t!("shell.settings.autosave_pick")).set_directory(start);
+                    let spawned = std::thread::Builder::new().name("hp-autosave-pick".into()).spawn(move || {
+                        let _ = tx.send(dialog.pick_folder());
+                    });
+                    if spawned.is_ok() {
+                        self.autosave_pick = Some(rx);
+                    }
+                }
+                let custom = state.settings.edit.autosave_folder.is_some();
+                if ui.add_enabled(custom, egui::Button::new(t!("shell.settings.autosave_default"))).clicked() {
+                    state.settings.edit.autosave_folder = None;
+                    changed = true;
+                }
+            });
+        });
+        if changed {
+            state.settings_dirty = true;
+        }
+    }
+
     fn background_section(&mut self, ui: &mut Ui, state: &mut AppState) {
         heading(ui, t!("shell.settings.background"));
         if let Some(rx) = &self.background_pick {
@@ -301,8 +337,10 @@ pub(super) fn reset(state: &mut AppState) {
     s.ui.background_hide_3d = d.background_hide_3d;
     s.ui.native_frames = d.native_frames;
     let e = EditSettings::default();
+    s.edit.autosave_enabled = e.autosave_enabled;
     s.edit.autosave_minutes = e.autosave_minutes;
     s.edit.autosave_keep = e.autosave_keep;
+    s.edit.autosave_folder = e.autosave_folder;
     s.view.show_fps = ViewSettings::default().show_fps;
     s.workflow.open_in_new_tab = hp_app::settings::WorkflowSettings::default().open_in_new_tab;
 }
@@ -344,7 +382,11 @@ pub(crate) const TR: TrTable = &[
     ("shell.settings.autosave", "Autosave", "Sauvegarde automatique"),
     ("shell.settings.autosave_every", "Save every", "Enregistrer toutes les"),
     ("shell.settings.autosave_keep", "Copies kept per map", "Copies conservées par map"),
-    ("shell.settings.autosave_folder", "Autosaves are stored in {0}", "Les sauvegardes automatiques sont dans {0}"),
+    ("shell.settings.autosave_enabled", "Save automatically", "Enregistrer automatiquement"),
+    ("shell.settings.autosave_where", "Save to:", "Enregistrer dans :"),
+    ("shell.settings.autosave_browse", "Choose folder...", "Choisir le dossier..."),
+    ("shell.settings.autosave_default", "Use the default folder", "Utiliser le dossier par défaut"),
+    ("shell.settings.autosave_pick", "Choose the autosave folder", "Choisissez le dossier des sauvegardes automatiques"),
     ("shell.settings.recent_count", "Maps in the list: {0}", "Maps dans la liste : {0}"),
     ("shell.settings.maps", "Maps", "Maps"),
     ("shell.settings.open_in_new_tab", "Open maps in new tabs", "Ouvrir les maps dans de nouveaux onglets"),

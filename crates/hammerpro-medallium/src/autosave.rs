@@ -91,8 +91,9 @@ impl Autosaver {
     }
 
     pub fn tick(&mut self, state: &mut AppState, tabs: &crate::tabs::Tabs) {
+        Settings::set_autosave_folder(state.settings.edit.autosave_folder.clone());
         let minutes = state.settings.edit.autosave_minutes;
-        if minutes == 0 {
+        if minutes == 0 || !state.settings.edit.autosave_enabled {
             self.due.clear();
             return;
         }

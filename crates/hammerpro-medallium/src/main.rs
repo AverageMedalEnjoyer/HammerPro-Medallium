@@ -145,6 +145,12 @@ fn main() -> eframe::Result<()> {
         std::process::exit(dispatch::lighting::child::run(&args));
     }
     timing::init_process_start();
+    let cores = std::thread::available_parallelism().map_or(4, std::num::NonZeroUsize::get);
+    let _ = rayon::ThreadPoolBuilder::new()
+        .num_threads(cores.saturating_sub(1).max(1))
+        .thread_name(|i| format!("hp-worker-{i}"))
+        .start_handler(|_| hp_app::background::lower_current_thread())
+        .build_global();
     let cli = parse_cli();
     let log_rx = logger::init(!cli.is_automated());
     if !cli.is_automated() {

@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -104,8 +106,10 @@ pub struct EditSettings {
     pub default_point_entity: String,
     pub default_brush_entity: String,
     pub undo_levels: u32,
+    pub autosave_enabled: bool,
     pub autosave_minutes: u32,
     pub autosave_keep: u32,
+    pub autosave_folder: Option<PathBuf>,
     pub arrow_key_nudge: bool,
     pub paste_offset: bool,
     pub undo_restores_selection: bool,
@@ -126,8 +130,10 @@ impl Default for EditSettings {
             default_point_entity: "info_player_start".to_owned(),
             default_brush_entity: "func_detail".to_owned(),
             undo_levels: 500,
+            autosave_enabled: true,
             autosave_minutes: 5,
             autosave_keep: 10,
+            autosave_folder: None,
             arrow_key_nudge: true,
             paste_offset: true,
             undo_restores_selection: true,

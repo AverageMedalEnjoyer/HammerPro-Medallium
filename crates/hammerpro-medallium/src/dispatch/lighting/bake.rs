@@ -205,7 +205,12 @@ fn run(job: Job, ctx: &Ctx<'_>) -> Outcome {
     let materials = crate::bake_support::GameMaterials { fs: fs.clone(), opts: Default::default() };
     let models = crate::bake_support::GameModels { fs: &fs, allow_dynamic: false };
     let builder =
-        || rayon::ThreadPoolBuilder::new().num_threads(threads.0.max(1)).thread_name(|i| format!("hp-light-{i}"));
+        || {
+            rayon::ThreadPoolBuilder::new()
+                .num_threads(threads.0.max(1))
+                .thread_name(|i| format!("hp-light-{i}"))
+                .start_handler(|_| hp_app::background::lower_current_thread())
+        };
     let pool = match builder().stack_size(BAKE_STACK).build().or_else(|_| builder().build()) {
         Ok(p) => p,
         Err(e) => return Outcome::Failed(format!("cannot start the threads: {e}")),

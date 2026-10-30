@@ -10,8 +10,15 @@ use hp_render::Renderer;
 use crate::AssetManager;
 use crate::queue::Shared;
 
-pub(crate) const POLL_INTERVAL: Duration = Duration::from_secs(2);
+/// How often every watched file is looked at again while Hammer Pro is the window in use.
+pub(crate) const POLL_INTERVAL: Duration = Duration::from_secs(3);
 pub(crate) const SEND_INTERVAL: Duration = Duration::from_secs(2);
+/// Files looked at in one go; a long list is checked a slice at a time so the disk never gets a burst.
+const SLICE: usize = 256;
+const SLICE_PAUSE: Duration = Duration::from_millis(15);
+/// While Hammer Pro is minimised or in the background nothing is polled; this is how often the
+/// watcher looks whether it is back in front.
+const IDLE_WAIT: Duration = Duration::from_millis(500);
 const MAX_FILES: usize = 50_000;
 
 pub(crate) struct WatchList {
@@ -107,11 +114,12 @@ fn resolve(list: WatchList) -> Resolved {
     Resolved { list, files }
 }
 
-fn check(resolved: &mut Resolved) -> Option<Changes> {
+fn check(resolved: &mut Resolved, range: std::ops::Range<usize>) -> Option<Changes> {
     let mut materials: AHashSet<usize> = AHashSet::new();
     let mut models: AHashSet<usize> = AHashSet::new();
     let mut custom_sources: Vec<u32> = Vec::new();
-    for file in &mut resolved.files {
+    let range = range.start.min(resolved.files.len())..range.end.min(resolved.files.len());
+    for file in &mut resolved.files[range] {
         let now = stamp(&file.path);
         if now == file.stamp {
             continue;
@@ -142,22 +150,48 @@ fn check(resolved: &mut Resolved) -> Option<Changes> {
 }
 
 fn run(lists: &Receiver<WatchList>, changes: &Sender<Changes>, shared: &Shared) {
+    hp_app::background::background_current_thread();
     let mut current: Option<Resolved> = None;
-    let mut next_poll = Instant::now() + POLL_INTERVAL;
+    let mut cursor = 0usize;
+    let mut next_sweep = Instant::now() + POLL_INTERVAL;
+    let mut was_idle = false;
     loop {
-        match lists.recv_timeout(next_poll.saturating_duration_since(Instant::now())) {
+        let wait = if cursor > 0 { SLICE_PAUSE } else { next_sweep.saturating_duration_since(Instant::now()).min(IDLE_WAIT) };
+        match lists.recv_timeout(wait) {
             Ok(list) => {
                 let list = lists.try_iter().last().unwrap_or(list);
                 current = Some(resolve(list));
+                cursor = 0;
+                next_sweep = Instant::now() + POLL_INTERVAL;
                 continue;
             }
             Err(RecvTimeoutError::Timeout) => {}
             Err(RecvTimeoutError::Disconnected) => return,
         }
-        next_poll = Instant::now() + POLL_INTERVAL;
-        if let Some(resolved) = &mut current
-            && let Some(found) = check(resolved)
-        {
+        if !hp_app::background::app_active() {
+            was_idle = true;
+            cursor = 0;
+            next_sweep = Instant::now() + IDLE_WAIT;
+            continue;
+        }
+        if was_idle {
+            was_idle = false;
+            next_sweep = Instant::now();
+        }
+        if cursor == 0 && Instant::now() < next_sweep {
+            continue;
+        }
+        let Some(resolved) = &mut current else {
+            next_sweep = Instant::now() + POLL_INTERVAL;
+            continue;
+        };
+        let end = (cursor + SLICE).min(resolved.files.len());
+        let found = check(resolved, cursor..end);
+        cursor = if end >= resolved.files.len() { 0 } else { end };
+        if cursor == 0 {
+            next_sweep = Instant::now() + POLL_INTERVAL;
+        }
+        if let Some(found) = found {
             if changes.send(found).is_err() {
                 return;
             }
@@ -307,16 +341,16 @@ mod tests {
         };
         let mut resolved = resolve(list);
         assert_eq!(resolved.files.len(), 4, "two VMTs, one texture, one model (the missing ones are skipped)");
-        assert_eq!(check(&mut resolved), None, "nothing changed");
+        assert_eq!(check(&mut resolved, 0..usize::MAX), None, "nothing changed");
         rewrite(&game.join("materials/brick/wall.vtf"), b"vtf2 longer");
         rewrite(&game.join("models/props/crate.mdl"), b"mdl2 longer");
-        let changes = check(&mut resolved).expect("changes");
+        let changes = check(&mut resolved, 0..usize::MAX).expect("changes");
         assert_eq!(changes.epoch, 7);
         assert_eq!(changes.materials, vec!["brick/wall".to_owned()]);
         assert_eq!(changes.models, vec!["models/props/crate.mdl".to_owned()]);
-        assert_eq!(check(&mut resolved), None, "reported once");
+        assert_eq!(check(&mut resolved, 0..usize::MAX), None, "reported once");
         std::fs::remove_file(game.join("materials/brick/other.vmt")).unwrap();
-        assert_eq!(check(&mut resolved).expect("deleted").materials, vec!["brick/other".to_owned()]);
+        assert_eq!(check(&mut resolved, 0..usize::MAX).expect("deleted").materials, vec!["brick/other".to_owned()]);
         let _ = std::fs::remove_dir_all(&dir);
     }
 

@@ -167,6 +167,8 @@ impl Default for Settings {
     }
 }
 
+static AUTOSAVE_FOLDER: std::sync::RwLock<Option<PathBuf>> = std::sync::RwLock::new(None);
+
 impl Settings {
     pub fn config_dir() -> PathBuf {
         dirs::config_dir().unwrap_or_else(|| PathBuf::from(".")).join("HammerPro")
@@ -176,8 +178,21 @@ impl Settings {
         Self::config_dir().join("settings.toml")
     }
 
+    /// The folder autosaves go to: the one chosen in the settings, or the default one.
     pub fn autosave_dir() -> PathBuf {
+        AUTOSAVE_FOLDER.read().unwrap_or_else(std::sync::PoisonError::into_inner).clone().unwrap_or_else(Self::default_autosave_dir)
+    }
+
+    pub fn default_autosave_dir() -> PathBuf {
         dirs::data_local_dir().unwrap_or_else(Self::config_dir).join("HammerPro").join("autosave")
+    }
+
+    /// Tells `autosave_dir` which folder the settings chose (`None` for the default one).
+    pub fn set_autosave_folder(folder: Option<PathBuf>) {
+        let folder = folder.filter(|p| !p.as_os_str().is_empty());
+        if *AUTOSAVE_FOLDER.read().unwrap_or_else(std::sync::PoisonError::into_inner) != folder {
+            *AUTOSAVE_FOLDER.write().unwrap_or_else(std::sync::PoisonError::into_inner) = folder;
+        }
     }
 
     pub fn crash_dir() -> PathBuf {

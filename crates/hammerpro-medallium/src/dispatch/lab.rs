@@ -549,6 +549,9 @@ fn nav_tick(app: &mut HammerProApp, ctx: &egui::Context) {
         ctx.request_repaint_after(Duration::from_millis(100));
         return;
     }
+    if !hp_app::background::app_active() {
+        return;
+    }
     let now = Instant::now();
     if lab.nav_check.is_some_and(|t| now < t) {
         ctx.request_repaint_after(NAV_CHECK_EVERY);

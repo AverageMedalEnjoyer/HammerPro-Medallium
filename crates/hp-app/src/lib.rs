@@ -1,4 +1,5 @@
 pub mod actions;
+pub mod background;
 pub mod chrome;
 pub mod console;
 pub mod dnd;

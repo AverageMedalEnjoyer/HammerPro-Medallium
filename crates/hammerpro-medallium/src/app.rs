@@ -202,6 +202,7 @@ impl HammerProApp {
             }
         }
 
+        Settings::set_autosave_folder(settings.edit.autosave_folder.clone());
         let mut assets = hp_assets::AssetManager::new(&settings);
         if !automated {
             assets.set_thumbnail_cache(Some(Settings::cache_dir().join("thumbs")));

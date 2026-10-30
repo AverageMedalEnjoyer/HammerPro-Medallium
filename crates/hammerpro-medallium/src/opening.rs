@@ -117,6 +117,7 @@ fn open_pool() -> Option<&'static rayon::ThreadPool> {
         rayon::ThreadPoolBuilder::new()
             .num_threads(cores.saturating_sub(1).max(1))
             .thread_name(|i| format!("hp-open-{i}"))
+            .start_handler(|_| hp_app::background::lower_current_thread())
             .build()
             .map_err(|e| log::warn!("cannot make the open thread pool: {e}"))
             .ok()

@@ -152,6 +152,7 @@ impl Package for Render {
         let focused = ctx.input(|i| {
             i.viewport().focused.unwrap_or(true) || i.raw.viewports.values().any(|v| v.focused == Some(true))
         });
+        hp_app::background::set_app_active(focused && !ctx.input(|i| i.viewport().minimized.unwrap_or(false)));
         let cap = if focused { r.max_fps } else { r.unfocused_fps };
         let now = Instant::now();
         if let Some(wait) = frame_wait(app.pkg.render.last_frame, now, cap) {
