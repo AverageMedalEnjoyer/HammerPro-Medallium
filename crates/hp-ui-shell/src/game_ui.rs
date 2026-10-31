@@ -364,7 +364,7 @@ mod tests {
         state.settings_dirty = false;
         apply_pick(&mut state, PickTarget::MapDir, Vec::new());
         assert!(!state.settings_dirty);
-        assert!(state.settings.game.map_dir.is_none());
+        assert_eq!(state.settings.game.map_dir, Some(PathBuf::from("D:/Games/maps")), "an empty pick changes nothing");
     }
 
     #[test]

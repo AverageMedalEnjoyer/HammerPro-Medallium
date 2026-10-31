@@ -91,8 +91,8 @@ pub(crate) const TR: TrTable = &[
     ("shell.status.no_game", "No game content", "Aucun contenu de jeu"),
     (
         "shell.status.no_game_tip",
-        "Garry's Mod was not found. Click to choose its folder.",
-        "Garry's Mod est introuvable. Cliquez pour choisir son dossier.",
+        "No game is selected. Click to choose one.",
+        "Aucun jeu n'est choisi. Cliquez pour en choisir un.",
     ),
     ("shell.status.mount_failed", "Content failed to load", "Échec du chargement du contenu"),
     ("shell.status.opening", "Opening {0}... {1} s", "Ouverture de {0}... {1} s"),

@@ -2,9 +2,9 @@
 
 # Hammer Pro
 
-**A modern, fast level editor for Source engine maps, built for Garry's Mod first.**
+**A modern, fast level editor for Source engine maps, built for every Source game.**
 
-[Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md) | [Discord](https://discord.gg/eAEWWKRNAe)
+[Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md)
 
 Hammer Pro opens and saves standard `.vmf` files, so you can use it side by side with Hammer and Hammer++. It is written in Rust, renders with the GPU through wgpu, stays smooth on huge maps and compiles maps with its own built in compiler: no VBSP, VVIS or VRAD needed.
 
@@ -21,17 +21,17 @@ Every feature has its own page in the [documentation](docs/en/README.md).
 - **More than Hammer.** A [UV editor](docs/en/features/uv-editor.md), a [material editor](docs/en/features/material-editor.md), [custom grids](docs/en/features/grids.md) (a step per axis, rotated, attached to objects), a [command palette](docs/en/features/command-palette.md), an [outliner](docs/en/features/outliner.md), a [logical view](docs/en/features/io-logical-view.md), [selection undo](docs/en/features/undo-history.md), [autosave and crash recovery](docs/en/features/autosave-crash.md), [several maps in tabs](docs/en/features/multiple-maps.md).
 - **See the map like the game.** [Real time lighting preview](docs/en/features/lighting-preview.md) with shadows, normal maps and cubemap reflections, a baked lighting preview, and a [player view](docs/en/features/player-view.md) (`F6`) that walks the compiled world with its lightmaps.
 - **Props and models.** [Propper](docs/en/features/propper.md) turns brushes into a static prop (with LODs and collision) and props back into brushes, [model import](docs/en/features/model-import.md) brings FBX, OBJ and glTF into the game, the [model browser](docs/en/features/model-browser.md) previews every model in 3D.
-- **Its own compiler.** Geometry, visibility and lighting (LDR and HDR, ambient occlusion, static prop lighting) for Garry's Mod and other Source games, with smart recompiles, background precompiles and a compile log with clickable errors. See [The built in compiler](docs/en/compiler/overview.md) and [Target games](docs/en/compiler/target-games.md).
+- **Its own compiler.** Geometry, visibility and lighting (LDR and HDR, ambient occlusion, static prop lighting) for Source games, with smart recompiles, background precompiles and a compile log with clickable errors. See [The built in compiler](docs/en/compiler/overview.md) and [Target games](docs/en/compiler/target-games.md).
 - **Map health.** Live problem checks, an instant leak check with the leak path, engine limits per game, portal files and visibility. See [Leaks and pointfiles](docs/en/features/leaks-pointfiles.md).
 - **Ship it.** [Map assets](docs/en/features/map-assets.md) lists and collects every file the map uses, [Build and save as content](docs/en/features/build-content-release.md) makes a ready to share addon with a release checklist and Workshop publishing, [BSP Protection Pro](docs/en/features/bsp-protection.md) ships a protected copy of the map.
 - **Gameplay helpers.** [Navigation mesh generation](docs/en/features/nav-mesh.md), [several 3D skyboxes and a skybox switch entity](docs/en/features/sky-cameras.md), [soundscapes](docs/en/features/soundscapes.md), [particle preview](docs/en/features/particles.md), [game launch and reload](docs/en/features/game-launch.md).
-- **Your editor.** Black and white interface (dark or light), [English and French](docs/en/features/themes-languages.md), [Hammer and Hammer++ shortcut sets](docs/en/features/keyboard-shortcuts.md), [Discord Rich Presence](docs/en/features/discord.md).
+- **Your editor.** Black and white interface (dark or light), [English and French](docs/en/features/themes-languages.md), [Hammer and Hammer++ shortcut sets](docs/en/features/keyboard-shortcuts.md).
 
 ## Requirements
 
 - Windows 10 or 11 (64-bit). Linux builds compile from source too.
 - A GPU with Vulkan, DirectX 12 or Metal support.
-- Garry's Mod installed through Steam (found automatically). Other Source games are supported as targets.
+- A Source game with a Hammer game configuration (`gameconfig.txt` or `hammerplusplus_gameconfig.txt`), found automatically.
 
 ## Download and install
 
@@ -45,7 +45,7 @@ Details: [Installation](docs/en/getting-started/installation.md) and [Game setup
 
 1. Open a `.vmf` (**File > Open map...**, `Ctrl+O`, or drag it onto the window) or start a new map (`Ctrl+N`).
 2. Draw a room with the block tool (`Shift+B`), place entities with the entity tool (`Shift+E`), texture faces with `Shift+A`.
-3. Press `F9` to compile and run the map in Garry's Mod.
+3. Press `F9` to compile and run the map in your game.
 
 Follow [Your first map](docs/en/getting-started/first-map.md) for a complete walk through.
 
@@ -71,18 +71,13 @@ cd HammerPro
 cargo build --release -p hammerpro-medallium
 ```
 
-The executable is `target/release/hammerpro-medallium.exe`. Rust 1.95 or newer is required. Run the tests with `cargo test --workspace` (tests that need Garry's Mod skip themselves when it is not installed). See [Building from source](docs/en/development/building.md) for build profiles and tips, and [Architecture](docs/en/development/architecture.md) for the crates.
+The executable is `target/release/hammerpro-medallium.exe`. Rust 1.95 or newer is required. Run the tests with `cargo test --workspace` (tests that need a game install skip themselves when it is not installed). See [Building from source](docs/en/development/building.md) for build profiles and tips, and [Architecture](docs/en/development/architecture.md) for the crates.
 
 ## Documentation
 
 - [English documentation](docs/en/README.md): getting started, one page per feature, the compiler, references (settings, shortcuts, command line, scripts), guides, troubleshooting and development.
 - [Documentation en français](docs/fr/README.md).
 - [Developer guide to extending Hammer Pro](docs/EXTENDING.md).
-
-## Community and contact
-
-- Discord server: [discord.gg/eAEWWKRNAe](https://discord.gg/eAEWWKRNAe) (help, feedback, bug reports, news)
-- Author on Discord: `oracleidt`
 
 ## Contributing
 
@@ -92,4 +87,4 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md). Trans
 
 MIT. See [LICENSE](LICENSE).
 
-Hammer Pro is not affiliated with Valve or Facepunch Studios. Source, Hammer and Garry's Mod are trademarks of their respective owners. Hammer Pro does not include or redistribute any Valve code or game content.
+Hammer Pro is not affiliated with Valve or Facepunch Studios. Source and Hammer are trademarks of their respective owners. Hammer Pro does not include or redistribute any Valve code or game content.

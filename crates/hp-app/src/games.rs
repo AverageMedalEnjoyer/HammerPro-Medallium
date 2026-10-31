@@ -19,7 +19,7 @@ fn remount(state: &mut AppState) {
 }
 
 /// Copies what the active game configuration says into the settings the rest of the editor reads:
-/// the game root (Garry's Mod mounting) and the folder maps are saved in.
+/// the game root (addon mounting) and the folder maps are saved in.
 pub fn adopt_active(state: &mut AppState) {
     let profile = state.settings.game.active_profile();
     let tools = gameconfig::build_tools(state.settings.game.active_game());

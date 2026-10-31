@@ -9,7 +9,7 @@ pub enum FsError {
         #[source]
         source: std::io::Error,
     },
-    #[error("not a Garry's Mod installation: {}", .0.display())]
+    #[error("not a game installation with addons: {}", .0.display())]
     NotAGameDir(PathBuf),
     #[error("not a folder: {}", .0.display())]
     NotADirectory(PathBuf),

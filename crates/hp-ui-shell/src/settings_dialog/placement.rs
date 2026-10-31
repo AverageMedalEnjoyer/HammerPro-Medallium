@@ -197,7 +197,7 @@ pub(crate) const TR: TrTable = &[
     ("shell.placement.remove", "Remove this folder from the list", "Retirer ce dossier de la liste"),
     ("shell.placement.none", "No folder", "Aucun dossier"),
     ("shell.placement.pick_title", "Choose a folder", "Choisir un dossier"),
-    ("shell.placement.game_prefabs", "List the prefabs of Garry's Mod", "Lister les prefabs de Garry's Mod"),
+    ("shell.placement.game_prefabs", "List the prefabs shipped with the game", "Lister les prefabs fournis avec le jeu"),
     (
         "shell.placement.game_prefabs_tip",
         "The Hammer prefab folders of the game install (bin/prefabs), read only",

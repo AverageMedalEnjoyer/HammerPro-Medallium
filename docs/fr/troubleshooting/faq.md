@@ -58,7 +58,6 @@ Des réponses courtes aux questions les plus fréquentes, avec des liens vers le
 
 **L'éditeur est lent.** Voir [Performances de l'éditeur](performance.md).
 
-**Mon statut Discord n'affiche pas ce que je mappe.** Voir [Le statut Discord ne s'affiche pas](discord-presence.md).
 
 **Comment signaler un bug ?** Voir [Signaler un bug](reporting-bugs.md).
 

@@ -243,24 +243,24 @@ pub fn lang_lock() -> std::sync::MutexGuard<'static, ()> {
     guard
 }
 
-/// Selects a Garry's Mod game configuration (written to a scratch folder) as the active game.
+/// Selects a game configuration with addon support (written to a scratch folder) as the active game.
 pub fn use_gmod_config(state: &mut AppState) {
     let dir = std::env::temp_dir().join(format!("hp_test_gmod_{}", std::process::id()));
-    let game = dir.join("GarrysMod").join("garrysmod");
-    let bin = dir.join("GarrysMod").join("bin");
+    let game = dir.join("TestGame").join("garrysmod");
+    let bin = dir.join("TestGame").join("bin");
     let _ = std::fs::create_dir_all(&game);
     let _ = std::fs::create_dir_all(&bin);
     let _ = std::fs::write(
         game.join("gameinfo.txt"),
-        "GameInfo { game \"Garry's Mod\" FileSystem { SteamAppId 4000 SearchPaths { game |gameinfo_path|. } } }",
+        "GameInfo { game \"Test Game\" FileSystem { SteamAppId 4000 SearchPaths { game |gameinfo_path|. } } }",
     );
     let file = bin.join("GameConfig.txt");
     let text = format!(
-        "\"Configs\"\n{{\n\"Games\"\n{{\n\"Garry's Mod\"\n{{\n\"GameDir\"\t\t\"{}\"\n\"Hammer\"\n{{\n}}\n}}\n}}\n}}\n",
+        "\"Configs\"\n{{\n\"Games\"\n{{\n\"Test Game\"\n{{\n\"GameDir\"\t\t\"{}\"\n\"Hammer\"\n{{\n}}\n}}\n}}\n}}\n",
         game.display()
     );
     let _ = std::fs::write(&file, text);
-    state.settings.game.game = hp_fs::gameconfig::ConfigId::new(&file, "Garry's Mod").to_id();
+    state.settings.game.game = hp_fs::gameconfig::ConfigId::new(&file, "Test Game").to_id();
 }
 
 pub fn test_state() -> AppState {

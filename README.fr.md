@@ -2,9 +2,9 @@
 
 # Hammer Pro
 
-**Un éditeur de maps moderne et rapide pour le moteur Source, pensé d'abord pour Garry's Mod.**
+**Un éditeur de maps moderne et rapide pour le moteur Source, pensé pour tous les jeux Source.**
 
-[Read in English](README.md) | [Documentation](docs/fr/README.md) | [Documentation in English](docs/en/README.md) | [Discord](https://discord.gg/eAEWWKRNAe)
+[Read in English](README.md) | [Documentation](docs/fr/README.md) | [Documentation in English](docs/en/README.md)
 
 Hammer Pro ouvre et enregistre des fichiers `.vmf` standard : vous pouvez l'utiliser en parallèle de Hammer et de Hammer++. Il est écrit en Rust, dessine avec la carte graphique grâce à wgpu, reste fluide sur les très grandes maps et compile les maps avec son propre compilateur intégré : ni VBSP, ni VVIS, ni VRAD.
 
@@ -21,18 +21,18 @@ Chaque fonctionnalité a sa propre page dans la [documentation](docs/fr/README.m
 - **Plus que Hammer.** Un [éditeur UV](docs/fr/features/uv-editor.md), un [éditeur de matériaux](docs/fr/features/material-editor.md), des [grilles personnalisées](docs/fr/features/grids.md) (un pas par axe, orientées, attachées aux objets), une [palette de commandes](docs/fr/features/command-palette.md), une [arborescence](docs/fr/features/outliner.md), une [vue logique](docs/fr/features/io-logical-view.md), l'[annulation de la sélection](docs/fr/features/undo-history.md), la [sauvegarde automatique et la récupération après plantage](docs/fr/features/autosave-crash.md), [plusieurs maps en onglets](docs/fr/features/multiple-maps.md).
 - **Voir la map comme le jeu.** [Aperçu de l'éclairage en temps réel](docs/fr/features/lighting-preview.md) avec ombres, normal maps et reflets des cubemaps, un aperçu de l'éclairage précalculé, et une [vue joueur](docs/fr/features/player-view.md) (`F6`) qui parcourt le monde compilé avec ses lightmaps.
 - **Props et modèles.** [Propper](docs/fr/features/propper.md) transforme des brushes en prop statique (avec LOD et collision) et des props en brushes, l'[import de modèles](docs/fr/features/model-import.md) amène des FBX, OBJ et glTF dans le jeu, le [navigateur de modèles](docs/fr/features/model-browser.md) affiche chaque modèle en 3D.
-- **Son propre compilateur.** Géométrie, visibilité et éclairage (LDR et HDR, occlusion ambiante, éclairage des props statiques) pour Garry's Mod et d'autres jeux Source, avec recompilations intelligentes, précompilations en arrière-plan et un journal de compilation aux erreurs cliquables. Voir [Le compilateur intégré](docs/fr/compiler/overview.md) et [Jeux cibles](docs/fr/compiler/target-games.md).
+- **Son propre compilateur.** Géométrie, visibilité et éclairage (LDR et HDR, occlusion ambiante, éclairage des props statiques) pour les jeux Source, avec recompilations intelligentes, précompilations en arrière-plan et un journal de compilation aux erreurs cliquables. Voir [Le compilateur intégré](docs/fr/compiler/overview.md) et [Jeux cibles](docs/fr/compiler/target-games.md).
 - **Santé de la map.** Vérification des problèmes en direct, détection instantanée des fuites avec leur chemin, limites du moteur par jeu, fichiers de portails et visibilité. Voir [Fuites et pointfiles](docs/fr/features/leaks-pointfiles.md).
 - **Publier.** [Ressources de la map](docs/fr/features/map-assets.md) liste et rassemble chaque fichier utilisé par la map, [Construire et enregistrer en contenu](docs/fr/features/build-content-release.md) prépare un addon prêt à partager avec une liste de contrôle et la publication sur le Workshop, [BSP Protection Pro](docs/fr/features/bsp-protection.md) livre une copie protégée de la map.
 - **Aides au gameplay.** [Génération du nav mesh](docs/fr/features/nav-mesh.md), [plusieurs skybox 3D et une entité pour en changer](docs/fr/features/sky-cameras.md), [soundscapes](docs/fr/features/soundscapes.md), [aperçu des particules](docs/fr/features/particles.md), [lancement et rechargement en jeu](docs/fr/features/game-launch.md).
 - **Assistants IA.** Un [serveur MCP](docs/fr/reference/mcp-server.md) intégré permet à Claude, Codex ou Gemini de lire et modifier la map ouverte, de la vérifier, de la compiler et de faire des captures d'écran, chaque modification formant une seule étape d'annulation.
-- **Votre éditeur.** Interface noir et blanc (sombre ou claire), [anglais et français](docs/fr/features/themes-languages.md), [jeux de raccourcis de Hammer et Hammer++](docs/fr/features/keyboard-shortcuts.md), [statut Discord](docs/fr/features/discord.md).
+- **Votre éditeur.** Interface noir et blanc (sombre ou claire), [anglais et français](docs/fr/features/themes-languages.md), [jeux de raccourcis de Hammer et Hammer++](docs/fr/features/keyboard-shortcuts.md).
 
 ## Configuration requise
 
 - Windows 10 ou 11 (64 bits). Hammer Pro se compile aussi sous Linux depuis les sources.
 - Une carte graphique compatible Vulkan, DirectX 12 ou Metal.
-- Garry's Mod installé par Steam (trouvé automatiquement). D'autres jeux Source sont pris en charge comme cibles.
+- Un jeu Source avec une configuration de jeu Hammer (`gameconfig.txt` ou `hammerplusplus_gameconfig.txt`), trouvée automatiquement.
 
 ## Téléchargement et installation
 
@@ -46,7 +46,7 @@ Détails : [Installation](docs/fr/getting-started/installation.md) et [Configura
 
 1. Ouvrez un `.vmf` (**Fichier > Ouvrir une map...**, `Ctrl+O`, ou glissez-le sur la fenêtre) ou créez une nouvelle map (`Ctrl+N`).
 2. Dessinez une pièce avec l'outil bloc (`Maj+B`), placez des entités avec l'outil entité (`Maj+E`), texturez les faces avec `Maj+A`.
-3. Appuyez sur `F9` pour compiler et lancer la map dans Garry's Mod.
+3. Appuyez sur `F9` pour compiler et lancer la map dans votre jeu.
 
 Suivez [Votre première map](docs/fr/getting-started/first-map.md) pour un parcours complet.
 
@@ -72,18 +72,13 @@ cd HammerPro
 cargo build --release -p hammerpro-medallium
 ```
 
-L'exécutable est `target/release/hammerpro-medallium.exe`. Il faut Rust 1.95 ou plus récent. Lancez les tests avec `cargo test --workspace` (les tests qui ont besoin de Garry's Mod se désactivent s'il n'est pas installé). Voir [Compiler depuis les sources](docs/fr/development/building.md) pour les profils de compilation et [Architecture](docs/fr/development/architecture.md) pour les crates.
+L'exécutable est `target/release/hammerpro-medallium.exe`. Il faut Rust 1.95 ou plus récent. Lancez les tests avec `cargo test --workspace` (les tests qui ont besoin d'un jeu installé se désactivent s'il n'est pas installé). Voir [Compiler depuis les sources](docs/fr/development/building.md) pour les profils de compilation et [Architecture](docs/fr/development/architecture.md) pour les crates.
 
 ## Documentation
 
 - [Documentation en français](docs/fr/README.md) : prise en main, une page par fonctionnalité, le compilateur, les références (paramètres, raccourcis, ligne de commande, scripts, MCP), des guides, le dépannage et le développement.
 - [English documentation](docs/en/README.md).
 - [Référence des outils MCP](docs/MCP.md) (générée, en anglais) et [guide du développeur pour étendre Hammer Pro](docs/EXTENDING.md) (en anglais).
-
-## Communauté et contact
-
-- Serveur Discord : [discord.gg/eAEWWKRNAe](https://discord.gg/eAEWWKRNAe) (aide, retours, signalement de bugs, nouveautés)
-- L’auteur sur Discord : `oracleidt`
 
 ## Contribuer
 
@@ -93,4 +88,4 @@ Les contributions sont les bienvenues. Lisez d'abord [CONTRIBUTING.md](CONTRIBUT
 
 MIT. Voir [LICENSE](LICENSE).
 
-Hammer Pro n'est affilié ni à Valve ni à Facepunch Studios. Source, Hammer et Garry's Mod sont des marques de leurs propriétaires respectifs. Hammer Pro n'inclut ni ne redistribue aucun code ni contenu de jeu de Valve.
+Hammer Pro n'est affilié ni à Valve ni à Facepunch Studios. Source et Hammer sont des marques de leurs propriétaires respectifs. Hammer Pro n'inclut ni ne redistribue aucun code ni contenu de jeu de Valve.

@@ -49,7 +49,7 @@ Toutes les options de `--bspc` et `--rad`, avec leur effet et leur valeur par d�
 
 - Elle part des **paramètres par défaut** et n'écrit jamais `settings.toml`. L'assistant de premier lancement n'apparaît pas.
 - La sauvegarde automatique est coupée, la map compilée n'est pas copiée dans le dossier `maps` du jeu et le jeu n'est jamais lancé (compilation avec lancement, session de jeu, publication : refusés avec le message "skipped: automated runs never write into the game folder or start the game").
-- Pas de fichier log, pas de rapport de plantage, pas de proposition de récupération et pas de présence Discord. Le cache des miniatures et les fichiers annexes de chaque map restent en mémoire.
+- Pas de fichier log, pas de rapport de plantage, et pas de proposition de récupération. Le cache des miniatures et les fichiers annexes de chaque map restent en mémoire.
 - Les cadres de fenêtre natifs ne sont pas utilisés (le cadre de Hammer Pro est dessiné).
 
 Codes de sortie : `0` fin normale, `2` le fichier script est illisible ou une ligne ne peut pas être lue (l'erreur indique la ligne), `3` une commande `assert_selected` ou `assert_tabs` a échoué.

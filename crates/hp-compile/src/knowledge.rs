@@ -202,7 +202,7 @@ const RULES: &[(&str, Knowledge)] = &[
         "to build the default cubemap",
         kb(
             "skybox_cubemap",
-            "Harmless with the Garry's Mod skies: the game builds the cubemaps itself (buildcubemaps).",
+            "Harmless with the stock skies: the game builds the cubemaps itself (buildcubemaps).",
             Fix::OpenDocs("https://developer.valvesoftware.com/wiki/Cubemaps"),
         ),
     ),
@@ -210,7 +210,7 @@ const RULES: &[(&str, Knowledge)] = &[
         "skybox vtf files for",
         kb(
             "skybox_cubemap",
-            "Harmless with the Garry's Mod skies: the game builds the cubemaps itself (buildcubemaps).",
+            "Harmless with the stock skies: the game builds the cubemaps itself (buildcubemaps).",
             Fix::OpenDocs("https://developer.valvesoftware.com/wiki/Cubemaps"),
         ),
     ),

@@ -43,7 +43,6 @@ Hammer Pro is split into small, focused crates under `crates/`, with dependencie
 | `hp-app` | Shared application core: state, settings, actions, i18n, theme, view math, tool interface and the extension points of the packages. |
 | `hp-assets` | Asset system: mounting game content and FGDs in the background, streaming materials, models and sprites, scene sync of the renderer. |
 | `hp-mcp` | The MCP server of a window, the `--mcp` stdio bridge and the AI app installer (see [MCP.md](../../MCP.md)). |
-| `hp-discord` | Discord Rich Presence over the local Discord IPC protocol. |
 
 ### User interface and tools
 
@@ -75,7 +74,7 @@ hp-light, hp-compile           lighting helpers, compile pipeline
 hp-fs, hp-geom                 game filesystem, brush geometry
 hp-vmf, hp-vmt                 formats built on hp-kv
 hp-kv, hp-bsp, hp-vpk, hp-gma, hp-vtf, hp-mdl, hp-fgd, hp-nav, hp-pcf, hp-meshio
-hp-discord, hp-mcp             standalone (no internal dependency)
+hp-mcp             standalone (no internal dependency)
 ```
 
 Some concrete edges:
@@ -85,7 +84,6 @@ hp-kv <- hp-vmf <- hp-geom <- hp-editor <- hp-app <- hp-ui-*, hp-tools-* <- hamm
 hp-kv, hp-vpk, hp-gma, hp-vtf, hp-vmt, hp-mdl, hp-bsp <- hp-fs <- hp-light <- hp-bspc
 hp-bsp, hp-kv <- hp-compile
 hp-vmf, hp-geom, hp-bsp <- hp-decompile <- hp-ui-lab
-hp-discord <- hp-ui-shell
 ```
 
 Libraries return errors and never panic on bad input; heavy work runs on worker threads and reports back through channels, so the UI thread stays free.

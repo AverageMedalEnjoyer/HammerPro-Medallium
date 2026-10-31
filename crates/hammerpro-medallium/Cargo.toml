@@ -27,7 +27,6 @@ hp-light = { path = "../hp-light" }
 hp-ui-lab = { path = "../hp-ui-lab" }
 hp-decompile = { path = "../hp-decompile" }
 hp-pcf = { path = "../hp-pcf" }
-hp-discord = { path = "../hp-discord" }
 hp-editor.workspace = true
 hp-vmf.workspace = true
 hp-kv.workspace = true

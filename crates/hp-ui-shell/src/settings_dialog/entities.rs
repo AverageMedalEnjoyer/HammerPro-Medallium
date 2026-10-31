@@ -141,8 +141,8 @@ pub(crate) const TR: TrTable = &[
     ("shell.entities.esc", "New outputs use the ESC separator", "Les nouvelles sorties utilisent le séparateur ESC"),
     (
         "shell.entities.esc_tip",
-        "Newer Hammer builds and Hammer++ separate output fields with ESC: parameters may then contain commas. Garry's Mod reads both.",
-        "Les versions récentes de Hammer et Hammer++ séparent les champs des sorties par ESC : les paramètres peuvent alors contenir des virgules. Garry's Mod lit les deux.",
+        "Newer Hammer builds and Hammer++ separate output fields with ESC: parameters may then contain commas. The game reads both.",
+        "Les versions récentes de Hammer et Hammer++ séparent les champs des sorties par ESC : les paramètres peuvent alors contenir des virgules. Le jeu lit les deux.",
     ),
     (
         "shell.entities.paste_name",
@@ -168,7 +168,7 @@ pub(crate) const TR: TrTable = &[
     ("shell.entities.excluded", "Hidden folders:", "Dossiers masqués :"),
     ("shell.entities.excluded_hint", "folder or folder/sub", "dossier ou dossier/sous-dossier"),
     ("shell.entities.browsers", "Model, sound and particle browsers", "Navigateurs de modèles, sons et particules"),
-    ("shell.entities.gmod_only", "Garry's Mod content only", "Contenu de Garry's Mod uniquement"),
+    ("shell.entities.gmod_only", "Base game content only", "Contenu du jeu de base uniquement"),
     (
         "shell.entities.gmod_only_tip",
         "List only what every player has (no mounted games, addons or Workshop items)",

@@ -5,7 +5,6 @@ mod app;
 mod autosave;
 mod bake_support;
 mod crash;
-mod discord;
 mod dispatch;
 mod export;
 mod files;

@@ -118,7 +118,6 @@ Vous découvrez Hammer Pro ? Lisez [Installation](getting-started/installation.m
 | [Thèmes et langues](features/themes-languages.md) | Thèmes sombre et clair, couleur d'accent, échelle, image de fond, anglais et français. |
 | [Cadres de fenêtre et fenêtres séparées](features/window-frames.md) | Cadres de Hammer Pro, cadres natifs, fenêtres sur d'autres écrans. |
 | [Sauvegarde automatique et plantages](features/autosave-crash.md) | Sauvegardes automatiques, sauvegardes d'urgence, rapports de plantage. |
-| [Statut Discord (Rich Presence)](features/discord.md) | Ce que votre profil Discord affiche pendant que vous mappez. |
 
 ## Compilateur
 
@@ -167,7 +166,6 @@ Vous découvrez Hammer Pro ? Lisez [Installation](getting-started/installation.m
 | [Erreurs courantes](troubleshooting/common-errors.md) | Fuites, textures manquantes, limites, compilations ratées. |
 | [Plantages et journaux](troubleshooting/crashes-and-logs.md) | Rapports de plantage, fichier journal, problèmes de carte graphique, cadres natifs. |
 | [Performances de l'éditeur](troubleshooting/performance.md) | Garder l'éditeur fluide sur les très grandes maps. |
-| [Le statut Discord ne s'affiche pas](troubleshooting/discord-presence.md) | Réparer le Rich Presence. |
 | [Signaler un bug](troubleshooting/reporting-bugs.md) | Ce qu'il faut envoyer pour qu'un bug soit corrigé. |
 
 ## Développement

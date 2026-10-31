@@ -118,7 +118,6 @@ New to Hammer Pro? Read [Installation](getting-started/installation.md), [Game s
 | [Themes and languages](features/themes-languages.md) | Dark and light themes, accent color, scale, background image, English and French. |
 | [Window frames and separate windows](features/window-frames.md) | Hammer Pro frames, native frames, windows on other screens. |
 | [Autosave and crash recovery](features/autosave-crash.md) | Autosaves, emergency saves, crash reports. |
-| [Discord Rich Presence](features/discord.md) | What your Discord profile shows while you map. |
 
 ## Compiler
 
@@ -167,7 +166,6 @@ New to Hammer Pro? Read [Installation](getting-started/installation.md), [Game s
 | [Common errors](troubleshooting/common-errors.md) | Leaks, missing textures, limits, failed compiles. |
 | [Crashes and logs](troubleshooting/crashes-and-logs.md) | Crash reports, log file, GPU problems, native frames. |
 | [Editor performance](troubleshooting/performance.md) | Keeping the editor smooth on huge maps. |
-| [Discord presence not showing](troubleshooting/discord-presence.md) | Fixing Rich Presence. |
 | [Reporting bugs](troubleshooting/reporting-bugs.md) | What to send so a bug can be fixed. |
 
 ## Development

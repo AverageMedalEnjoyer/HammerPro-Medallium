@@ -1502,7 +1502,6 @@ dependencies = [
  "hp-bspc",
  "hp-compile",
  "hp-decompile",
- "hp-discord",
  "hp-editor",
  "hp-fgd",
  "hp-fs",
@@ -1701,15 +1700,6 @@ dependencies = [
  "hp-vmf",
  "rayon",
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "hp-discord"
-version = "1.0.0"
-dependencies = [
- "log",
- "serde_json",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1982,7 +1972,6 @@ dependencies = [
  "egui",
  "glam",
  "hp-app",
- "hp-discord",
  "hp-editor",
  "hp-fgd",
  "hp-fs",

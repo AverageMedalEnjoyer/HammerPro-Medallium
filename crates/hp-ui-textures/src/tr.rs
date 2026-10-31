@@ -523,8 +523,8 @@ pub const TR: TrTable = &[
     ("tex.browser.clear_filters", "Clear filters", "Effacer les filtres"),
     (
         "tex.browser.not_configured",
-        "Game content is not configured. Set the Garry's Mod folder in the settings.",
-        "Le contenu du jeu n'est pas configuré. Indiquez le dossier de Garry's Mod dans les paramètres.",
+        "Game content is not configured. Select a game configuration in the settings.",
+        "Le contenu du jeu n'est pas configuré. Choisissez une configuration de jeu dans les paramètres.",
     ),
     (
         "tex.browser.mount_failed",

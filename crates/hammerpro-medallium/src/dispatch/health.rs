@@ -122,7 +122,7 @@ impl Package for Health {
         HealthRuntime::update_pvs(&mut app.state);
         HealthRuntime::update_play(&mut app.state);
         if busy || working || app.pkg.health.leak_report_wanted {
-            ctx.request_repaint_after(std::time::Duration::from_millis(60));
+            ctx.request_repaint_after(std::time::Duration::from_millis(200));
         }
     }
 

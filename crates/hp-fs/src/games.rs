@@ -105,7 +105,7 @@ pub static KNOWN_GAMES: &[KnownGame] = &[
         map_prefix: "gm_",
         ..game(
             GMOD_ID,
-            "Garry's Mod",
+            "Source 64-bit branch",
             4000,
             &["GarrysMod"],
             "garrysmod",

@@ -8,7 +8,6 @@ use crate::i18n::Lang;
 mod brush;
 mod compile;
 mod content;
-mod discord;
 mod entities;
 mod grid;
 mod health;
@@ -33,7 +32,6 @@ pub use compile::{
     PackPolicy, ProfileStep, RadModeSetting, VisModeSetting, WindowPlacement, background_precompile_default,
 };
 pub use content::{ContentSettings, ReleaseMode};
-pub use discord::DiscordSettings;
 pub use entities::{BrowserSettings, EntitiesSettings, PathToolSettings};
 pub use grid::{
     GRID_COORD_LIMIT, GridMode, GridSettings, GridSpec, MAX_CUSTOM_GRIDS, MAX_MAJOR_EVERY, PerViewGrids, ViewGrid,
@@ -127,8 +125,6 @@ pub struct Settings {
     pub mcp: McpSettings,
     #[serde(skip_serializing_if = "is_default")]
     pub grid: GridSettings,
-    #[serde(skip_serializing_if = "is_default")]
-    pub discord: DiscordSettings,
 }
 
 impl Default for Settings {
@@ -162,7 +158,6 @@ impl Default for Settings {
             lab: LabSettings::default(),
             mcp: McpSettings::default(),
             grid: GridSettings::default(),
-            discord: DiscordSettings::default(),
         }
     }
 }

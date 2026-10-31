@@ -54,7 +54,7 @@ impl Branch {
 
     pub const fn name(self) -> &'static str {
         match self {
-            Branch::GarrysMod => "Garry's Mod",
+            Branch::GarrysMod => "Source 64-bit",
             Branch::Source2013 => "Source 2013",
             Branch::Source2007 => "Source 2007",
             Branch::BlackMesa => "Black Mesa",

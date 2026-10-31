@@ -58,7 +58,6 @@ Short answers to the questions asked most often, with links to the pages that ex
 
 **The editor is slow.** See [Editor performance](performance.md).
 
-**My Discord status does not show what I map.** See [Discord presence not showing](discord-presence.md).
 
 **How do I report a bug?** See [Reporting bugs](reporting-bugs.md).
 

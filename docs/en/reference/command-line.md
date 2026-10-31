@@ -49,7 +49,7 @@ Every flag of `--bspc` and `--rad`, with its effect and default, is documented i
 
 - It starts from the **default settings** and never writes `settings.toml`. The first run wizard is not shown.
 - Autosave is off, the compiled map is not copied to the game's `maps` folder and the game is never started (compile, launch, game session, publishing: refused with a "skipped: automated runs never write into the game folder or start the game" message).
-- No log file, no crash report, no crash recovery prompt and no Discord presence. The thumbnail cache and the per-map sidecar files stay in memory.
+- No log file, no crash report, and no crash recovery prompt. The thumbnail cache and the per-map sidecar files stay in memory.
 - Native window frames are not used (Hammer Pro's own frame is drawn).
 
 Exit codes: `0` normal end, `2` the script file cannot be read or a line cannot be parsed (the error names the line), `3` an `assert_selected` or `assert_tabs` command failed.

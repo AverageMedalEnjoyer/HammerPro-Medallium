@@ -62,7 +62,6 @@ pub struct HammerProApp {
     pub(crate) map_dialogs: hp_ui_mapping::MapDialogs,
     log_rx: Receiver<(Severity, String)>,
     autosaver: Autosaver,
-    discord: crate::discord::DiscordPresence,
     pub(crate) pending: Option<PendingOp>,
     pub(crate) allow_close: bool,
     pub(crate) hollow_prompt: Option<crate::prompts::HollowPrompt>,
@@ -264,7 +263,6 @@ impl HammerProApp {
             map_dialogs: hp_ui_mapping::MapDialogs::new(),
             log_rx,
             autosaver: Autosaver::new(),
-            discord: crate::discord::DiscordPresence::new(!automated),
             pending: None,
             allow_close: false,
             hollow_prompt: None,
@@ -809,7 +807,6 @@ impl HammerProApp {
         }
 
         self.autosaver.tick(&mut self.state, &self.tabs);
-        self.discord.tick(&self.state);
 
         if self.state.settings_dirty && self.settings_saved_at.elapsed().as_secs_f32() > 2.0 {
             self.save_settings();

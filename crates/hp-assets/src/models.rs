@@ -412,25 +412,3 @@ mod tests {
         assert_eq!(part_bounds(&[part(0, 2)]), Some(([2.0, 0.0, 0.0], [2.0, 0.0, 0.0])));
     }
 }
-
-#[cfg(test)]
-mod model_fuzz_tmp {
-    #[test]
-    fn every_model_loads_without_panic() {
-        let root = std::path::Path::new(r"D:\SteamLibrary\steamapps\common\GarrysMod");
-        let fs = hp_fs::GameFs::for_gmod(root, &hp_fs::MountOptions::default()).expect("mount");
-        let models = fs.models();
-        let prev = std::panic::take_hook();
-        std::panic::set_hook(Box::new(|_| {}));
-        let mut bad = Vec::new();
-        for m in models.iter() {
-            let name = m.name.clone();
-            let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| super::model_job(&fs, &name)));
-            if r.is_err() {
-                bad.push(name);
-            }
-        }
-        std::panic::set_hook(prev);
-        eprintln!("MODELFUZZ {} models, {} panics: {:?}", models.len(), bad.len(), &bad[..bad.len().min(30)]);
-    }
-}

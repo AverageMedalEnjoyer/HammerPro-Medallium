@@ -626,11 +626,11 @@ pub const TR: TrTable = &[
     ("entities.src_game", "Game", "Jeu"),
     ("entities.src_addons", "Addons", "Addons"),
     ("entities.src_workshop", "Workshop", "Workshop"),
-    ("entities.gmod_only", "Garry's Mod content only", "Contenu de Garry's Mod uniquement"),
+    ("entities.gmod_only", "Base game content only", "Contenu du jeu de base uniquement"),
     (
         "entities.gmod_only_tip",
-        "Only list what every Garry's Mod player has (no mounted games, addons or Workshop items)",
-        "Ne lister que ce que tous les joueurs de Garry's Mod possèdent (ni jeux montés, ni addons, ni Workshop)",
+        "Only list what every player of the game has (no mounted games, addons or Workshop items)",
+        "Ne lister que ce que tous les joueurs du jeu possèdent (ni jeux montés, ni addons, ni Workshop)",
     ),
     (
         "entities.pick_for",

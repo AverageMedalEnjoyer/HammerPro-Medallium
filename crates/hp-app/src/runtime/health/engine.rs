@@ -21,6 +21,12 @@ use crate::state::{AssetStatus, AssetsApi};
 pub(crate) const DEBOUNCE: Duration = Duration::from_millis(500);
 const SLICE: Duration = Duration::from_millis(3);
 const MATERIAL_POLL: Duration = Duration::from_millis(1000);
+/// After a full set of checks the engine rests for this many times as long as the checks took, so a
+/// big map spends at most about one seventh of its time checking itself, however fast it is edited.
+const COOLDOWN_FACTOR: u32 = 6;
+const COOLDOWN_MAX: Duration = Duration::from_secs(20);
+/// The leak search is the heaviest check: it only starts when the map has been left alone this long.
+const LEAK_QUIET: Duration = Duration::from_millis(1500);
 
 #[derive(Debug)]
 pub struct CheckResult {
@@ -76,6 +82,8 @@ pub(crate) struct Engine {
     answers: Arc<Mutex<AssetAnswers>>,
     deps_cache: Arc<DepsCache>,
     has_instances: bool,
+    cost_ms: u64,
+    cooldown_until: Option<Instant>,
 }
 
 impl std::fmt::Debug for Engine {
@@ -108,6 +116,8 @@ impl Default for Engine {
             answers: Arc::default(),
             deps_cache: Arc::new(DepsCache::new()),
             has_instances: false,
+            cost_ms: 0,
+            cooldown_until: None,
         }
     }
 }
@@ -236,9 +246,15 @@ impl Engine {
         if let Some(job) = &mut self.job {
             loop {
                 match job.rx.try_recv() {
-                    Ok(Msg::Checks(r)) => out.checks = Some(r),
+                    Ok(Msg::Checks(r)) => {
+                        self.cost_ms = r.ms;
+                        self.cooldown_until = Some(Instant::now() + cooldown(self.cost_ms));
+                        out.checks = Some(r);
+                    }
                     Ok(Msg::Leak(r)) => {
                         job.leak_pending = false;
+                        self.cost_ms += r.ms;
+                        self.cooldown_until = Some(Instant::now() + cooldown(self.cost_ms));
                         out.leak = Some(r);
                     }
                     Err(TryRecvError::Empty) => break,
@@ -258,6 +274,9 @@ impl Engine {
         if self.seen != Some(want) {
             self.seen = Some(want);
             self.changed_at = Instant::now();
+            if let Some(job) = &self.job {
+                job.cancel.store(true, Ordering::Relaxed);
+            }
         }
         let checked = self.sent == Some(want);
         if checked && !force && self.building.is_none() {
@@ -265,6 +284,10 @@ impl Engine {
             return out;
         }
         if !force && self.building.is_none() && self.changed_at.elapsed() < DEBOUNCE {
+            out.busy = true;
+            return out;
+        }
+        if !force && self.building.is_none() && self.cooldown_until.is_some_and(|t| Instant::now() < t) {
             out.busy = true;
             return out;
         }
@@ -290,8 +313,9 @@ impl Engine {
         let (tx, rx) = std::sync::mpsc::channel();
         let flag = Arc::clone(&cancel);
         let spawned = std::thread::Builder::new().name("hp-health".into()).spawn(move || {
+            crate::background::lower_current_thread();
             let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                run_job(&snap, &know, profile, leak, &flag, &tx);
+                run_job(&snap, &know, profile, leak, LEAK_QUIET, &flag, &tx);
             }));
             if result.is_err() {
                 log::error!("the map health checks failed (panic in a check)");
@@ -316,7 +340,7 @@ impl Engine {
         let know = self.knowledge(doc, assets, &snap);
         let (tx, rx) = std::sync::mpsc::channel();
         let cancel = AtomicBool::new(false);
-        run_job(&snap, &know, profile, leak, &cancel, &tx);
+        run_job(&snap, &know, profile, leak, Duration::ZERO, &cancel, &tx);
         self.sent = Some(self.want(doc, assets, profile, leak));
         self.seen = self.sent;
         let mut checks = None;
@@ -350,11 +374,28 @@ fn normalize(name: &str) -> String {
     s
 }
 
+fn cooldown(cost_ms: u64) -> Duration {
+    Duration::from_millis(cost_ms).saturating_mul(COOLDOWN_FACTOR).min(COOLDOWN_MAX)
+}
+
+/// Waits `quiet` while checking that the map has not changed. `false` when the job was cancelled.
+fn stay_quiet(quiet: Duration, cancel: &AtomicBool) -> bool {
+    let start = Instant::now();
+    while start.elapsed() < quiet {
+        if cancel.load(Ordering::Relaxed) {
+            return false;
+        }
+        std::thread::sleep(Duration::from_millis(40));
+    }
+    !cancel.load(Ordering::Relaxed)
+}
+
 fn run_job(
     snap: &Arc<MapSnapshot>,
     know: &Knowledge,
     profile: LimitProfile,
     leak: bool,
+    leak_quiet: Duration,
     cancel: &AtomicBool,
     tx: &Sender<Msg>,
 ) {
@@ -378,7 +419,7 @@ fn run_job(
         ms,
         snapshot: Arc::clone(snap),
     }));
-    if !leak {
+    if !leak || !stay_quiet(leak_quiet, cancel) {
         return;
     }
     let t1 = Instant::now();
@@ -405,4 +446,25 @@ fn run_job(
     let problems = leak_problems(snap, &report, &candidates);
     let ms = t1.elapsed().as_millis() as u64;
     let _ = tx.send(Msg::Leak(LeakResult { serial: snap.content_serial, report, problems, ms }));
+}
+
+#[cfg(test)]
+mod throttle_tests {
+    use super::*;
+
+    #[test]
+    fn the_engine_rests_longer_after_longer_checks() {
+        assert_eq!(cooldown(0), Duration::ZERO);
+        assert_eq!(cooldown(100), Duration::from_millis(600));
+        assert_eq!(cooldown(60_000), COOLDOWN_MAX);
+    }
+
+    #[test]
+    fn a_cancelled_job_does_not_wait_for_the_quiet_period() {
+        let cancel = AtomicBool::new(true);
+        let t = Instant::now();
+        assert!(!stay_quiet(Duration::from_secs(5), &cancel));
+        assert!(t.elapsed() < Duration::from_secs(1));
+        assert!(stay_quiet(Duration::ZERO, &AtomicBool::new(false)));
+    }
 }

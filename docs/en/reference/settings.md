@@ -486,20 +486,6 @@ The **Build and save as content** window and the Map assets tab. See [Build and 
 | `object_grids` | `true` | Editing an object that carries a grid snaps to it. |
 | `plane_3d` | `true` | Draw the plane of a custom or per view grid in 3D. |
 
-## `[mcp]` and `[discord]`
-
-| Key | Default | What it does |
-| --- | --- | --- |
-| `mcp.start_with_app` | `false` | Switch the MCP server on when Hammer Pro starts. **Settings > MCP**. See [MCP server](mcp-server.md). |
-| `discord.enabled` | `true` | Show the activity on Discord (needs an application id). |
-| `discord.show_map` | `true` | Show the map name. |
-| `discord.show_elapsed` | `true` | Show the time spent. |
-| `discord.show_tool` | `true` | Show the active tool. |
-| `discord.application_id` | `""` | Discord application id. |
-| `discord.project_url` | `""` | Link of the button (no button when empty). |
-
-See [Discord Rich Presence](../features/discord.md).
-
 ## Related pages
 
 - [Settings window](../features/settings-dialog.md)

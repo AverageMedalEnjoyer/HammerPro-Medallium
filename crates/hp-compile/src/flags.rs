@@ -57,7 +57,7 @@ pub const FLAGS: &[FlagInfo] = &[
         true,
         "Game folder whose materials, models and lights.rad (texture lights) the compiler reads.",
     ),
-    info(StepKind::Bsp, "-gmod", true, "Garry's Mod folder whose content the compiler mounts."),
+    info(StepKind::Bsp, "-gmod", true, "Game folder whose content the compiler mounts."),
     info(StepKind::Bsp, "-threads", true, "Number of processor threads to use."),
     info(
         StepKind::Bsp,
@@ -202,7 +202,7 @@ pub const FLAGS: &[FlagInfo] = &[
         true,
         "Game folder whose materials, models and lights.rad (texture lights) the compiler reads.",
     ),
-    info(StepKind::Rad, "-gmod", true, "Garry's Mod folder whose content the compiler mounts."),
+    info(StepKind::Rad, "-gmod", true, "Game folder whose content the compiler mounts."),
     info(
         StepKind::Rad,
         "-lights",

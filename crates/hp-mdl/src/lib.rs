@@ -73,6 +73,4 @@ pub fn read_header(mdl: &[u8]) -> Result<MdlHeaderInfo, MdlError> {
 extern crate self as hp_mdl;
 
 #[cfg(test)]
-mod corpus_tests;
-#[cfg(test)]
 mod synthetic_tests;

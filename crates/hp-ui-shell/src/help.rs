@@ -344,8 +344,8 @@ pub(crate) const TR: hp_app::i18n::TrTable = &[
     ("shell.about.version", "Version", "Version"),
     (
         "shell.about.description",
-        "A fast, modern level editor for Source engine maps, made for Garry's Mod mappers.",
-        "Un éditeur de maps rapide et moderne pour le moteur Source, pensé pour les mappeurs de Garry's Mod.",
+        "A fast, modern level editor for Source engine maps, made for Source mappers.",
+        "Un éditeur de maps rapide et moderne pour le moteur Source, pensé pour les mappeurs Source.",
     ),
     (
         "shell.about.license",

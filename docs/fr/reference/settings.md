@@ -486,20 +486,6 @@ La fenêtre **Construire et enregistrer en contenu** et l'onglet Ressources de l
 | `object_grids` | `true` | Modifier un objet qui porte une grille s'aligne sur cette grille. |
 | `plane_3d` | `true` | Dessine le plan d'une grille personnalisée ou par vue en 3D. |
 
-## `[mcp]` et `[discord]`
-
-| Clé | Défaut | Effet |
-| --- | --- | --- |
-| `mcp.start_with_app` | `false` | Active le serveur MCP au démarrage de Hammer Pro. **Paramètres > MCP**. Voir [Serveur MCP](mcp-server.md). |
-| `discord.enabled` | `true` | Affiche l'activité sur Discord (nécessite un id d'application). |
-| `discord.show_map` | `true` | Affiche le nom de la map. |
-| `discord.show_elapsed` | `true` | Affiche le temps passé. |
-| `discord.show_tool` | `true` | Affiche l'outil actif. |
-| `discord.application_id` | `""` | Id de l'application Discord. |
-| `discord.project_url` | `""` | Lien du bouton (pas de bouton si vide). |
-
-Voir [Discord Rich Presence](../features/discord.md).
-
 ## Pages liées
 
 - [Fenêtre des paramètres](../features/settings-dialog.md)

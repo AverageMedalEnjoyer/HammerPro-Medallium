@@ -43,7 +43,6 @@ Hammer Pro est découpé en petites crates spécialisées dans `crates/`, avec d
 | `hp-app` | Cœur partagé de l'application : état, paramètres, actions, traductions, thème, calcul des vues, interface des outils et points d'extension des modules. |
 | `hp-assets` | Gestion des ressources : montage du contenu du jeu et des FGD en arrière-plan, chargement progressif des matériaux, modèles et sprites, synchronisation de la scène du rendu. |
 | `hp-mcp` | Le serveur MCP d'une fenêtre, le pont stdio `--mcp` et l'installation dans les applications d'IA (voir [MCP.md](../../MCP.md), en anglais). |
-| `hp-discord` | Statut Discord (Rich Presence) par le protocole IPC local de Discord. |
 
 ### Interface et outils
 
@@ -75,7 +74,7 @@ hp-light, hp-compile           outils d'éclairage, chaîne de compilation
 hp-fs, hp-geom                 système de fichiers du jeu, géométrie des brushes
 hp-vmf, hp-vmt                 formats construits sur hp-kv
 hp-kv, hp-bsp, hp-vpk, hp-gma, hp-vtf, hp-mdl, hp-fgd, hp-nav, hp-pcf, hp-meshio
-hp-discord, hp-mcp             autonomes (aucune dépendance interne)
+hp-mcp             autonomes (aucune dépendance interne)
 ```
 
 Quelques liens concrets :
@@ -85,7 +84,6 @@ hp-kv <- hp-vmf <- hp-geom <- hp-editor <- hp-app <- hp-ui-*, hp-tools-* <- hamm
 hp-kv, hp-vpk, hp-gma, hp-vtf, hp-vmt, hp-mdl, hp-bsp <- hp-fs <- hp-light <- hp-bspc
 hp-bsp, hp-kv <- hp-compile
 hp-vmf, hp-geom, hp-bsp <- hp-decompile <- hp-ui-lab
-hp-discord <- hp-ui-shell
 ```
 
 Les bibliothèques renvoient des erreurs et ne paniquent jamais sur une entrée invalide ; les traitements lourds tournent dans des threads de fond et rendent compte par des canaux, pour que le thread de l'interface reste libre.

@@ -48,15 +48,15 @@ pub(crate) const TR: TrTable = &[
     ("shell.launch.ready", "Game ready", "Jeu prêt"),
     (
         "shell.launch.ready_tip",
-        "Garry's Mod is running: running the map loads it there, without restarting the game",
-        "Garry's Mod est lancé : lancer la map l'y charge, sans redémarrer le jeu",
+        "The game is running: running the map loads it there, without restarting the game",
+        "Le jeu est lancé : lancer la map l'y charge, sans redémarrer le jeu",
     ),
     ("shell.launch.starting", "Game starting", "Jeu en démarrage"),
-    ("shell.launch.starting_tip", "Garry's Mod is starting", "Garry's Mod démarre"),
+    ("shell.launch.starting_tip", "The game is starting", "Le jeu démarre"),
     (
         "shell.launch.pending_tip",
-        "Garry's Mod is starting: {0} loads as soon as it is ready",
-        "Garry's Mod démarre : {0} se chargera dès qu'il sera prêt",
+        "The game is starting: {0} loads as soon as it is ready",
+        "Le jeu démarre : {0} se chargera dès qu'il sera prêt",
     ),
 ];
 

@@ -326,8 +326,8 @@ pub(crate) const TR: TrTable = &[
     ("shell.render.player_lighting", "Player view: compiled lighting", "Vue joueur : éclairage compilé"),
     (
         "shell.render.player_lighting_tip",
-        "The player view lights the compiled map with its lightmaps and the props with their baked lighting, like Garry's Mod (L in the view)",
-        "La vue joueur éclaire la map compilée avec ses lightmaps et les props avec leur éclairage pré-calculé, comme Garry's Mod (L dans la vue)",
+        "The player view lights the compiled map with its lightmaps and the props with their baked lighting, like in the game (L in the view)",
+        "La vue joueur éclaire la map compilée avec ses lightmaps et les props avec leur éclairage pré-calculé, comme dans le jeu (L dans la vue)",
     ),
     ("shell.render.effects", "Render effects", "Effets de rendu"),
     (

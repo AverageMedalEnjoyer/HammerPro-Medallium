@@ -8,7 +8,6 @@ authors.workspace = true
 
 [dependencies]
 hp-app = { path = "../hp-app" }
-hp-discord = { path = "../hp-discord" }
 hp-editor.workspace = true
 hp-geom.workspace = true
 hp-vmf.workspace = true

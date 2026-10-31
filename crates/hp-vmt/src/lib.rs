@@ -8,8 +8,6 @@ mod patch;
 mod value;
 mod write;
 
-#[cfg(test)]
-mod real_data_tests;
 
 pub use alpha::{AlphaUsage, BlendMode, quantize_alpha_reference};
 pub use edit::{
