@@ -24,7 +24,7 @@ use crate::models::{RenderModel, entity_matrix, model_data_key};
 use crate::producer::{Derived, DerivedProducer, ProducerChanges};
 use crate::render::{CollisionState, EnvState, SkyRoom};
 
-const PARALLEL_SOLIDS: usize = 32;
+const PARALLEL_SOLIDS: usize = 4096;
 const DEFAULT_AMBIENT: [f32; 3] = [0.06, 0.06, 0.07];
 pub(crate) const PROGRESSIVE_MIN: usize = 16_384;
 const UPLOAD_BATCH: usize = 256;
@@ -869,7 +869,7 @@ impl AssetManager {
         for id in ids {
             self.scene.upload_pending.remove(id);
         }
-        let built = self.build_solids(doc, ids, display, true);
+        let built = self.build_solids(doc, ids, display, false); // sequential: avoids core-saturation spikes on every edit/undo
         self.upload_solids(renderer, built);
     }
 

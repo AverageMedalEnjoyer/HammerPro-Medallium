@@ -114,7 +114,7 @@ impl Default for RenderSettings {
             normal_maps: true,
             player_compiled_lighting: true,
             cubemaps: true,
-            cubemaps_auto: true,
+            cubemaps_auto: false,
             light_shadows: 4,
             animate_materials: true,
             model_fade: false,

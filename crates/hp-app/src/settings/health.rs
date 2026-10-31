@@ -20,9 +20,9 @@ pub struct HealthSettings {
 impl Default for HealthSettings {
     fn default() -> Self {
         Self {
-            live_checks: true,
-            live_leak_check: true,
-            show_leak_path: true,
+            live_checks: false,
+            live_leak_check: false,
+            show_leak_path: false,
             limit_profile: "auto".to_owned(),
             visible_only: false,
             portal_width: 1.0,

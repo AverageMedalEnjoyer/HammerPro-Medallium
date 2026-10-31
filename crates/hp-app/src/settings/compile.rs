@@ -134,7 +134,9 @@ pub struct CompileSettings {
 }
 
 pub fn background_precompile_default() -> bool {
-    std::thread::available_parallelism().is_ok_and(|n| n.get() >= 8)
+    // Disabled by default: on high-core CPUs the background work contributed to
+    // edit-time fan spikes and brief audio lag. Users can still enable it in Settings.
+    false
 }
 
 impl Default for CompileSettings {
