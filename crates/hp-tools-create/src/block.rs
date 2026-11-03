@@ -469,11 +469,12 @@ impl BlockTool {
         {
             let h = height_from_mouse(view, d, anchor, pos, base_height, &surface_snap(d.surface));
             d.phase = Phase3d::Height { anchor, base_height, height: h };
+            // Height is adjusted by moving the mouse. Creating requires Enter
+            // (same as the 2D path) so the user can review the box first.
             if m.activated() {
                 if m.drag_started {
                     self.drag = Some(Drag::Swallow);
                 }
-                self.confirm(state);
                 return ToolFlow::Handled;
             }
             return if m.any_button() { ToolFlow::Handled } else { ToolFlow::Ignored };

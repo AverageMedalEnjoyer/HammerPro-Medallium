@@ -83,8 +83,8 @@ pub(crate) fn analyze_water(mat: &Material) -> Option<WaterAnalysis> {
         cheap: !reflect && envmap,
         cheap_blend: !force_cheap,
         cheap_range: [
-            num(mat, "$cheapwaterstartdistance").unwrap_or(500.0),
-            num(mat, "$cheapwaterenddistance").unwrap_or(1000.0),
+            num(mat, "$cheapwaterstartdistance").unwrap_or(4000.0),
+            num(mat, "$cheapwaterenddistance").unwrap_or(8000.0),
         ],
         fresnel: !mat.flag("$nofresnel"),
         reflect_blend: num(mat, "$reflectblendfactor").unwrap_or(1.0),

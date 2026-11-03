@@ -583,6 +583,7 @@ struct CompleteState {
     highlight: Option<usize>,
     open: bool,
     shown: Vec<String>,
+    query: String,
 }
 
 impl CompleteState {
@@ -636,19 +637,30 @@ pub(crate) fn autocomplete_popup(
 ) -> Option<String> {
     let st_id = field.id.with("complete");
     let mut st: CompleteState = ui.data(|d| d.get_temp(st_id)).unwrap_or_default();
-    if !field.has_focus() {
+    // Keep the popup alive for one interaction after the field loses focus so a
+    // mouse click on a row is not swallowed by the early focus check.
+    let was_open = st.open;
+    if !field.has_focus() && !was_open {
         let picked = st.key_pick(keys, mode, &st.shown);
         ui.data_mut(|d| d.insert_temp(st_id, CompleteState::default()));
         return picked;
     }
-    let matches: Vec<usize> = suggest(text, candidates.iter().copied(), 12);
-    let useful = !(matches.len() == 1 && candidates[matches[0]].eq_ignore_ascii_case(text.trim()));
-    let shown: Vec<String> =
+    let typed = text.trim();
+    let matches: Vec<usize> = suggest(typed, candidates.iter().copied(), 64);
+    let useful = !(matches.len() == 1 && candidates[matches[0]].eq_ignore_ascii_case(typed));
+    let base: Vec<String> =
         if useful { matches.iter().map(|&i| candidates[i].to_owned()).collect() } else { Vec::new() };
-    st.open = !shown.is_empty();
     if field.changed() {
         st.highlight = None;
+        st.query.clear();
     }
+    let q = st.query.trim().to_ascii_lowercase();
+    let shown: Vec<String> = if q.is_empty() {
+        base.iter().take(16).cloned().collect()
+    } else {
+        base.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).take(16).cloned().collect()
+    };
+    st.open = field.has_focus() && (!shown.is_empty() || !base.is_empty() || was_open);
     let n = shown.len();
     if n == 0 {
         st.highlight = None;
@@ -665,14 +677,37 @@ pub(crate) fn autocomplete_popup(
     if st.open && picked.is_none() {
         let popup_id = field.id.with("complete_popup");
         Popup::new(popup_id, ui.ctx().clone(), field, field.layer_id)
-            .width(field.rect.width().max(180.0))
+            .width(field.rect.width().max(220.0))
             .close_behavior(PopupCloseBehavior::IgnoreClicks)
             .show(|ui| {
-                ui.set_min_width(field.rect.width().max(180.0));
-                for (row, name) in shown.iter().enumerate() {
+                ui.set_min_width(field.rect.width().max(220.0));
+                let search = ui.add(
+                    TextEdit::singleline(&mut st.query)
+                        .hint_text(t!("common.search"))
+                        .desired_width(f32::INFINITY),
+                );
+                if search.changed() {
+                    st.highlight = None;
+                }
+                let q = st.query.trim().to_ascii_lowercase();
+                let rows: Vec<&String> = if q.is_empty() {
+                    shown.iter().collect()
+                } else {
+                    shown.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).collect()
+                };
+                // Recompute keyboard highlight against the filtered list when search is active.
+                let rows: Vec<&String> = if rows.is_empty() && !base.is_empty() && !q.is_empty() {
+                    base.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).take(16).collect()
+                } else {
+                    rows
+                };
+                for (row, name) in rows.iter().enumerate() {
                     if list_row(ui, name, "", st.highlight == Some(row), false).clicked() {
-                        picked = Some(name.clone());
+                        picked = Some((*name).clone());
                     }
+                }
+                if rows.is_empty() {
+                    ui.label(RichText::new("No matches").weak().small());
                 }
                 let (up, down, enter) = (key_label(Key::ArrowUp), key_label(Key::ArrowDown), key_label(Key::Enter));
                 let hint = match mode {
@@ -686,6 +721,7 @@ pub(crate) fn autocomplete_popup(
         st.open = false;
         st.highlight = None;
         st.shown.clear();
+        st.query.clear();
     } else {
         st.shown = shown;
         if st.open && (mode == CompleteMode::Complete || st.highlight.is_some()) {

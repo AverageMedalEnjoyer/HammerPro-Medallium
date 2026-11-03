@@ -15,11 +15,17 @@ enum Section {
 }
 
 fn parse_dx_level(s: &str) -> Option<u32> {
-    let digits = s.strip_prefix("dx")?;
-    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+    // Source VMTs use names like "dx90", "dx9", and "dx90_20b" (SM 2.0b).
+    // Only the leading numeric DX level matters; shader-model suffixes are ignored.
+    let rest = s.strip_prefix("dx")?;
+    let digits: String = rest.chars().take_while(|c| c.is_ascii_digit()).collect();
+    if digits.is_empty() {
         return None;
     }
     let n: u32 = digits.parse().ok()?;
+    if n > 999 {
+        return None;
+    }
     Some(if n < 10 { n * 10 } else { n })
 }
 
@@ -200,6 +206,39 @@ mod tests {
         assert_eq!(eval_conditional("proxies", 95), None);
         assert_eq!(parse_dx_level("dx9"), Some(90));
         assert_eq!(parse_dx_level("dx81"), Some(81));
+        assert_eq!(parse_dx_level("dx90_20b"), Some(90));
+        assert_eq!(parse_dx_level("dx90_30"), Some(90));
+        assert_eq!(eval_conditional(">=dx90_20b", 95), Some(true));
+        assert_eq!(eval_conditional("<dx90_20b", 95), Some(false));
         assert_eq!(parse_dx_level("dx99999999999"), None);
     }
+
+    #[test]
+    fn dx90_20b_selects_basetexture() {
+        let m = parse(
+            r#"
+"VertexLitGeneric"
+{
+    "$bumpmap" "Models/Combine_soldier/combine_soldier_normal"
+    ">=dx90_20b"
+    {
+        "$baseTexture" "Models/Combine_soldier/combinesoldier_noalpha"
+        "$selfillummask" "Models/Combine_soldier/combinesoldierselfillummask"
+    }
+    "<dx90_20b"
+    {
+        "$baseTexture" "Models/Combine_soldier/combinesoldiersheet"
+    }
+}
+"#,
+        )
+        .unwrap();
+        let r = m.resolve_fallbacks(DEFAULT_DX_LEVEL, false);
+        assert_eq!(
+            r.get("$basetexture").map(str::to_ascii_lowercase).as_deref(),
+            Some("models/combine_soldier/combinesoldier_noalpha")
+        );
+        assert!(r.get("$selfillummask").is_some());
+    }
+
 }

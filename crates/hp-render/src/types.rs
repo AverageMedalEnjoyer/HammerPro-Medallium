@@ -371,7 +371,7 @@ impl Default for WaterDesc {
             fog_range: [0.0, 0.0],
             cheap: false,
             cheap_blend: true,
-            cheap_range: [500.0, 1000.0],
+            cheap_range: [4000.0, 8000.0],
             fresnel: true,
             reflect_blend: 1.0,
             base_texture: None,

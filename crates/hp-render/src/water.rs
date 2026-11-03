@@ -77,8 +77,8 @@ pub(crate) fn water_uniform(desc: &MaterialDesc, w: &WaterDesc) -> WaterMatUnifo
     let inv = |v: f32| if v.is_finite() && v.abs() > 1e-6 { 1.0 / v } else { 1.0 / 512.0 };
     let amount = |v: f32| finite(v, 0.0).clamp(-64.0, 64.0);
     let (fog_start, fog_inv) = fog_range(w.fog_range);
-    let cheap_start = finite(w.cheap_range[0], 500.0).max(0.0);
-    let cheap_end = finite(w.cheap_range[1], 1000.0).max(cheap_start + 1.0);
+    let cheap_start = finite(w.cheap_range[0], 4000.0).max(0.0);
+    let cheap_end = finite(w.cheap_range[1], 8000.0).max(cheap_start + 1.0);
     let bump = if w.bump_uv.iter().all(|v| v.is_finite()) { w.bump_uv } else { [1.0, 1.0, 0.0, 0.0] };
     let scroll = speed(w.bump_scroll);
     let (s1, s2) = (speed(w.scroll1), speed(w.scroll2));
@@ -131,12 +131,11 @@ pub(crate) fn water_uniform(desc: &MaterialDesc, w: &WaterDesc) -> WaterMatUnifo
 }
 
 pub(crate) fn far_uniform(desc: &MaterialDesc, w: &WaterDesc) -> Option<WaterMatUniform> {
-    if w.cheap || !(w.reflect || w.refract) || !w.above_water {
-        return None;
-    }
-    let mut u = water_uniform(desc, w);
-    u.flags[0] = (u.flags[0] & !(W_REFLECT | W_REFRACT)) | W_CHEAP;
-    Some(u)
+    // Editor always uses the full water path. Switching to a cheap far LOD
+    // was turning large bodies black and killing reflections as soon as the
+    // camera left a small radius around the water AABB.
+    let _ = (desc, w);
+    None
 }
 
 fn box_distance(eye: glam::Vec3, lo: glam::Vec3, hi: glam::Vec3) -> f32 {
@@ -550,7 +549,7 @@ impl Renderer {
                 mapped_at_creation: false,
             });
             self.queue.write_buffer(&buf, 0, bytemuck::bytes_of(&u));
-            let end = finite(w.cheap_range[1], 1000.0).max(finite(w.cheap_range[0], 500.0).max(0.0) + 1.0);
+            let end = finite(w.cheap_range[1], 8000.0).max(finite(w.cheap_range[0], 4000.0).max(0.0) + 1.0);
             (make_bind(&buf), end)
         });
         if let Some(state) = self.water.as_mut() {
@@ -706,17 +705,15 @@ mod tests {
     }
 
     #[test]
-    fn expensive_water_turns_cheap_far_away() {
+    fn expensive_water_keeps_reflections_far_away() {
         let d = MaterialDesc::default();
         let w = WaterDesc { envmap: true, cheap_range: [2000.0, 3000.0], ..Default::default() };
         let near = water_uniform(&d, &w);
         assert_eq!(near.flags[0] & (W_REFLECT | W_REFRACT | W_CHEAP), W_REFLECT | W_REFRACT);
         assert_eq!(near.flags[0] & (W_NO_ENVMAP | W_BELOW), 0);
-        let far = far_uniform(&d, &w).expect("expensive water has a LOD");
-        assert_eq!(far.flags[0] & (W_REFLECT | W_REFRACT | W_CHEAP), W_CHEAP);
-        assert_eq!(far.ranges[3], 3000.0);
-        let bare = far_uniform(&d, &WaterDesc { envmap: false, ..w }).expect("lod");
-        assert_ne!(bare.flags[0] & W_NO_ENVMAP, 0);
+        // Far LOD is intentionally disabled so reflections never drop out.
+        assert!(far_uniform(&d, &w).is_none());
+        assert!(far_uniform(&d, &WaterDesc { envmap: false, ..w }).is_none());
         assert!(far_uniform(&d, &WaterDesc { cheap: true, reflect: false, ..w }).is_none());
         let under = WaterDesc { above_water: false, reflect: false, ..w };
         assert!(far_uniform(&d, &under).is_none());
