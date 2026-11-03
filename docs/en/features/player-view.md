@@ -13,7 +13,25 @@ The player view lets you walk the map in the 3D view like a Garry's Mod player: 
 
 ## Keys
 
-| Key | What it does | --- | --- | Mouse | Look around. | `W` `A` `S` `D` (`Z` `Q` `S` `D` on AZERTY with the **Auto** camera keys) | Move. | `Space` | Jump. | `Ctrl` | Crouch. | `Shift` | Run. | `V` | Noclip: fly through walls. | `C` | Third person camera behind the player model. | Mouse wheel | Distance of the third person camera. | `M` | Next player model (switches to third person). | `X` | `mat_wireframe` 0, 1, 2, 3 in turn (below). | `E` | Use: open or close doors, press buttons, use props. | `N` | Shows the tool textures (nodraw, clips, triggers), hidden by default like in game. | `B` | Compiled world or editor brushes. | `L` | Lightmaps of the compiled map, or the editor shading. | `H` | Hides or shows the counters. | `1` to `9` | Turn a named light on or off. | `Escape`, `F6` | Leave. |
+| Key | What it does |
+| --- | --- |
+| Mouse | Look around. |
+| `W` `A` `S` `D` (`Z` `Q` `S` `D` on AZERTY with the **Auto** camera keys) | Move. |
+| `Space` | Jump. |
+| `Ctrl` | Crouch. |
+| `Shift` | Run. |
+| `V` | Noclip: fly through walls. |
+| `C` | Third person camera behind the player model. |
+| Mouse wheel | Distance of the third person camera. |
+| `M` | Next player model (switches to third person). |
+| `X` | `mat_wireframe` 0, 1, 2, 3 in turn (below). |
+| `E` | Use: open or close doors, press buttons, use props. |
+| `N` | Shows the tool textures (nodraw, clips, triggers), hidden by default like in game. |
+| `B` | Compiled world or editor brushes. |
+| `L` | Lightmaps of the compiled map, or the editor shading. |
+| `H` | Hides or shows the counters. |
+| `1` to `9` | Turn a named light on or off. |
+| `Escape`, `F6` | Leave. |
 
 The keys line at the top of the view reminds you of them.
 
@@ -41,7 +59,12 @@ A corner of the view shows (hide with `H`):
 
 ## Wireframe (X)
 
-| Value | What you see | --- | --- | `mat_wireframe 0` | Off. | `mat_wireframe 1` | World triangles seen through, models in wireframe. | `mat_wireframe 2` | World triangles on the visible surfaces, models in wireframe. | `mat_wireframe 3` | World polygon outlines seen through, models in wireframe. |
+| Value | What you see |
+| --- | --- |
+| `mat_wireframe 0` | Off. |
+| `mat_wireframe 1` | World triangles seen through, models in wireframe. |
+| `mat_wireframe 2` | World triangles on the visible surfaces, models in wireframe. |
+| `mat_wireframe 3` | World polygon outlines seen through, models in wireframe. |
 
 In wireframe, props show the level of detail the game would draw.
 

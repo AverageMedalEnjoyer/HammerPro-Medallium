@@ -10,17 +10,35 @@ The **Outliner** tab shows the map as a tree: the world with its groups and soli
 
 ## The tree
 
-| Node | Contains | --- | --- | **World** | The groups (**Group #id**, nested like in the map) and the world solids (**Solid #id**). | **Entities** | One node per class (sorted without case), the entities of that class in file order. A brush entity stands for its solids. |
+| Node | Contains |
+| --- | --- |
+| **World** | The groups (**Group #id**, nested like in the map) and the world solids (**Solid #id**). |
+| **Entities** | One node per class (sorted without case), the entities of that class in file order. A brush entity stands for its solids. |
 
 The bottom line sums up the map: "World solids: N, entities: N, selected: N". The **World** and **Entities** nodes start expanded.
 
 ## Controls
 
-| Control | What it does | --- | --- | Search box | "Search a name, class, id or material". Rows are kept when they or a child match, and the parents of matches are expanded. A class that matches by name stays collapsed. | Down arrow button | **Expand all**. | Up arrow button | **Collapse all** (keeps **World** and **Entities** open). | Eye of a row | **Hide** or **Show** what the row stands for (an object, a group, a class, the world). Shown crossed out when everything below it is hidden. | Arrow of a row | Expands or collapses it. |
+| Control | What it does |
+| --- | --- |
+| Search box | "Search a name, class, id or material". Rows are kept when they or a child match, and the parents of matches are expanded. A class that matches by name stays collapsed. |
+| Down arrow button | **Expand all**. |
+| Up arrow button | **Collapse all** (keeps **World** and **Entities** open). |
+| Eye of a row | **Hide** or **Show** what the row stands for (an object, a group, a class, the world). Shown crossed out when everything below it is hidden. |
+| Arrow of a row | Expands or collapses it. |
 
 ## Selecting
 
-| Gesture | What it does | --- | --- | Click a row | Selects its visible objects (a group row selects its members, a class row its entities). | `Ctrl`+click | Adds the row to the selection, or removes it when all its visible objects are already selected. | `Shift`+click | Selects the range of rows from the last clicked row. | Double click | Selects and centers the 2D and 3D views on the selection. | `Up` / `Down` (pointer over the list) | Selects the previous or next row. | `Right` | Expands the current row. | `Left` | Collapses the current row, or goes to its parent. | `Enter` | Centers the views on the selection. |
+| Gesture | What it does |
+| --- | --- |
+| Click a row | Selects its visible objects (a group row selects its members, a class row its entities). |
+| `Ctrl`+click | Adds the row to the selection, or removes it when all its visible objects are already selected. |
+| `Shift`+click | Selects the range of rows from the last clicked row. |
+| Double click | Selects and centers the 2D and 3D views on the selection. |
+| `Up` / `Down` (pointer over the list) | Selects the previous or next row. |
+| `Right` | Expands the current row. |
+| `Left` | Collapses the current row, or goes to its parent. |
+| `Enter` | Centers the views on the selection. |
 
 Hidden objects are never selected: a row holding only hidden objects keeps the current selection and tells you "Hidden objects cannot be selected: show them first (eye button)". Clicking a row does not take the keyboard focus, so `Delete`, `H` and the tool keys keep working on the selection you made in the outliner.
 

@@ -10,7 +10,15 @@ Hammer has one grid, the same step on every axis. Stairs rarely fit it: a common
 2. In **Custom grids**, click **New grid**. It starts from the size of the global grid.
 3. Fill in the fields:
 
-| Field | For the stairs | Notes |---|---|---| **Name** | `Stairs` | Unique in the map. | **Step X Y Z** | `12`, `64`, `8` | Any size, decimals allowed. Equal steps change together: hold `Shift` while you change one to set it alone. | **Origin** | the bottom corner of the first step | A node of the grid lies there. | **Pitch Yaw Roll** | `0 0 0` (or the yaw of a turned building) | Orientation of the grid, like entity angles. | **Major line every** | e.g. `4` | 0: the setting of the views. | **Limits** | the stairwell box | Optional: the grid applies only inside this box, the global grid outside. **Fit to the selection** takes the selection bounds. | **Colour** | any | Optional colour of its lines. |
+| Field | For the stairs | Notes |
+|---|---|---|
+| **Name** | `Stairs` | Unique in the map. |
+| **Step X Y Z** | `12`, `64`, `8` | Any size, decimals allowed. Equal steps change together: hold `Shift` while you change one to set it alone. |
+| **Origin** | the bottom corner of the first step | A node of the grid lies there. |
+| **Pitch Yaw Roll** | `0 0 0` (or the yaw of a turned building) | Orientation of the grid, like entity angles. |
+| **Major line every** | e.g. `4` | 0: the setting of the views. |
+| **Limits** | the stairwell box | Optional: the grid applies only inside this box, the global grid outside. **Fit to the selection** takes the selection bounds. |
+| **Colour** | any | Optional colour of its lines. |
 
 The grid is **saved with the map** (a `hammerpro_grids` block in the VMF). **Save as preset** copies it to the settings so every map offers it; **Copy to the map** does the reverse.
 

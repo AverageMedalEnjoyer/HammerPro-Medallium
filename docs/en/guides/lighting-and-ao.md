@@ -8,7 +8,12 @@ This guide lights a map from the first light to the final compile: place lights,
 
 Place light entities with the entity tool:
 
-| Entity | Use |---|---| `light` | A point light that shines in every direction. | `light_spot` | A spot light with an inner and outer cone, aimed with its angles. | `light_environment` | The sun and the sky light, through the faces with the sky texture. One per map. | `light_dynamic` | A light computed by the game at run time (not baked). |
+| Entity | Use |
+|---|---|
+| `light` | A point light that shines in every direction. |
+| `light_spot` | A spot light with an inner and outer cone, aimed with its angles. |
+| `light_environment` | The sun and the sky light, through the faces with the sky texture. One per map. |
+| `light_dynamic` | A light computed by the game at run time (not baked). |
 
 Texture lights (materials that emit light, listed in `lights.rad`) also light the map at compile time. The color and brightness of a light are its `_light` key: select the light and press `C` (**Edit > Edit color...**) to pick the color.
 
@@ -39,7 +44,11 @@ The lightmap scale of a face is its number of units per luxel: lower is finer li
 
 In **File > Compile and run...** (`Ctrl+F9`), the **Dynamic range** row sets what the lighting computes:
 
-| Choice | Effect |---|---| **LDR** | Standard dynamic range only: the fastest, what most players see. The default. | **HDR** | High dynamic range only. | **LDR + HDR** | Both (two passes), needed for a release. |
+| Choice | Effect |
+|---|---|
+| **LDR** | Standard dynamic range only: the fastest, what most players see. The default. |
+| **HDR** | High dynamic range only. |
+| **LDR + HDR** | Both (two passes), needed for a release. |
 
 **Final** always computes both, **Draft** computes one. The **Preset** sets the quality: Draft uses `-bounce 1 -fast`, Final uses `-final -StaticPropLighting`. For a quick look at the real lighting, compile with **Normal**; for the release, **Final**.
 
@@ -49,7 +58,12 @@ Hammer Pro's lighting adds ambient occlusion, which VRAD does not have for light
 
 By default it is **on for Normal and Final, off for Draft**. Control it per map in **Map > Map properties...** (these keys are shown whatever the FGD):
 
-| Map property | Key | Effect | Default |---|---|---|---| **Ambient occlusion (Hammer Pro)** | `_ao` | **Compile default**, **On** or **Off**. | Compile default | **Ambient occlusion radius** | `_aoradius` | How far geometry darkens a surface, in units (4 to 1024). | 96 | **Ambient occlusion strength** | `_aostrength` | 0 (none) to 1 (a closed corner loses all its bounced light). | 0.75 | **Ambient occlusion rays** | `_aosamples` | Rays per luxel and per static prop vertex (4 to 512). More is smoother and slower. | 32, 64 with Final |
+| Map property | Key | Effect | Default |
+|---|---|---|---|
+| **Ambient occlusion (Hammer Pro)** | `_ao` | **Compile default**, **On** or **Off**. | Compile default |
+| **Ambient occlusion radius** | `_aoradius` | How far geometry darkens a surface, in units (4 to 1024). | 96 |
+| **Ambient occlusion strength** | `_aostrength` | 0 (none) to 1 (a closed corner loses all its bounced light). | 0.75 |
+| **Ambient occlusion rays** | `_aosamples` | Rays per luxel and per static prop vertex (4 to 512). More is smoother and slower. | 32, 64 with Final |
 
 Or per compile, with the lighting options of the compile window (the menu **All lighting options (hammerpro --rad)** or the **Extra lighting arguments**): `-ao`, `-noao`, `-aoradius N`, `-aostrength N`, `-aosamples N`. These options win over the map keys.
 

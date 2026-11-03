@@ -21,7 +21,11 @@ Clicking the **Leak** badge of the status bar does the same.
 
 When a compile finds a leak, the compiler writes a pointfile (`<map>.lin`). With **Load the leak pointfile automatically** (Settings > Compile, on by default) it is loaded at the end of the compile and the leaking entity is selected. The compile window can also stop right after the geometry on a leak (**Stop when the map leaks**, see [Compile window](../compiler/compile-window.md)).
 
-| Command | What it does | --- | --- | **Map > Load leak pointfile...** | Loads `<map>.lin`, else `<map>.pts`, next to the map or in its build folder (`.hammerpro_build`). Without one, asks for a file (filter **Leak pointfile**, `.lin` and `.pts`). | **Map > Unload pointfile** | Removes the path from the views. | Drop a `.lin` or `.pts` file on the window | Loads it. |
+| Command | What it does |
+| --- | --- |
+| **Map > Load leak pointfile...** | Loads `<map>.lin`, else `<map>.pts`, next to the map or in its build folder (`.hammerpro_build`). Without one, asks for a file (filter **Leak pointfile**, `.lin` and `.pts`). |
+| **Map > Unload pointfile** | Removes the path from the views. |
+| Drop a `.lin` or `.pts` file on the window | Loads it. |
 
 A loaded pointfile replaces the path of the instant check in the views. When the leaking entity is deleted, the path is unloaded (*The leaking entity is gone: leak path unloaded. Compile again to check the map is sealed.*).
 
@@ -29,7 +33,13 @@ A loaded pointfile replaces the path of the instant check in the views. When the
 
 A loaded pointfile opens a small floating window, **Leak path: N points**, to walk the camera along the path the way you fix a leak: point 1 is the leaking entity and **Next** walks toward the void.
 
-| Control | What it does | --- | --- | **Point N of M** | Where you are on the path. | **Previous** | Previous point, toward the leaking entity. | **Next** | Next point, toward the void. | **Look at the current point** | Moves the 3D camera to look at the point. | **Unload** | Unloads the pointfile. |
+| Control | What it does |
+| --- | --- |
+| **Point N of M** | Where you are on the path. |
+| **Previous** | Previous point, toward the leaking entity. |
+| **Next** | Next point, toward the void. |
+| **Look at the current point** | Moves the 3D camera to look at the point. |
+| **Unload** | Unloads the pointfile. |
 
 The views label the ends of the path: **Leak start: entity** and **Leak end: void**.
 
@@ -37,17 +47,30 @@ The views label the ends of the path: **Leak start: entity** and **Leak end: voi
 
 A portal file (`<map>.prt`) holds the portals between the visibility clusters that the geometry step builds. Viewing them shows where the visibility splits the map, and how hints and `func_detail` change it.
 
-| Command | Default key | What it does | --- | --- | --- | **Map > Load portal file...** | Loads the `.prt` of the map (or asks for one). Dropping a `.prt` on the window works too. | **Map > Unload portal file** | Removes the portals. | **Map > Build portals (geometry only)** | `Ctrl+Shift+P` | Builds only the geometry of the current map (seconds, into its build folder) and loads its portals: see the effect of hints and `func_detail` right away. | **Map > Portals and visibility...** | Opens the window below. | **View > Show visible clusters** | Colors the portals of the clusters visible from the camera (needs a map compiled with visibility). |
+| Command | Default key | What it does |
+| --- | --- | --- |
+| **Map > Load portal file...** | | Loads the `.prt` of the map (or asks for one). Dropping a `.prt` on the window works too. |
+| **Map > Unload portal file** | | Removes the portals. |
+| **Map > Build portals (geometry only)** | `Ctrl+Shift+P` | Builds only the geometry of the current map (seconds, into its build folder) and loads its portals: see the effect of hints and `func_detail` right away. |
+| **Map > Portals and visibility...** | | Opens the window below. |
+| **View > Show visible clusters** | | Colors the portals of the clusters visible from the camera (needs a map compiled with visibility). |
 
 After a compile that wrote a new portal file, Hammer Pro offers it (*The compile wrote a new portal file.* **Load it** / **Not now**), unless you turned off **Offer the new portal file after a compile**. Portals already shown are reloaded automatically.
 
 ### The Portals and visibility window
 
-| Control | What it does | Default | --- | --- | --- | Summary | *N portals between M clusters*, or **No portal file loaded**. |
-| **Line width** | Width of the portal lines, 1 to 4 px. | 1 px | **See through the walls (3D)** | The 3D view draws the portals over the geometry, like the 2D views. | on | **Color by render cost** | Portals go from green to red with the triangles drawn from their clusters: red areas are the ones to optimize (hints, func_detail, areaportals). Needs the visibility of the compiled map. | off | **Leaf grid (1024 units)** | The compiler splits leaves every 1024 units: hints work best along this grid. **Thickness** sets its line width (1 to 6 px). | off | **Show visible clusters** | Portals of the clusters visible from the camera (or a picked point) turn green, like `mat_leafvis 3` in game. **From the camera** or **From a point** (click a point in a view). Shows *Cluster N: X of Y clusters visible* and *Drawn from here: faces, triangles, displacements, props, overlays*. | off | **Geometry only and reload** | Same as **Build portals (geometry only)**. |
-| **Reload** | Reads the newest portal file of the map; after edits, it is built again first. |
-| **Load portal file...** / **Unload portal file** | As in the Map menu. |
-| **Detach window** | Shows the window as a window of its own (another screen). **Put back in the main window** returns it. Its place is remembered. |
+| Control | What it does | Default |
+| --- | --- | --- |
+| Summary | *N portals between M clusters*, or **No portal file loaded**. | |
+| **Line width** | Width of the portal lines, 1 to 4 px. | 1 px |
+| **See through the walls (3D)** | The 3D view draws the portals over the geometry, like the 2D views. | on |
+| **Color by render cost** | Portals go from green to red with the triangles drawn from their clusters: red areas are the ones to optimize (hints, func_detail, areaportals). Needs the visibility of the compiled map. | off |
+| **Leaf grid (1024 units)** | The compiler splits leaves every 1024 units: hints work best along this grid. **Thickness** sets its line width (1 to 6 px). | off |
+| **Show visible clusters** | Portals of the clusters visible from the camera (or a picked point) turn green, like `mat_leafvis 3` in game. **From the camera** or **From a point** (click a point in a view). Shows *Cluster N: X of Y clusters visible* and *Drawn from here: faces, triangles, displacements, props, overlays*. | off |
+| **Geometry only and reload** | Same as **Build portals (geometry only)**. | |
+| **Reload** | Reads the newest portal file of the map; after edits, it is built again first. | |
+| **Load portal file...** / **Unload portal file** | As in the Map menu. | |
+| **Detach window** | Shows the window as a window of its own (another screen). **Put back in the main window** returns it. Its place is remembered. | |
 
 ## Seal an opening with an areaportal
 
@@ -59,7 +82,16 @@ The areaportal checks of [Check for problems](check-problems.md) tell you when a
 
 **Settings > Map health** (`[health]`):
 
-| Option | Key | Default | --- | --- | --- | **Look for leaks as I edit** | `live_leak_check` | on | **Draw the path of the leak found** | `show_leak_path` | on | **Portal line width** | `portal_width` | 1 | **Show the 1024 unit leaf grid** | `leaf_grid` | off | **Offer the new portal file after a compile** | `offer_portals` | on | Leaf grid thickness (portals window) | `leaf_width` | 1 | Color by render cost (portals window) | `portal_heat` | off | See through the walls (portals window) | `portal_xray` | on |
+| Option | Key | Default |
+| --- | --- | --- |
+| **Look for leaks as I edit** | `live_leak_check` | on |
+| **Draw the path of the leak found** | `show_leak_path` | on |
+| **Portal line width** | `portal_width` | 1 |
+| **Show the 1024 unit leaf grid** | `leaf_grid` | off |
+| **Offer the new portal file after a compile** | `offer_portals` | on |
+| Leaf grid thickness (portals window) | `leaf_width` | 1 |
+| Color by render cost (portals window) | `portal_heat` | off |
+| See through the walls (portals window) | `portal_xray` | on |
 
 ## MCP
 

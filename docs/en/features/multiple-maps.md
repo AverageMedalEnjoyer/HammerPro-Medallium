@@ -8,13 +8,27 @@ Hammer Pro keeps several maps open at once, each in its own tab above the views,
 
 The tab bar sits above the views: one tab per open map, a `*` after the name when the map has unsaved changes, and the full path in the tooltip (*Not saved yet* for a new map).
 
-| Gesture | What it does | --- | --- | Click a tab | Shows that map. | Middle click a tab | Closes it. | Close button (cross) of a tab | Closes it. | **+** at the end of the bar | **New map** in a new tab. | Right click a tab | **Close**, **Close other maps** (when several maps are open), **Copy the path** and **Show in the folder** (for a saved map). |
+| Gesture | What it does |
+| --- | --- |
+| Click a tab | Shows that map. |
+| Middle click a tab | Closes it. |
+| Close button (cross) of a tab | Closes it. |
+| **+** at the end of the bar | **New map** in a new tab. |
+| Right click a tab | **Close**, **Close other maps** (when several maps are open), **Copy the path** and **Show in the folder** (for a saved map). |
 
 Long names are shortened; the bar scrolls sideways when the tabs do not fit.
 
 ## Commands
 
-| Command | Default key | What it does | --- | --- | --- | **File > New map** | `Ctrl+N` | Opens a new empty map in a new tab. | **File > Open map...** | `Ctrl+O` | Opens a map in a new tab (see below). | **File > Close** | `Ctrl+F4` | Closes the map shown, after asking to save its changes (*Save the changes to map before closing it?*). Closing the last map leaves a new empty one. | **File > Close other maps** | Closes every other map, asking for each modified one in turn. | **Window > Next map** | `Ctrl+Tab` | Shows the next tab. | **Window > Previous map** | `Ctrl+Shift+Tab` | Shows the previous tab. | **Window > Open maps** | Lists the open maps (the one shown is checked); click one to show it. |
+| Command | Default key | What it does |
+| --- | --- | --- |
+| **File > New map** | `Ctrl+N` | Opens a new empty map in a new tab. |
+| **File > Open map...** | `Ctrl+O` | Opens a map in a new tab (see below). |
+| **File > Close** | `Ctrl+F4` | Closes the map shown, after asking to save its changes (*Save the changes to map before closing it?*). Closing the last map leaves a new empty one. |
+| **File > Close other maps** | | Closes every other map, asking for each modified one in turn. |
+| **Window > Next map** | `Ctrl+Tab` | Shows the next tab. |
+| **Window > Previous map** | `Ctrl+Shift+Tab` | Shows the previous tab. |
+| **Window > Open maps** | | Lists the open maps (the one shown is checked); click one to show it. |
 
 Quitting Hammer Pro asks about every modified map in turn.
 
@@ -34,7 +48,11 @@ Everything that belongs to a map follows its tab: cameras, selection, undo histo
 
 A layout is the arrangement of the views and panels: the view in each quadrant, the split positions, the maximized view, and which dock panels are shown (textures, entity properties, visgroups, outliner, models, console).
 
-| Command | What it does | --- | --- | **Window > Layout > Save layout...** | Asks for a name (*Name of the layout:*, `Layout N` proposed) and saves the current arrangement. A layout with the same name is replaced (you are warned). 32 layouts at most. | **Window > Layout > Reset layout** | Back to the default arrangement: 3D, top, front and side views, centered splits, no maximized view, every dock panel shown. | **Window > Saved layouts** | Click a layout to apply it. **Delete** lists the layouts to delete one. *No saved layout* when the list is empty. |
+| Command | What it does |
+| --- | --- |
+| **Window > Layout > Save layout...** | Asks for a name (*Name of the layout:*, `Layout N` proposed) and saves the current arrangement. A layout with the same name is replaced (you are warned). 32 layouts at most. |
+| **Window > Layout > Reset layout** | Back to the default arrangement: 3D, top, front and side views, centered splits, no maximized view, every dock panel shown. |
+| **Window > Saved layouts** | Click a layout to apply it. **Delete** lists the layouts to delete one. *No saved layout* when the list is empty. |
 
 Layouts are stored in settings.toml (`[workflow.layouts]`), so they are the same for every map.
 

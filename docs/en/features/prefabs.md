@@ -6,21 +6,42 @@ A prefab is a piece of map saved as a VMF file (a staircase, a light fixture, a 
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | Prefabs tab | **View > Panels > Prefabs** | none | **Create prefab...** | **Tools > Create prefab...** | `Ctrl+R` | **Insert prefab at original size** | **Tools > Insert prefab at original size** | `Alt+Shift+C` |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| Prefabs tab | **View > Panels > Prefabs** | none |
+| **Create prefab...** | **Tools > Create prefab...** | `Ctrl+R` |
+| **Insert prefab at original size** | **Tools > Insert prefab at original size** | `Alt+Shift+C` |
 
 ## The library
 
 The tab lists the `.vmf` files of the prefab folders, scanned in the background. Subfolders are categories. The folders are:
 
-| Root | Where | Writable | --- | --- | --- | **My prefabs** | The library folder: `%APPDATA%\HammerPro\prefabs` by default, or the folder chosen in the settings. | Yes | **Prefab folder** | Each extra folder added in the settings. | No | The game (**Garry's Mod**) | The Hammer prefab folders of the game install (`bin/prefabs`, `bin/win64/prefabs`). | No |
+| Root | Where | Writable |
+| --- | --- | --- |
+| **My prefabs** | The library folder: `%APPDATA%\HammerPro\prefabs` by default, or the folder chosen in the settings. | Yes |
+| **Prefab folder** | Each extra folder added in the settings. | No |
+| The game (**Garry's Mod**) | The Hammer prefab folders of the game install (`bin/prefabs`, `bin/win64/prefabs`). | No |
 
 Tab controls:
 
-| Control | What it does | --- | --- | **+** | **Create a prefab from the selection...** (same as `Ctrl+R`). | Refresh | **Scan the prefab folders again**. | Folder | **Open my prefab folder**. | Slider | **Tile size** (56 to 192 points). | **Search prefabs...** | Filters the tiles by name. | Category list | **All prefabs** or one folder. | Count | "N of M prefabs" (very large folders show only their first files). |
+| Control | What it does |
+| --- | --- |
+| **+** | **Create a prefab from the selection...** (same as `Ctrl+R`). |
+| Refresh | **Scan the prefab folders again**. |
+| Folder | **Open my prefab folder**. |
+| Slider | **Tile size** (56 to 192 points). |
+| **Search prefabs...** | Filters the tiles by name. |
+| Category list | **All prefabs** or one folder. |
+| Count | "N of M prefabs" (very large folders show only their first files). |
 
 Each tile shows a thumbnail drawn in the background and cached on disk, so the tab opens instantly next time. The tooltip gives the name, category and path.
 
-| Gesture on a tile | What it does | --- | --- | Click | Selects the prefab (for **Insert prefab at original size**). | Double click | Arms the prefab for the [entity tool](entity-tool.md). | Drag into a view | Inserts it where you drop it. | Right-click | **Place with the entity tool**, **Insert at original size**, **Show in folder**. |
+| Gesture on a tile | What it does |
+| --- | --- |
+| Click | Selects the prefab (for **Insert prefab at original size**). |
+| Double click | Arms the prefab for the [entity tool](entity-tool.md). |
+| Drag into a view | Inserts it where you drop it. |
+| Right-click | **Place with the entity tool**, **Insert at original size**, **Show in folder**. |
 
 ## Inserting a prefab
 
@@ -38,7 +59,11 @@ Write `&i` in names inside a prefab (for example `door_&i` and an output targeti
 
 Select the objects and press `Ctrl+R`. The **Create prefab** window asks:
 
-| Field | What it does | --- | --- | **Name:** | File name of the prefab. | **Folder:** | A folder of your library, **(library)** for its root, **or a new folder** (subfolders with `/`). Created if needed. | **Replace the existing prefab** | Shown when the name exists. |
+| Field | What it does |
+| --- | --- |
+| **Name:** | File name of the prefab. |
+| **Folder:** | A folder of your library, **(library)** for its root, **or a new folder** (subfolders with `/`). Created if needed. |
+| **Replace the existing prefab** | Shown when the name exists. |
 
 **Save** writes the VMF in the background (atomic write). Names and folders cannot contain `\ / : * ? " < > |` or reserved names.
 
@@ -46,7 +71,14 @@ Select the objects and press `Ctrl+R`. The **Create prefab** window asks:
 
 **Tools > Options... > Prefabs** (`[placement]` in `settings.toml`):
 
-| Option | What it does | Default | --- | --- | --- | **Show the Prefabs tab** (`show_prefabs`) | Shows the tab in the right dock. | On | **Library folder:** (`prefab_library`) | Where new prefabs are saved. **Browse...**, **Use the default folder**. | `%APPDATA%\HammerPro\prefabs` | **More prefab folders (read only):** (`prefab_dirs`) | Extra folders listed read only. **Add a folder...**, remove with the cross. | None | **List the prefabs of Garry's Mod** (`game_prefabs`) | Lists the Hammer prefab folders of the game install, read only. | On | **Group inserted prefabs** (`group_prefabs`) | The objects of each inserted prefab form a group. | On | Tile size (`prefab_tile`) | Size of the tiles, 56 to 192. | 96 |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Show the Prefabs tab** (`show_prefabs`) | Shows the tab in the right dock. | On |
+| **Library folder:** (`prefab_library`) | Where new prefabs are saved. **Browse...**, **Use the default folder**. | `%APPDATA%\HammerPro\prefabs` |
+| **More prefab folders (read only):** (`prefab_dirs`) | Extra folders listed read only. **Add a folder...**, remove with the cross. | None |
+| **List the prefabs of Garry's Mod** (`game_prefabs`) | Lists the Hammer prefab folders of the game install, read only. | On |
+| **Group inserted prefabs** (`group_prefabs`) | The objects of each inserted prefab form a group. | On |
+| Tile size (`prefab_tile`) | Size of the tiles, 56 to 192. | 96 |
 
 ## Tips
 

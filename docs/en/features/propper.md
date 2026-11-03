@@ -6,7 +6,11 @@ Propper turns selected brushes and displacements into a static prop (a compiled 
 
 ## Opening it
 
-| Command | Where | What it needs |---|---|---| **Convert brushes to a static prop** | **Tools** menu, and a button of the tool palette | Selected brushes (world brushes or brushes of entities). Greyed out otherwise: "Select the brushes to turn into a static prop". | **Convert prop to brushes...** | **Tools** menu, and a button of the tool palette | A selected `prop_*` entity whose `model` is a `.mdl`. Greyed out otherwise: "Select a prop to turn back into brushes". | **Static prop options (Propper)...** | **Tools** menu | Nothing. |
+| Command | Where | What it needs |
+|---|---|---|
+| **Convert brushes to a static prop** | **Tools** menu, and a button of the tool palette | Selected brushes (world brushes or brushes of entities). Greyed out otherwise: "Select the brushes to turn into a static prop". |
+| **Convert prop to brushes...** | **Tools** menu, and a button of the tool palette | A selected `prop_*` entity whose `model` is a `.mdl`. Greyed out otherwise: "Select a prop to turn back into brushes". |
+| **Static prop options (Propper)...** | **Tools** menu | Nothing. |
 
 None of them has a default shortcut (bind one in **Settings > Keyboard**).
 
@@ -33,7 +37,11 @@ The toast and the console tell the result: levels of detail with their triangle 
 
 This window holds the options of "Convert brushes to a static prop", also used by the [model import](model-import.md). They are saved in `[lab.model_lod]`.
 
-| Option | What it does | Default |---|---|---| **Levels of detail (LOD)** | Make simplified versions of the model that the game draws far away (fewer triangles, same look). | On | **Levels** | Levels below the full model, 3 to 6. Big models get one or two more. | 4 | **Each keeps** | Part of the triangles of the level above each level keeps, 20 to 90 %. Small models are reduced more gently. | 50 % |
+| Option | What it does | Default |
+|---|---|---|
+| **Levels of detail (LOD)** | Make simplified versions of the model that the game draws far away (fewer triangles, same look). | On |
+| **Levels** | Levels below the full model, 3 to 6. Big models get one or two more. | 4 |
+| **Each keeps** | Part of the triangles of the level above each level keeps, 20 to 90 %. Small models are reduced more gently. | 50 % |
 
 The levels switch at distances that double each level. The simplification keeps texture seams, material borders, holes and the silhouette: flat areas are reduced first. The window also recalls how collision and blend materials are handled. **Close** or `Escape` closes it.
 
@@ -41,9 +49,13 @@ The levels switch at distances that double each level. The simplification keeps 
 
 The **Convert prop to brushes** window works on the first selected prop (`prop_static`, `prop_dynamic`, `prop_physics` or any `prop_*` with a `.mdl` model). It reads the model through the game content, with the body groups of its `body` key, the materials of its `skin`, and its origin, angles and model scale. The window shows the model path, its render triangle count, and whether it has a collision model ("Collision model: N convex pieces (one brush each)" or "No collision model: the brushes are built from the render mesh").
 
-| Option | What it does | Default |---|---|---| **Shape from** - **Automatic** | The collision model when the model has one (the exact brushes of a prop made with Hammer Pro), else the render mesh. | Selected | **Shape from** - **Collision model** | One brush per convex piece of the collision model. Refused for a model without one. |
-| **Shape from** - **Render mesh (convex pieces)** | Brushes grown from the convex parts of the visible mesh: close to the model, approximate on curved or hollow shapes. |
-| **Put the brushes in** | **func_detail** (a new one), or **The world** (grouped when there are several brushes). | func_detail | **Keep the prop** | Leaves the prop in the map next to the brushes. | Off |
+| Option | What it does | Default |
+|---|---|---|
+| **Shape from** - **Automatic** | The collision model when the model has one (the exact brushes of a prop made with Hammer Pro), else the render mesh. | Selected |
+| **Shape from** - **Collision model** | One brush per convex piece of the collision model. Refused for a model without one. | |
+| **Shape from** - **Render mesh (convex pieces)** | Brushes grown from the convex parts of the visible mesh: close to the model, approximate on curved or hollow shapes. | |
+| **Put the brushes in** | **func_detail** (a new one), or **The world** (grouped when there are several brushes). | func_detail |
+| **Keep the prop** | Leaves the prop in the map next to the brushes. | Off |
 
 These choices are saved (`unprop_shape`, `unprop_detail`, `unprop_keep_prop` in `[lab]`). **Convert** (`Enter`) runs it, **Cancel** (`Escape`) closes the window.
 

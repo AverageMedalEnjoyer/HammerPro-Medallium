@@ -6,7 +6,11 @@ The navigation mesh (`.nav`) tells NPCs and bots where they can walk. Hammer Pro
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | **Generate nav mesh** | **Tools > Generate nav mesh** | none | **Load nav mesh...** | **Map > Load nav mesh...** | none | **Show nav mesh** | **View > Display options > Show nav mesh** | none |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| **Generate nav mesh** | **Tools > Generate nav mesh** | none |
+| **Load nav mesh...** | **Map > Load nav mesh...** | none |
+| **Show nav mesh** | **View > Display options > Show nav mesh** | none |
 
 ## Generating
 
@@ -26,7 +30,17 @@ Warnings in the console: player starts with no ground under them are skipped, an
 
 **Show nav mesh** draws the mesh in every view. The file is the one chosen with **Map > Load nav mesh...**, else the `.nav` next to the map, else the one in the game's `maps` folder (also next to a decompiled BSP). It is read again when it changes on disk. Hammer Pro reads nav versions 1 to 16 (Garry's Mod writes version 16).
 
-| Drawing | Meaning | --- | --- | Area outline green | Walkable. | Blue | Crouch. | Yellow | Jump. | Red | Avoid. | Cyan | Stairs. | Magenta | Cut off from the main part of the mesh (where players spawn, else the largest part). | White line | Connection both ways. | Orange line with an arrow | One way connection. | Purple frame | Ladder. |
+| Drawing | Meaning |
+| --- | --- |
+| Area outline green | Walkable. |
+| Blue | Crouch. |
+| Yellow | Jump. |
+| Red | Avoid. |
+| Cyan | Stairs. |
+| Magenta | Cut off from the main part of the mesh (where players spawn, else the largest part). |
+| White line | Connection both ways. |
+| Orange line with an arrow | One way connection. |
+| Purple frame | Ladder. |
 
 Areas are filled in the 3D view and outlined in the 2D views. The status bar shows "Nav areas: N" (and "cut off: N"); the console lists the areas, ladders, one way links and links to missing areas of the loaded mesh.
 
@@ -34,7 +48,11 @@ Areas are filled in the 3D view and outlined in the 2D views. The status bar sho
 
 **Tools > Options... > Nav mesh and particles** (`[lab]` in `settings.toml`):
 
-| Option | What it does | Default | --- | --- | --- | **Show nav mesh** (`show_nav_mesh`) | Draws the mesh. | Off | **Fill the areas in the 3D view** (`nav_fill`) | Without the fill, only the outlines of the areas are drawn. | On | **Connections between areas** (`nav_connections`) | White: both ways. Orange with an arrow: one way. | On |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Show nav mesh** (`show_nav_mesh`) | Draws the mesh. | Off |
+| **Fill the areas in the 3D view** (`nav_fill`) | Without the fill, only the outlines of the areas are drawn. | On |
+| **Connections between areas** (`nav_connections`) | White: both ways. Orange with an arrow: one way. | On |
 
 ## Tips
 

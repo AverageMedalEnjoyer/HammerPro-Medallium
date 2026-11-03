@@ -34,7 +34,11 @@ The build records its date and, in a git checkout, the commit, both shown in **H
 
 ## Profiles
 
-| Profile | Command | Use | Settings |---|---|---|---| `dev` | `cargo build`, `cargo run`, `cargo test` | Everyday development. Your code at `opt-level = 1`, every dependency at `opt-level = 3`, so the editor stays usable. Line tables only (enough for backtraces), no incremental cache. | `opt-level = 1`, `debug = "line-tables-only"`, `incremental = false` | `release` | `cargo build --release` | The builds you ship. | `lto = "thin"`, `codegen-units = 1`, no debug info | `fast` | `cargo build --profile fast`, `cargo test --profile fast` | Iteration builds: release speed at run time, much faster and lighter to build than `release`. Output in `target/fast/`. | Inherits `release`, `lto = false`, `codegen-units = 16`, `incremental = true` |
+| Profile | Command | Use | Settings |
+|---|---|---|---|
+| `dev` | `cargo build`, `cargo run`, `cargo test` | Everyday development. Your code at `opt-level = 1`, every dependency at `opt-level = 3`, so the editor stays usable. Line tables only (enough for backtraces), no incremental cache. | `opt-level = 1`, `debug = "line-tables-only"`, `incremental = false` |
+| `release` | `cargo build --release` | The builds you ship. | `lto = "thin"`, `codegen-units = 1`, no debug info |
+| `fast` | `cargo build --profile fast`, `cargo test --profile fast` | Iteration builds: release speed at run time, much faster and lighter to build than `release`. Output in `target/fast/`. | Inherits `release`, `lto = false`, `codegen-units = 16`, `incremental = true` |
 
 ## Tests
 

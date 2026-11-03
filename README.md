@@ -6,6 +6,8 @@
 
 **!!! MOST CODE IN THIS USES AND IS ASSISTED BY AI, YOU WILL HAVE TO KILL ME TO CODE WITH RUST. THIS IS A PROJECT MAINLY FOR ME. IF ANYONE WANTS TO USE THIS FOR ANYTHING, FEEL FREE. PERMISSION IS NOT NEEDED. !!!**
 
+[Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md)
+
 Hammer Pro opens and saves standard `.vmf` files, so you can use it side by side with Hammer and Hammer++. It is written in Rust, renders with the GPU through wgpu, stays smooth on huge maps and compiles maps with its own built in compiler: no VBSP, VVIS or VRAD needed.
 
 Version **1.0.1**.
@@ -25,7 +27,7 @@ Every feature has its own page in the [documentation](docs/en/README.md).
 - **Map health.** Live problem checks, an instant leak check with the leak path, engine limits per game, portal files and visibility. See [Leaks and pointfiles](docs/en/features/leaks-pointfiles.md).
 - **Ship it.** [Map assets](docs/en/features/map-assets.md) lists and collects every file the map uses, [Build and save as content](docs/en/features/build-content-release.md) makes a ready to share addon with a release checklist and Workshop publishing, [BSP Protection Pro](docs/en/features/bsp-protection.md) ships a protected copy of the map.
 - **Gameplay helpers.** [Navigation mesh generation](docs/en/features/nav-mesh.md), [several 3D skyboxes and a skybox switch entity](docs/en/features/sky-cameras.md), [soundscapes](docs/en/features/soundscapes.md), [particle preview](docs/en/features/particles.md), [game launch and reload](docs/en/features/game-launch.md).
-- **Your editor.** Black and white interface (dark or light), [English](docs/en/features/themes-languages.md), [Hammer and Hammer++ shortcut sets](docs/en/features/keyboard-shortcuts.md).
+- **Your editor.** Black and white interface (dark or light), [English and French](docs/en/features/themes-languages.md), [Hammer and Hammer++ shortcut sets](docs/en/features/keyboard-shortcuts.md).
 
 ## Requirements
 
@@ -49,7 +51,17 @@ Details: [Installation](docs/en/getting-started/installation.md) and [Game setup
 
 Follow [Your first map](docs/en/getting-started/first-map.md) for a complete walk through.
 
-| Action | Keys |---|---| Fly the 3D camera | hold the right mouse button + `W A S D` (`Z Q S D` on AZERTY), `Shift` faster | Toggle mouselook | `Z` | Pan / zoom 2D views | middle mouse or `Space` + drag / mouse wheel | Grid smaller / larger | `[` / `]` | Selection, block, entity, texture, clip, vertex tools | `Shift+S`, `Shift+B`, `Shift+E`, `Shift+A`, `Shift+X`, `Shift+V` | Command palette | `Ctrl+P` | Compile now | `F9` | Player view | `F6` | Every shortcut | `F1` |
+| Action | Keys |
+|---|---|
+| Fly the 3D camera | hold the right mouse button + `W A S D` (`Z Q S D` on AZERTY), `Shift` faster |
+| Toggle mouselook | `Z` |
+| Pan / zoom 2D views | middle mouse or `Space` + drag / mouse wheel |
+| Grid smaller / larger | `[` / `]` |
+| Selection, block, entity, texture, clip, vertex tools | `Shift+S`, `Shift+B`, `Shift+E`, `Shift+A`, `Shift+X`, `Shift+V` |
+| Command palette | `Ctrl+P` |
+| Compile now | `F9` |
+| Player view | `F6` |
+| Every shortcut | `F1` |
 
 All shortcuts are listed in [Actions and keyboard shortcuts](docs/en/reference/actions-shortcuts.md) and can be changed in **Settings > Keyboard**.
 
@@ -66,11 +78,12 @@ The executable is `target/release/hammerpro-medallium.exe`. Rust 1.95 or newer i
 ## Documentation
 
 - [English documentation](docs/en/README.md): getting started, one page per feature, the compiler, references (settings, shortcuts, command line, scripts), guides, troubleshooting and development.
+- [Documentation en français](docs/fr/README.md).
 - [Developer guide to extending Hammer Pro](docs/EXTENDING.md).
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md). Translations live next to the code in each crate's `TR` table (English); adding a language means adding one column.
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md). Translations live next to the code in each crate's `TR` table (English and French); adding a language means adding one column.
 
 ## License
 

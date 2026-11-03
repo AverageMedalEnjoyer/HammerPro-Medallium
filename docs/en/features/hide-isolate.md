@@ -6,7 +6,15 @@ Hiding takes objects out of the way without deleting them: Hammer's quick hide (
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | **Hide selected** | **View > Hide selected** | `H` | **Hide unselected** | **View > Hide unselected** | `Ctrl+Shift+H` | **Unhide all** | **View > Unhide all** | `U` | **Make a visgroup of hidden objects** | **View > Make a visgroup of hidden objects** | none | **Show editor objects** | **View > Display options > Show editor objects** | none (`Alt+O` with the Hammer++ keymap preset) | **Show tool textures** | **View > Show tool textures** | none (`Ctrl+Shift+F2` with the Hammer++ keymap preset) | Hidden tool textures | **View > Hidden tool textures** (submenu) | none |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| **Hide selected** | **View > Hide selected** | `H` |
+| **Hide unselected** | **View > Hide unselected** | `Ctrl+Shift+H` |
+| **Unhide all** | **View > Unhide all** | `U` |
+| **Make a visgroup of hidden objects** | **View > Make a visgroup of hidden objects** | none |
+| **Show editor objects** | **View > Display options > Show editor objects** | none (`Alt+O` with the Hammer++ keymap preset) |
+| **Show tool textures** | **View > Show tool textures** | none (`Ctrl+Shift+F2` with the Hammer++ keymap preset) |
+| Hidden tool textures | **View > Hidden tool textures** (submenu) | none |
 
 The toolbar has the three hide buttons, and the tool palette ends with the isolate eye.
 
@@ -45,7 +53,12 @@ The eye at the end of the tool palette isolates the selection:
 - **Show tool textures** (View menu and toolbar, on by default, `view.show_tool_textures`) shows or hides every face with a tool texture in the 3D view.
 - **View > Hidden tool textures** hides groups of tool textures in the 3D view while tool textures are shown: **Nodraw**, **Clips**, **Triggers**, **Hints and skips**. The same four checkboxes are on the **Rendering** page of the settings (**Tool textures hidden in 3D**), and **Show nodraw faces** (View > Display options and toolbar) toggles the **Nodraw** one.
 
-| Setting (`[render]`) | What it hides | Default | --- | --- | --- | `hide_nodraw` | Nodraw faces | Off | `hide_clips` | Clip brushes | Off | `hide_triggers` | Triggers | Off | `hide_hints` | Hints and skips | Off |
+| Setting (`[render]`) | What it hides | Default |
+| --- | --- | --- |
+| `hide_nodraw` | Nodraw faces | Off |
+| `hide_clips` | Clip brushes | Off |
+| `hide_triggers` | Triggers | Off |
+| `hide_hints` | Hints and skips | Off |
 
 ## Tips
 

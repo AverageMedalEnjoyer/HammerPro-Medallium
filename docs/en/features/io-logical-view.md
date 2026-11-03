@@ -6,7 +6,13 @@ Outputs and inputs wire entities together: "when this fires, send that input to 
 
 ## Opening it
 
-| What | How |---|---| Outputs and inputs tabs | **Edit > Properties** (`Alt+Enter`), then the **Outputs (N)** and **Inputs (N)** tabs of the **Entity** tab. | Connection lines in the views | **View > Display options > Show connections** cycles the mode; **Settings > Helpers > Input/output connections** sets it. | Logical view window | **View > Logical view** (opens and closes it). | 2D logical view in a quadrant | **View > 2D logical view** sets the view under the mouse (else the last one used), or choose **2D Logical** in the view type menu of a view header. | Entity gallery | **Map > Insert entity gallery**. |
+| What | How |
+|---|---|
+| Outputs and inputs tabs | **Edit > Properties** (`Alt+Enter`), then the **Outputs (N)** and **Inputs (N)** tabs of the **Entity** tab. |
+| Connection lines in the views | **View > Display options > Show connections** cycles the mode; **Settings > Helpers > Input/output connections** sets it. |
+| Logical view window | **View > Logical view** (opens and closes it). |
+| 2D logical view in a quadrant | **View > 2D logical view** sets the view under the mouse (else the last one used), or choose **2D Logical** in the view type menu of a view header. |
+| Entity gallery | **Map > Insert entity gallery**. |
 
 None of these has a default shortcut; you can bind them in **Settings > Keyboard** (see [Keyboard shortcuts](keyboard-shortcuts.md)).
 
@@ -16,7 +22,15 @@ The tab lists the outputs of the selected entities. With several entities select
 
 ### Toolbar
 
-| Button | Key | What it does |---|---|---| **+ Add** | `Insert` | Adds an output to every selected entity and selects it. The new output is `OnTrigger` when the class has it, else the first output of the class, else `OnUser1`; it fires always. | **Copy** | `Ctrl+C` | Copies the selected outputs (also to the system clipboard as `"Output" "value"` lines). | **Paste** | `Ctrl+V` | Pastes the copied outputs on every selected entity. | **Delete** | `Delete` | Deletes the selected outputs. | (cut) | `Ctrl+X` | Copies then deletes the selected outputs. | (select all) | `Ctrl+A` | Selects every output row. | **Mark** | Selects the entities targeted by the selected outputs (names, `*` wildcards, class names) and centers the views on them. |
+| Button | Key | What it does |
+|---|---|---|
+| **+ Add** | `Insert` | Adds an output to every selected entity and selects it. The new output is `OnTrigger` when the class has it, else the first output of the class, else `OnUser1`; it fires always. |
+| **Copy** | `Ctrl+C` | Copies the selected outputs (also to the system clipboard as `"Output" "value"` lines). |
+| **Paste** | `Ctrl+V` | Pastes the copied outputs on every selected entity. |
+| **Delete** | `Delete` | Deletes the selected outputs. |
+| (cut) | `Ctrl+X` | Copies then deletes the selected outputs. |
+| (select all) | `Ctrl+A` | Selects every output row. |
+| **Mark** | | Selects the entities targeted by the selected outputs (names, `*` wildcards, class names) and centers the views on them. |
 
 The keys are your application shortcuts for Copy, Cut, Paste, Delete and Select all. They act on the outputs while the mouse pointer is over the tab and no text field has the focus; elsewhere they act on the map as usual.
 
@@ -36,7 +50,14 @@ Hover a row for the full connection, its parameter, delay, refires and problems.
 
 Under the table, the editor changes every selected output at once (**(multiple values)** when they differ). **Select an output to edit it (Ctrl and Shift select several).**
 
-| Field | What it does |---|---| **My output named** | Picker of the outputs of the class (every output when the class is unknown). | **Target entities named** | Text with completion of the names of the map and of the special targets (`!self`, `!activator`, `!caller`, `!player`, `!pvsplayer`, `!speechtarget`, `!picker`). Red when no entity has the name. `Tab` completes, arrows pick, `Enter` accepts. | **Via this input** | Picker of the inputs of the classes the target resolves to (every input when it resolves to nothing known). | **With a parameter override of** | Free text, **<none>** when empty. Double quotes are refused; when the input is `RunScriptCode`, **Use backticks** replaces them with backticks. | **After a delay in seconds of** | 0 to 3600 seconds. Drag or type. | **Fire this many times** | **Always** (-1) or a number (Hammer++ refires). Drag or type a number; 0 is skipped, since it would never fire. |
+| Field | What it does |
+|---|---|
+| **My output named** | Picker of the outputs of the class (every output when the class is unknown). |
+| **Target entities named** | Text with completion of the names of the map and of the special targets (`!self`, `!activator`, `!caller`, `!player`, `!pvsplayer`, `!speechtarget`, `!picker`). Red when no entity has the name. `Tab` completes, arrows pick, `Enter` accepts. |
+| **Via this input** | Picker of the inputs of the classes the target resolves to (every input when it resolves to nothing known). |
+| **With a parameter override of** | Free text, **<none>** when empty. Double quotes are refused; when the input is `RunScriptCode`, **Use backticks** replaces them with backticks. |
+| **After a delay in seconds of** | 0 to 3600 seconds. Drag or type. |
+| **Fire this many times** | **Always** (-1) or a number (Hammer++ refires). Drag or type a number; 0 is skipped, since it would never fire. |
 
 ## Inputs tab
 
@@ -54,7 +75,11 @@ Inside the map file, the fields of an output are separated by commas (old Hammer
 
 Every output can be drawn as a line from its entity to each target, with an arrow at the target, in the 2D and 3D views.
 
-| Mode | Settings label | What is drawn |---|---|---| Off | **Hidden** | Nothing. | Selected (default) | **Selected entities** | The outputs of the selected entities and the outputs that target them. | All | **Every entity** | Every output of the map. |
+| Mode | Settings label | What is drawn |
+|---|---|---|
+| Off | **Hidden** | Nothing. |
+| Selected (default) | **Selected entities** | The outputs of the selected entities and the outputs that target them. |
+| All | **Every entity** | Every output of the map. |
 
 **View > Display options > Show connections** cycles Off, Selected, All, and a notification tells the new mode. The mode is saved as `[helpers] connections`.
 
@@ -79,13 +104,30 @@ The logical view shows the entities of the map and their outputs as a schematic.
 
 ### Toolbar
 
-| Control | What it does |---|---| **Find an entity...** | Shows only the nodes whose name or class contains the text and frames them while you type. `Enter` frames the results. | Filter | **Named and connected** (default) or **Connected only** (entities with an outgoing or incoming connection). | **Frame all** | Shows every entity (`Home` with the mouse over the view). | **Frame selection** | Frames the search results, else the selected entities. | **Arrange** | Places every entity automatically and stores the positions in the map (one undo step, "Arrange logical view"). |
+| Control | What it does |
+|---|---|
+| **Find an entity...** | Shows only the nodes whose name or class contains the text and frames them while you type. `Enter` frames the results. |
+| Filter | **Named and connected** (default) or **Connected only** (entities with an outgoing or incoming connection). |
+| **Frame all** | Shows every entity (`Home` with the mouse over the view). |
+| **Frame selection** | Frames the search results, else the selected entities. |
+| **Arrange** | Places every entity automatically and stores the positions in the map (one undo step, "Arrange logical view"). |
 
 The status line gives **Entities: N, outputs: N**, the number of search results, **Outputs with a problem: N**, and the color legend.
 
 ### Mouse
 
-| Action | Result |---|---| Click a node | Selects it (`Ctrl` toggles, `Shift` adds). | Click an edge | Selects its source entity. | Click empty space | Clears the selection. | Drag on empty space | Box selection (`Ctrl` or `Shift` adds). | Drag a node | Moves the selected nodes; one undo step ("Move in logical view") on release. | Drag from the output port of a node onto another node | Opens the **New output** form. | Double click a node | Selects it and opens its properties. | Middle or right drag | Pans. | Wheel | Zooms around the cursor. | `Escape` | Cancels the drag in progress. |
+| Action | Result |
+|---|---|
+| Click a node | Selects it (`Ctrl` toggles, `Shift` adds). |
+| Click an edge | Selects its source entity. |
+| Click empty space | Clears the selection. |
+| Drag on empty space | Box selection (`Ctrl` or `Shift` adds). |
+| Drag a node | Moves the selected nodes; one undo step ("Move in logical view") on release. |
+| Drag from the output port of a node onto another node | Opens the **New output** form. |
+| Double click a node | Selects it and opens its properties. |
+| Middle or right drag | Pans. |
+| Wheel | Zooms around the cursor. |
+| `Escape` | Cancels the drag in progress. |
 
 Hidden entities are never selected from the logical view.
 
@@ -99,7 +141,14 @@ Positions are stored in the `logicalpos` key of each entity, like Hammer, so the
 
 Dragging from an output port to another node opens **New output**:
 
-| Field | Content |---|---| **Output** | An output of the source class, typed or picked. The first proposal is an output of the class itself, not of the common bases (`OnUser1`...); `OnTrigger` when the class is unknown. | **Target** | The target name. When the target has no name, a field proposes `class_id`: **The target has no name: it gets this one**. | **Input** | An input of the target class, typed or picked. | **Parameter** | Free text. | **Delay** | 0 to 3600 seconds. | **Only once** | Fires once instead of always. |
+| Field | Content |
+|---|---|
+| **Output** | An output of the source class, typed or picked. The first proposal is an output of the class itself, not of the common bases (`OnUser1`...); `OnTrigger` when the class is unknown. |
+| **Target** | The target name. When the target has no name, a field proposes `class_id`: **The target has no name: it gets this one**. |
+| **Input** | An input of the target class, typed or picked. |
+| **Parameter** | Free text. |
+| **Delay** | 0 to 3600 seconds. |
+| **Only once** | Fires once instead of always. |
 
 **Add** (enabled when output, input and target name are set) adds the output, naming the target first if needed, in one undo step. **Cancel** or `Escape` closes the form.
 

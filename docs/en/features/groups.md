@@ -6,7 +6,12 @@ A group ties objects together (brushes, entities, other groups) so one click sel
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | **Group** | **Tools > Group** | `Ctrl+G` | **Ungroup** | **Tools > Ungroup** | `Ctrl+U` | **Ignore groups** | **Edit > Selection mode > Ignore groups** | `Ctrl+W` | **Groups** / **Objects** / **Solids** | **Edit > Selection mode** | none |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| **Group** | **Tools > Group** | `Ctrl+G` |
+| **Ungroup** | **Tools > Ungroup** | `Ctrl+U` |
+| **Ignore groups** | **Edit > Selection mode > Ignore groups** | `Ctrl+W` |
+| **Groups** / **Objects** / **Solids** | **Edit > Selection mode** | none |
 
 The toolbar has the **Group**, **Ungroup** and **Ignore groups** buttons next to **Carve**. The selection mode is also at the top of the right dock (**Select:**), like Hammer's right bar.
 
@@ -21,7 +26,11 @@ Groups can be nested as deep as you like. The [Outliner](outliner.md) shows them
 
 The selection mode decides what a click on a brush selects:
 
-| Mode | A click selects | Tooltip | --- | --- | --- | **Groups** (default) | The whole outermost group, or the whole brush entity. | "Clicks select whole groups" | **Objects** | The whole brush entity, ignoring groups. | "Clicks select whole entities, ignoring groups" | **Solids** | The single solid, even inside a brush entity. | "Clicks select single solids, even inside entities" |
+| Mode | A click selects | Tooltip |
+| --- | --- | --- |
+| **Groups** (default) | The whole outermost group, or the whole brush entity. | "Clicks select whole groups" |
+| **Objects** | The whole brush entity, ignoring groups. | "Clicks select whole entities, ignoring groups" |
+| **Solids** | The single solid, even inside a brush entity. | "Clicks select single solids, even inside entities" |
 
 **Ignore groups** (`Ctrl+W`, Hammer's key) switches to **Solids**, and back to the mode you used before when you press it again. Pressed while **Solids** was chosen by hand, it goes back to **Groups**. The mode is remembered between sessions (`select_mode` in the `[edit]` table of `settings.toml`, default `Groups`).
 

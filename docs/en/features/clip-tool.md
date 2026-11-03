@@ -11,7 +11,11 @@ The clipping tool splits the selected solids with a plane. You define the plane 
 
 ## Modes: which pieces to keep
 
-| Mode | Result |---|---| **Keep both** | Each crossed solid becomes two solids. The back piece keeps the solid id, the front piece is a new solid (selected when the original was). | **Keep front** | Only the piece on the front side of the plane stays. | **Keep back** | Only the piece on the back side stays. |
+| Mode | Result |
+|---|---|
+| **Keep both** | Each crossed solid becomes two solids. The back piece keeps the solid id, the front piece is a new solid (selected when the original was). |
+| **Keep front** | Only the piece on the front side of the plane stays. |
+| **Keep back** | Only the piece on the back side stays. |
 
 The default mode is **Keep both**. Change it with the buttons of the options bar, or cycle it like in Hammer: select the tool again (`Shift+X` while the clipping tool is active), or press `Tab` (`Shift+Tab` cycles the other way). The cycle order is both, front, back.
 
@@ -42,9 +46,15 @@ The distances between the 3D points are shown in the 3D view.
 
 ## Options and keys
 
-| Option or key | What it does | Default |---|---|---| **Keep front** / **Keep back** / **Keep both** | Pieces to keep. `Shift+X` (selecting the tool again) or `Tab` cycles. | Keep both | **Clip** (`Enter`) | Split the selected solids. Enabled when the plane crosses at least one selected solid. |
-| **Clear** (`Escape`) | Forget the clip points. |
-| **3 points** (`C`) | Three point mode: after the line, click in another 2D view to tilt the plane. | off | **Measurements** (`O`) | Show the length and angle of the clip line next to it. Saved as `[brush] clip_measurements`. | on | **Current material on cuts** | The new cut faces get the current material instead of copying the most similar face of the brush. Saved as `[brush] clip_current_material`. | off | **N solid(s) cut** | Number of selected solids the plane crosses. |
+| Option or key | What it does | Default |
+|---|---|---|
+| **Keep front** / **Keep back** / **Keep both** | Pieces to keep. `Shift+X` (selecting the tool again) or `Tab` cycles. | Keep both |
+| **Clip** (`Enter`) | Split the selected solids. Enabled when the plane crosses at least one selected solid. | |
+| **Clear** (`Escape`) | Forget the clip points. | |
+| **3 points** (`C`) | Three point mode: after the line, click in another 2D view to tilt the plane. | off |
+| **Measurements** (`O`) | Show the length and angle of the clip line next to it. Saved as `[brush] clip_measurements`. | on |
+| **Current material on cuts** | The new cut faces get the current material instead of copying the most similar face of the brush. Saved as `[brush] clip_current_material`. | off |
+| **N solid(s) cut** | Number of selected solids the plane crosses. | |
 
 The two settings are also on the **Brushes** page of the Settings window (**Show the length and angle of the clip line**, **Current material on the cut faces**), opened with **Tools > Options...** (`Ctrl+,`).
 

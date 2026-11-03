@@ -13,17 +13,36 @@ Hammer Pro is built to stay smooth on huge maps, but heavy content, a weak GPU o
 
 Page **Settings > Rendering**, group **Frame rate**:
 
-| Option | What it does | Default |---|---|---| **Frame rate limit** | Most frames per second (0: no limit; with vertical sync the display limits it). Lower it to save power and heat on laptops. | 0 | **In the background** | Frame rate limit while the window is not active (0: no limit). | 30 | **Vertical sync** | Waits for the screen refresh. Applies after a restart. | On |
+| Option | What it does | Default |
+|---|---|---|
+| **Frame rate limit** | Most frames per second (0: no limit; with vertical sync the display limits it). Lower it to save power and heat on laptops. | 0 |
+| **In the background** | Frame rate limit while the window is not active (0: no limit). | 30 |
+| **Vertical sync** | Waits for the screen refresh. Applies after a restart. | On |
 
 ## What the 3D view draws
 
-| Setting | Where | Effect on speed | Default |---|---|---|---| **View distance** | Settings > Viewports | Farthest distance drawn. Shorter is faster. **View > Shorter draw distance** and **Longer draw distance** change it on the fly. | 32768 | **Antialiasing (MSAA)** | Settings > Viewports | Smoother edges, uses more GPU memory. Turn it off on weak GPUs. | On | **Radius culling** and **Culling radius** | Settings > Rendering, also **View > Display options > Radius culling** and the toolbar | Nothing farther than the radius from the camera is drawn (a circle shows it in the 2D views), like Hammer's radius culling. | Off, 4096 | **Skip hidden geometry** | Settings > Rendering | Parts of the map whose objects are all hidden are not drawn at all. | On | **Model distance** | Settings > Rendering | Models farther than this are drawn as boxes (0: no limit). A big help on maps with many props. | 0 | `lod_distances` | `settings.toml`, table `[render]` | Two distances beyond which heavy models use their LOD 1 and LOD 2 (0: always the full model). No UI yet. | `[0, 0]` | **Relief (normal maps)** | Settings > Rendering | Off: flat surfaces and less video memory. | On | **Cubemap reflections** and **Redraw the cubemaps after edits** | Settings > Rendering | Materials with `$envmap` reflect cubemaps drawn by the editor. Turning off the automatic redraw keeps them until **Map > Lighting > Rebuild cubemaps**. | On, On | **Shadowed lights** | Settings > Rendering | In the Lit render mode, how many point and spot lights near the camera cast shadows (0: only the sun, 16 at most). | 4 | **Water preview** | Settings > Rendering | Refraction, reflection and waves of water. Off: the tool texture. | On | **Model fade**, **Render effects**, **Animated materials** | View > Display options (the first two also in Settings > Rendering) | Small costs; turn off when every frame counts. | Off, On, On |
+| Setting | Where | Effect on speed | Default |
+|---|---|---|---|
+| **View distance** | Settings > Viewports | Farthest distance drawn. Shorter is faster. **View > Shorter draw distance** and **Longer draw distance** change it on the fly. | 32768 |
+| **Antialiasing (MSAA)** | Settings > Viewports | Smoother edges, uses more GPU memory. Turn it off on weak GPUs. | On |
+| **Radius culling** and **Culling radius** | Settings > Rendering, also **View > Display options > Radius culling** and the toolbar | Nothing farther than the radius from the camera is drawn (a circle shows it in the 2D views), like Hammer's radius culling. | Off, 4096 |
+| **Skip hidden geometry** | Settings > Rendering | Parts of the map whose objects are all hidden are not drawn at all. | On |
+| **Model distance** | Settings > Rendering | Models farther than this are drawn as boxes (0: no limit). A big help on maps with many props. | 0 |
+| `lod_distances` | `settings.toml`, table `[render]` | Two distances beyond which heavy models use their LOD 1 and LOD 2 (0: always the full model). No UI yet. | `[0, 0]` |
+| **Relief (normal maps)** | Settings > Rendering | Off: flat surfaces and less video memory. | On |
+| **Cubemap reflections** and **Redraw the cubemaps after edits** | Settings > Rendering | Materials with `$envmap` reflect cubemaps drawn by the editor. Turning off the automatic redraw keeps them until **Map > Lighting > Rebuild cubemaps**. | On, On |
+| **Shadowed lights** | Settings > Rendering | In the Lit render mode, how many point and spot lights near the camera cast shadows (0: only the sun, 16 at most). | 4 |
+| **Water preview** | Settings > Rendering | Refraction, reflection and waves of water. Off: the tool texture. | On |
+| **Model fade**, **Render effects**, **Animated materials** | View > Display options (the first two also in Settings > Rendering) | Small costs; turn off when every frame counts. | Off, On, On |
 
 The render mode matters too: **Flat shaded** (`Alt+2`) and **Wireframe** (`Alt+3`) are the cheapest; **Lighting preview** (`Alt+5`) and **Baked lighting preview** (`Ctrl+F5`) the most expensive. See [Render modes and display options](../features/render-modes-display.md) and [Lighting preview](../features/lighting-preview.md).
 
 ## What the 2D views draw
 
-| Setting | Where | Effect | Default |---|---|---|---| **Models** | Settings > Rendering | **Boxes** (fastest), **Wireframe** (every model), **Wireframe when selected**. | Wireframe when selected | Displacements in 2D | Settings > Rendering, **View > Display options > Displacement mesh in 2D views** | The full triangle grid, the grid of the selection only, or the outline. Outlines are lighter on terrain heavy maps. | Full mesh |
+| Setting | Where | Effect | Default |
+|---|---|---|---|
+| **Models** | Settings > Rendering | **Boxes** (fastest), **Wireframe** (every model), **Wireframe when selected**. | Wireframe when selected |
+| Displacements in 2D | Settings > Rendering, **View > Display options > Displacement mesh in 2D views** | The full triangle grid, the grid of the selection only, or the outline. Outlines are lighter on terrain heavy maps. | Full mesh |
 
 ## Hiding what you are not working on
 

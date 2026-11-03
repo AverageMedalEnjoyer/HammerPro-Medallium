@@ -14,7 +14,11 @@ Hammer Pro protects your work in several ways:
 
 On the next start, the window **Hammer Pro closed unexpectedly** shows the **Report file:** path and these buttons:
 
-| Button | What it does |---|---| **Show the report file** | Opens its folder with the report selected. | **Copy the report** | Copies the text of the report, to paste it in a message. | **Open the saved changes** | Opens the emergency save, when one was written ("Your unsaved changes were saved to ..."). |
+| Button | What it does |
+|---|---|
+| **Show the report file** | Opens its folder with the report selected. |
+| **Copy the report** | Copies the text of the report, to paste it in a message. |
+| **Open the saved changes** | Opens the emergency save, when one was written ("Your unsaved changes were saved to ..."). |
 
 Errors of worker threads do not stop the editor: they are logged with their location, and the first few of a run also get a report file whose path is in the log (not offered at the next start).
 
@@ -26,7 +30,10 @@ Independently of crashes, Hammer Pro saves modified maps in the background every
 
 ## The log file
 
-| File | Content |---|---| `%LOCALAPPDATA%\HammerPro\logs\hammerpro.log` | The current run, written line by line (it survives an abort). | `%LOCALAPPDATA%\HammerPro\logs\hammerpro.old.log` | The previous run. |
+| File | Content |
+|---|---|
+| `%LOCALAPPDATA%\HammerPro\logs\hammerpro.log` | The current run, written line by line (it survives an abort). |
+| `%LOCALAPPDATA%\HammerPro\logs\hammerpro.old.log` | The previous run. |
 
 The log holds the English diagnostics of the libraries (mount timings, file counts, the graphics adapter chosen) as well as every warning and error. Warnings and errors also appear in the **console** panel (`` ` ``), translated.
 

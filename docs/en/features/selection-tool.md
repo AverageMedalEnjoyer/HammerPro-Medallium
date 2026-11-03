@@ -13,8 +13,16 @@ The Selection tool picks objects in the 2D and 3D views and transforms them: Ham
 
 ### Click selection
 
-| Gesture | 2D views | 3D view |---|---|---| Click an object | Selects it (replaces the selection) | Selects the nearest object under the pointer | Click the same spot again | Selects the next overlapping object (up to 64 are cycled) | Selects the next object behind | `Ctrl+click` | Adds the object to the selection, or removes it when it is already selected | Same; `Ctrl+click` also picks through the gizmo | Click on empty space | Clears the selection (a click inside the selection box switches the handle mode instead) | Clears the selection (not with `Ctrl`) | Click an object that is already the whole selection | Switches the handle mode (Scale, Rotate, Skew, then Scale again), like Hammer |
-| Middle click | The next object at the spot of the last click, or the first one under the pointer | Same | Double click | Selects the object; for an entity (or a brush entity) it also opens its properties | Same | `Page Down` / `Page Up` | For 2 seconds after a click: the object behind / in front | Same |
+| Gesture | 2D views | 3D view |
+|---|---|---|
+| Click an object | Selects it (replaces the selection) | Selects the nearest object under the pointer |
+| Click the same spot again | Selects the next overlapping object (up to 64 are cycled) | Selects the next object behind |
+| `Ctrl+click` | Adds the object to the selection, or removes it when it is already selected | Same; `Ctrl+click` also picks through the gizmo |
+| Click on empty space | Clears the selection (a click inside the selection box switches the handle mode instead) | Clears the selection (not with `Ctrl`) |
+| Click an object that is already the whole selection | Switches the handle mode (Scale, Rotate, Skew, then Scale again), like Hammer | |
+| Middle click | The next object at the spot of the last click, or the first one under the pointer | Same |
+| Double click | Selects the object; for an entity (or a brush entity) it also opens its properties | Same |
+| `Page Down` / `Page Up` | For 2 seconds after a click: the object behind / in front | Same |
 
 A plain click on the gizmo or on a stretch arrow does not select (it only starts drags). After that two second window, `Page Up` and `Page Down` nudge the selection again (see Nudging with the keyboard below).
 
@@ -22,7 +30,11 @@ A plain click on the gizmo or on a stretch arrow does not select (it only starts
 
 Drag on empty space in a 2D view to draw a box. On release:
 
-| Box mode | What it takes |---|---| **Touching** (default) | Every object touching the box | **Inside** | Only objects fully inside the box. A group or brush entity only partly inside is not taken | **Centers** | Only objects whose center is in the box. Centers are drawn as small crosses, and click selection also uses them. Handy in crowded areas |
+| Box mode | What it takes |
+|---|---|
+| **Touching** (default) | Every object touching the box |
+| **Inside** | Only objects fully inside the box. A group or brush entity only partly inside is not taken |
+| **Centers** | Only objects whose center is in the box. Centers are drawn as small crosses, and click selection also uses them. Handy in crowded areas |
 
 - Hold `Alt` while dragging to use the other mode (Touching becomes Inside and the other way).
 - Hold `Ctrl` to add the boxed objects to the selection. `Ctrl+drag` always draws a box, even over an object or the selection.
@@ -35,14 +47,23 @@ Drag on empty space in a 2D view to draw a box. On release:
 
 What a click on a solid selects depends on the selection mode, set in the main toolbar or in **Edit > Selection mode**:
 
-| Mode | A click selects | Default |---|---|---| **Groups** | The whole outermost group, or the whole brush entity | Yes | **Objects** | Brush entities as a whole, ignoring groups |
-| **Solids** | The single solid, even inside a brush entity |
+| Mode | A click selects | Default |
+|---|---|---|
+| **Groups** | The whole outermost group, or the whole brush entity | Yes |
+| **Objects** | Brush entities as a whole, ignoring groups | |
+| **Solids** | The single solid, even inside a brush entity | |
 
 **Ignore groups** (`Ctrl+W`, **Edit > Selection mode**) switches to Solids, and back to the mode you used before. The mode is saved in `settings.toml` (`[edit] select_mode`). See [Groups](groups.md).
 
 ### Edit menu commands
 
-| Command | Shortcut | What it does |---|---|---| **Select all** | `Ctrl+A` | Selects every visible object | **Clear selection** | `Ctrl+Shift+A` (also `Shift+Q`) | Deselects everything | **Invert selection** | `Ctrl+I` | Selects what was not selected | **Previous face selection** | `Alt+Z` | Goes back to the previous face selection (switches to the texture tool, where faces show) | **Next face selection** | `Alt+Y` | Goes forward again |
+| Command | Shortcut | What it does |
+|---|---|---|
+| **Select all** | `Ctrl+A` | Selects every visible object |
+| **Clear selection** | `Ctrl+Shift+A` (also `Shift+Q`) | Deselects everything |
+| **Invert selection** | `Ctrl+I` | Selects what was not selected |
+| **Previous face selection** | `Alt+Z` | Goes back to the previous face selection (switches to the texture tool, where faces show) |
+| **Next face selection** | `Alt+Y` | Goes forward again |
 
 With the **Hammer** and **Hammer++** keyboard presets, Select all is `Ctrl+Shift+A`, Clear selection is `Shift+Q` and Invert selection is `Ctrl+Shift+I`. See [Keyboard shortcuts](keyboard-shortcuts.md).
 
@@ -61,13 +82,21 @@ The right end of the options bar has a **Class** / **Material** switch, a text f
 
 Drag inside the selection box to move it. Drag an object that is not selected to select it and move it at once. The handles on the box depend on the handle mode:
 
-| Handle mode | Handles | Drag does |---|---|---| **Scale** (default) | Corners and edges | Resizes the selection. `Ctrl`: keep the proportions (corner) or scale from the center (edge) | **Rotate** | Corners | Rotates around the pivot (see Movable pivot below), snapped to the rotation step. Hold the free rotation key (`Ctrl` by default) for a free angle | **Skew** | Edges | Shears the selection along the edge, snapped to the grid |
+| Handle mode | Handles | Drag does |
+|---|---|---|
+| **Scale** (default) | Corners and edges | Resizes the selection. `Ctrl`: keep the proportions (corner) or scale from the center (edge) |
+| **Rotate** | Corners | Rotates around the pivot (see Movable pivot below), snapped to the rotation step. Hold the free rotation key (`Ctrl` by default) for a free angle |
+| **Skew** | Edges | Shears the selection along the edge, snapped to the grid |
 
 Click the selection (or empty space inside its box) to cycle the mode. A new selection always starts in Scale mode.
 
 Modifiers during any drag:
 
-| Key | Effect |---|---| `Shift` | Clone: the drag makes a transformed copy and leaves the original (one "Duplicate" undo step). A cloned single path node links itself after its source | `Alt` | No grid snap for this drag | `Escape` | Cancels the drag |
+| Key | Effect |
+|---|---|
+| `Shift` | Clone: the drag makes a transformed copy and leaves the original (one "Duplicate" undo step). A cloned single path node links itself after its source |
+| `Alt` | No grid snap for this drag |
+| `Escape` | Cancels the drag |
 
 When moving, the point that lands on the grid is the bounds minimum of the brushes (an off-grid prop selected with them does not pull them off the grid), or the origin of a single point entity.
 
@@ -77,7 +106,11 @@ When moving, the point that lands on the grid is the bounds minimum of the brush
 
 The gizmo sits on the pivot of the selection (the movable pivot, the origin of a single point entity, else the bounds center) and keeps the same size on screen. Its mode is chosen in the options bar:
 
-| Gizmo mode | Parts |---|---| **Move** (default) | Arrows move along an axis, squares move in a plane | **Rotate** | Rings rotate around an axis, snapped to the rotation step (free rotation key: no snap) | **Scale** | Arms with cube tips scale one axis (size snapped to the grid), squares scale two axes, the center square scales uniformly (factors snapped to 0.1). Scale goes from 0.01 to 100 |
+| Gizmo mode | Parts |
+|---|---|
+| **Move** (default) | Arrows move along an axis, squares move in a plane |
+| **Rotate** | Rings rotate around an axis, snapped to the rotation step (free rotation key: no snap) |
+| **Scale** | Arms with cube tips scale one axis (size snapped to the grid), squares scale two axes, the center square scales uniformly (factors snapped to 0.1). Scale goes from 0.01 to 100 |
 
 `Shift` clones, `Alt` turns snapping off. **Local** (or `Ctrl+J`, **Gizmo in local space**, in the command palette) aligns the gizmo with the angles of a single selected point entity instead of the world axes. Untick **Show** to hide the gizmo.
 
@@ -121,7 +154,12 @@ When one entity is selected, its helper points (keys typed `origin`, `vecline` o
 
 With objects selected and the pointer over a view (and **Nudge with arrow keys** on):
 
-| Keys | Effect |---|---| Arrow keys | Move by one grid step in the view plane. In the 3D view, along the world axes closest to the camera right and forward directions | `Page Up` / `Page Down` | Move toward / away from the viewer in a 2D view, up / down in the 3D view | `Alt+arrow` | Move by one unit | `Shift+arrow` | Clone one grid step away (or move one unit when **Shift+arrows clone** is off) |
+| Keys | Effect |
+|---|---|
+| Arrow keys | Move by one grid step in the view plane. In the 3D view, along the world axes closest to the camera right and forward directions |
+| `Page Up` / `Page Down` | Move toward / away from the viewer in a 2D view, up / down in the 3D view |
+| `Alt+arrow` | Move by one unit |
+| `Shift+arrow` | Clone one grid step away (or move one unit when **Shift+arrows clone** is off) |
 
 With nothing selected, the arrow keys scroll the 2D view instead (see [Camera and navigation](camera-navigation.md)).
 
@@ -131,7 +169,16 @@ With a selection, a right click in a view adds at the top: **Move to floor**, **
 
 ## Options bar
 
-| Option | What it does | Default |---|---|---| **Box:** Touching / Inside / Centers | What a box selection takes (see above) | Touching | **Handles:** Scale / Rotate / Skew | What the 2D handles do | Scale | **3D stretch** | Arrows on the faces of the selected brushes in the 3D view (saved in the settings) | On | **Gizmo:** Show | Shows the transform gizmo in the 3D view | On | Move / Rotate / Scale | What the gizmo does | Move | **Local** | Gizmo of a single point entity follows its angles (saved in the settings) | Off | **Pivot** | Shows the movable pivot | Off | **Class** / **Material**, field, **Select** | Select by class or material | Class |
+| Option | What it does | Default |
+|---|---|---|
+| **Box:** Touching / Inside / Centers | What a box selection takes (see above) | Touching |
+| **Handles:** Scale / Rotate / Skew | What the 2D handles do | Scale |
+| **3D stretch** | Arrows on the faces of the selected brushes in the 3D view (saved in the settings) | On |
+| **Gizmo:** Show | Shows the transform gizmo in the 3D view | On |
+| Move / Rotate / Scale | What the gizmo does | Move |
+| **Local** | Gizmo of a single point entity follows its angles (saved in the settings) | Off |
+| **Pivot** | Shows the movable pivot | Off |
+| **Class** / **Material**, field, **Select** | Select by class or material | Class |
 
 The box, handle and gizmo choices last for the session. These options are also reachable by name through scripts (`tool_option`) and the MCP tools `get_tool_options` / `set_tool_options` (`handles`, `box`, `gizmo`, `gizmo_mode`, `gizmo_local`, `stretch_handles`).
 
@@ -139,7 +186,15 @@ The box, handle and gizmo choices last for the session. These options are also r
 
 In **Tools > Options...**, page **Selection** (`[selection]` in `settings.toml`):
 
-| Option | What it does | Default |---|---|---| **Rotation step** | Angle the rotation handles, gizmo rings and the R key snap to (1° to 90°) | 15° | **Free rotation key** | Key held for a free angle: Ctrl or Alt | Ctrl | **Handle size** | Size of the 2D handles, 4 to 16 points | 7 | **Keep visgroups when cloning** | Copies made by clone drags and Shift+arrows stay in the visgroups of their originals | On | **Shift+arrows clone** | Shift+arrows copies the selection one grid step away, Alt+arrows then nudges by one unit | On | **3D stretch handles** | Same as the options bar checkbox | On | **Gizmo in local space** | Same as the Local button | Off |
+| Option | What it does | Default |
+|---|---|---|
+| **Rotation step** | Angle the rotation handles, gizmo rings and the R key snap to (1° to 90°) | 15° |
+| **Free rotation key** | Key held for a free angle: Ctrl or Alt | Ctrl |
+| **Handle size** | Size of the 2D handles, 4 to 16 points | 7 |
+| **Keep visgroups when cloning** | Copies made by clone drags and Shift+arrows stay in the visgroups of their originals | On |
+| **Shift+arrows clone** | Shift+arrows copies the selection one grid step away, Alt+arrows then nudges by one unit | On |
+| **3D stretch handles** | Same as the options bar checkbox | On |
+| **Gizmo in local space** | Same as the Local button | Off |
 
 Page **Editing**: **Nudge with arrow keys** (on) and **Undo restores the selection** (on: selection changes are undo steps, see [Undo and history](undo-history.md)). Page **Viewports**: **Outline objects under the mouse** (off) outlines what is under the pointer in the 3D view. Snapping follows **Map > Snap to grid** (`Shift+W`) and the active grid (see [Grids](grids.md)).
 

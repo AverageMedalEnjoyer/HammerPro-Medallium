@@ -6,17 +6,28 @@ The **Find and replace textures** window swaps a material for another on the fac
 
 ## Opening it
 
-| How | Result |---|---| **Tools > Find and replace textures...** (`Ctrl+Shift+R`) | Opens the window. When **Find** is empty, it is filled with the current material. | **Replace...** in the [texture browser](texture-browser.md) header | Opens it with the current material in **Find**. | Right click a thumbnail > **Replace with this...** | Opens it with the current material in **Find** and the clicked one in **Replace with**. |
+| How | Result |
+|---|---|
+| **Tools > Find and replace textures...** (`Ctrl+Shift+R`) | Opens the window. When **Find** is empty, it is filled with the current material. |
+| **Replace...** in the [texture browser](texture-browser.md) header | Opens it with the current material in **Find**. |
+| Right click a thumbnail > **Replace with this...** | Opens it with the current material in **Find** and the clicked one in **Replace with**. |
 
 With the Hammer and Hammer++ keymap presets, `Ctrl+Shift+R` is **Find and replace in entities...** and this window has no shortcut (see [Keyboard shortcuts](keyboard-shortcuts.md)).
 
 ## The window
 
-| Control | What it does | Default |---|---|---| **Find** | Material name or pattern. Names are compared without case; slashes, a `materials/` prefix and a `.vmt` extension are cleaned up. | current material | Image button next to **Find** | Click: opens or closes the material picker (see below). Right click: puts the current material in the field. |
-| Cursor button (**Use the material of the selection**) | Puts the first material of the selection in **Find**. Disabled with no selection. |
-| **Replace with** | Replacement material. | empty | Image button next to **Replace with** | Same picker, for the replacement. |
-| **In**: **Whole map** / **Selection** | Every face of the map, or the faces of the selected objects plus the selected faces. | **Whole map** | **Match**: **Exact name** / **Wildcards** | Exact: the whole name. Wildcards: `*` matches any text, `?` one character. | **Exact name** | **Keep the texture size in the world** | Adjusts the texture scale of each face when the new texture has another resolution, so the texture keeps its size on the walls. | off | **Replace** | Runs the replacement (also `Enter` in a field). Disabled until a face matches and **Replace with** is filled. |
-| **Close** | Closes the window (also `Escape`). |
+| Control | What it does | Default |
+|---|---|---|
+| **Find** | Material name or pattern. Names are compared without case; slashes, a `materials/` prefix and a `.vmt` extension are cleaned up. | current material |
+| Image button next to **Find** | Click: opens or closes the material picker (see below). Right click: puts the current material in the field. | |
+| Cursor button (**Use the material of the selection**) | Puts the first material of the selection in **Find**. Disabled with no selection. | |
+| **Replace with** | Replacement material. | empty |
+| Image button next to **Replace with** | Same picker, for the replacement. | |
+| **In**: **Whole map** / **Selection** | Every face of the map, or the faces of the selected objects plus the selected faces. | **Whole map** |
+| **Match**: **Exact name** / **Wildcards** | Exact: the whole name. Wildcards: `*` matches any text, `?` one character. | **Exact name** |
+| **Keep the texture size in the world** | Adjusts the texture scale of each face when the new texture has another resolution, so the texture keeps its size on the walls. | off |
+| **Replace** | Runs the replacement (also `Enter` in a field). Disabled until a face matches and **Replace with** is filled. | |
+| **Close** | Closes the window (also `Escape`). | |
 
 `Tab` goes from **Find** to **Replace with**.
 
@@ -28,7 +39,11 @@ The whole replacement (and the rescale) is one undo step. After it, the window s
 
 In wildcard mode, a `*` in **Replace with** reuses the text the `*` of **Find** matched:
 
-| Find | Replace with | Result |---|---|---| `dev/*` | `tools/*` | `dev/dev_measurewall01a` becomes `tools/dev_measurewall01a` | `concrete/concretefloor00?a` | `concrete/concretefloor001a` | every numbered variant becomes the same floor | `*` | `dev/dev_measuregeneric01b` | every face of the scope gets the same material |
+| Find | Replace with | Result |
+|---|---|---|
+| `dev/*` | `tools/*` | `dev/dev_measurewall01a` becomes `tools/dev_measurewall01a` |
+| `concrete/concretefloor00?a` | `concrete/concretefloor001a` | every numbered variant becomes the same floor |
+| `*` | `dev/dev_measuregeneric01b` | every face of the scope gets the same material |
 
 ## The material picker
 

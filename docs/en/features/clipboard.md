@@ -8,7 +8,16 @@ Cut, copy and paste map objects, paste many copies at once with Paste special, d
 
 All are in the **Edit** menu and in the right click menu of the views:
 
-| Command | Shortcut | What it does |---|---|---| **Cut** | `Ctrl+X` | Copies the selected objects to the clipboard and deletes them | **Copy** | `Ctrl+C` | Copies the selected objects to the clipboard | **Paste** | `Ctrl+V` | Pastes the clipboard contents; the pasted objects become the selection | **Paste special...** | `Ctrl+Shift+V` | Opens the Paste special dialog (several copies, offset, rotation) | **Delete** | `Delete` | Deletes the selected objects | **Duplicate** | `Ctrl+D` | Copies the selection one grid step away on X and Y, without using the clipboard; the copies are selected | **Copy keyvalues** | none | Copies the keyvalues of the selected entity | **Paste keyvalues** | none | Pastes them onto the selected entities |
+| Command | Shortcut | What it does |
+|---|---|---|
+| **Cut** | `Ctrl+X` | Copies the selected objects to the clipboard and deletes them |
+| **Copy** | `Ctrl+C` | Copies the selected objects to the clipboard |
+| **Paste** | `Ctrl+V` | Pastes the clipboard contents; the pasted objects become the selection |
+| **Paste special...** | `Ctrl+Shift+V` | Opens the Paste special dialog (several copies, offset, rotation) |
+| **Delete** | `Delete` | Deletes the selected objects |
+| **Duplicate** | `Ctrl+D` | Copies the selection one grid step away on X and Y, without using the clipboard; the copies are selected |
+| **Copy keyvalues** | none | Copies the keyvalues of the selected entity |
+| **Paste keyvalues** | none | Pastes them onto the selected entities |
 
 ## Where Paste puts the objects
 
@@ -30,7 +39,16 @@ The clipboard is the system clipboard, as VMF text: top level `solid`, `entity` 
 
 **Edit > Paste special...** (`Ctrl+Shift+V`) pastes the clipboard several times, each copy moved and rotated from the previous one (like Hammer's Paste Special):
 
-| Option | What it does | Default |---|---|---| **Copies** | Number of copies (1 to 10000; above 1000 the dialog warns that the map gets much heavier) | 1 | **Offset per copy** | X, Y, Z offset added for each copy. The `<` button next to an axis takes the size of the clipboard contents on that axis (copies side by side) | 64, 0, 0 | **Rotation per copy** | Rotation in degrees around X, Y and Z added for each copy, around the center of the copied objects | 0, 0, 0 | **Name prefix** | Optional prefix added to the name of every named pasted entity | empty | **Start at the original position** | The first copy is placed exactly over the copied objects | Off | **Group each copy** | Each copy becomes a group | Off | **Make entity names unique** | Pasted entities whose name already exists are renamed (`name_2`, `name_3`...) | Off | **Rotate around the pivot** | The rotation turns around the movable pivot instead of the center of the copied objects. Only available while the pivot is shown (**Movable pivot**) | On |
+| Option | What it does | Default |
+|---|---|---|
+| **Copies** | Number of copies (1 to 10000; above 1000 the dialog warns that the map gets much heavier) | 1 |
+| **Offset per copy** | X, Y, Z offset added for each copy. The `<` button next to an axis takes the size of the clipboard contents on that axis (copies side by side) | 64, 0, 0 |
+| **Rotation per copy** | Rotation in degrees around X, Y and Z added for each copy, around the center of the copied objects | 0, 0, 0 |
+| **Name prefix** | Optional prefix added to the name of every named pasted entity | empty |
+| **Start at the original position** | The first copy is placed exactly over the copied objects | Off |
+| **Group each copy** | Each copy becomes a group | Off |
+| **Make entity names unique** | Pasted entities whose name already exists are renamed (`name_2`, `name_3`...) | Off |
+| **Rotate around the pivot** | The rotation turns around the movable pivot instead of the center of the copied objects. Only available while the pivot is shown (**Movable pivot**) | On |
 
 - The dialog shows **Offset of the last copy** so you can check the total.
 - Renamed entities keep working together: the keys of the pasted entities that name another pasted entity (targets, filters) follow the new names.
@@ -47,7 +65,11 @@ Select one entity and use **Edit > Copy keyvalues**, then select other entities 
 
 ## Settings
 
-| Option | Page | What it does | Default |---|---|---|---| **Offset pasted objects** | **Editing** | Paste moves the objects by one grid step so they do not overlap (when the paste does not follow the cursor) | On | **Keep visgroups when cloning** | **Selection** | Clones stay in the visgroups of their originals | On | **Paste keyvalues also pastes the name (targetname)** | **Entities and browsers** | Paste keyvalues also copies `targetname` | Off |
+| Option | Page | What it does | Default |
+|---|---|---|---|
+| **Offset pasted objects** | **Editing** | Paste moves the objects by one grid step so they do not overlap (when the paste does not follow the cursor) | On |
+| **Keep visgroups when cloning** | **Selection** | Clones stay in the visgroups of their originals | On |
+| **Paste keyvalues also pastes the name (targetname)** | **Entities and browsers** | Paste keyvalues also copies `targetname` | Off |
 
 ## Tips
 

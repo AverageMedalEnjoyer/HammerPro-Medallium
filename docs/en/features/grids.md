@@ -6,7 +6,17 @@ The grid is what the tools snap to and what the 2D views draw. Hammer Pro keeps 
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | **Smaller grid** | **Map > Smaller grid** | `[` | **Larger grid** | **Map > Larger grid** | `]` | **Show grid** | **Map > Show grid** | `Shift+G` (also `Shift+R`, Hammer's key) | **Snap to grid** | **Map > Snap to grid** | `Shift+W` | **3D grid on faces** | **Map > 3D grid on faces** | `P` | **Global grid**, **One grid per view**, **Custom grid**, **Grid of the selection** | **Map > Grids** | none | **Grid from selection**, **Grid from face** | **Map > Grids** | none | **Attach the grid to the selection**, **Detach the grid of the selection** | **Map > Grids** | none | **Grid manager...** | **Map > Grids > Grid manager...** | none |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| **Smaller grid** | **Map > Smaller grid** | `[` |
+| **Larger grid** | **Map > Larger grid** | `]` |
+| **Show grid** | **Map > Show grid** | `Shift+G` (also `Shift+R`, Hammer's key) |
+| **Snap to grid** | **Map > Snap to grid** | `Shift+W` |
+| **3D grid on faces** | **Map > 3D grid on faces** | `P` |
+| **Global grid**, **One grid per view**, **Custom grid**, **Grid of the selection** | **Map > Grids** | none |
+| **Grid from selection**, **Grid from face** | **Map > Grids** | none |
+| **Attach the grid to the selection**, **Detach the grid of the selection** | **Map > Grids** | none |
+| **Grid manager...** | **Map > Grids > Grid manager...** | none |
 
 With the Hammer and Hammer++ keymap presets, **Show grid** is `Shift+R`.
 
@@ -25,13 +35,26 @@ The toolbar has **Show grid**, **3D grid on faces**, the grid size controls and 
 
 The mode decides which grid the tools snap to and the views draw. Choose it in **Map > Grids**, the grid menu of the toolbar, the grid manager, or **Settings > Viewports > Grid**.
 
-| Mode | What it does | --- | --- | **Global grid** (default) | One size for every view, like Hammer (`edit.grid_size`, 16 by default). | **One grid per view** | Each view (3D, top, front, side) has its own size, origin and major line interval: a precise grid in one view, a coarse one in another. The size controls change the grid of the view under the mouse, or of the last view used. The first switch to this mode gives every view the global size. | **Custom grid** | A named custom grid (the one chosen last, else the first one). With no custom grid, you get "No custom grid yet: create one in the grid manager or from the selection." | **Grid of the selection** | The grid attached to the selected objects; the global grid when they have none. |
+| Mode | What it does |
+| --- | --- |
+| **Global grid** (default) | One size for every view, like Hammer (`edit.grid_size`, 16 by default). |
+| **One grid per view** | Each view (3D, top, front, side) has its own size, origin and major line interval: a precise grid in one view, a coarse one in another. The size controls change the grid of the view under the mouse, or of the last view used. The first switch to this mode gives every view the global size. |
+| **Custom grid** | A named custom grid (the one chosen last, else the first one). With no custom grid, you get "No custom grid yet: create one in the grid manager or from the selection." |
+| **Grid of the selection** | The grid attached to the selected objects; the global grid when they have none. |
 
 ## Custom grids
 
 A custom grid has:
 
-| Field | Meaning | --- | --- | **Name** | Unique, without case. | **Step X Y Z** | Step along the grid's own axes, any size with decimals (12, 24, 1.5...). Equal steps change together; hold `Shift` to change one. | **Origin** | A grid node sits here (world units). | **Pitch Yaw Roll** | Orientation, like entity angles: follow a rotated building (yaw) or a slope (pitch, roll). | **Major line every** | Every N lines is a major line (0: the setting of the views). | **Limits** | **Min** and **Max**: the grid applies inside this box only; outside, the global grid applies. **Fit to the selection** fills them in. | **Colour** | Color of its lines (default: the theme's grid color). |
+| Field | Meaning |
+| --- | --- |
+| **Name** | Unique, without case. |
+| **Step X Y Z** | Step along the grid's own axes, any size with decimals (12, 24, 1.5...). Equal steps change together; hold `Shift` to change one. |
+| **Origin** | A grid node sits here (world units). |
+| **Pitch Yaw Roll** | Orientation, like entity angles: follow a rotated building (yaw) or a slope (pitch, roll). |
+| **Major line every** | Every N lines is a major line (0: the setting of the views). |
+| **Limits** | **Min** and **Max**: the grid applies inside this box only; outside, the global grid applies. **Fit to the selection** fills them in. |
+| **Colour** | Color of its lines (default: the theme's grid color). |
 
 Custom grids live in the map (saved in the VMF in a `hammerpro_grids` block, every change is an undo step) or in the settings as presets offered in every map. The grid menu lists them as "name (step)" and "name (step, preset)".
 
@@ -57,7 +80,20 @@ With **Objects use their grid** on, editing an object that carries a grid (movin
 
 ## How the grid is drawn
 
-| Option | Where | What it does | Default | --- | --- | --- | --- | **Show grid** (`edit.show_grid`) | Map menu, `Shift+G` | Draws the 2D grid. | On | **Snap to grid** (`edit.snap_to_grid`) | Map menu, `Shift+W` | Tools snap to the grid. | On | **Highlight grid lines every** (`view.grid_highlight_every`) | Settings > Viewports | Major line interval of the 2D grid (2 to 64). | 8 | **Show 1024 unit lines** (`view.show_1024_grid`) | Settings > Viewports | Lines every 1024 units. | On | **Grid in the 3D view** (`view.show_3d_grid`) | Settings > Viewports | A grid on the z = 0 plane around the camera, the X axis red and the Y axis green. | Off | **3D grid on faces (P)** (`render.grid_3d`) | Map menu, `P`, Settings > Rendering | Draws the grid on the faces of brushes, every grid step, brighter every major step. | Off | **3D grid opacity** (`render.grid_3d_opacity`) | Settings > Rendering | 0.05 to 1. | 0.45 | `render.grid_3d_fade_cells` | `settings.toml` | The 3D grid fades out beyond this many cells from the camera. | 64 | **Dotted grid** (`render.grid_dotted`) | Settings > Rendering | Draws the 2D grid as dots where its lines cross. | Off | **Highlight every 64 units** (`render.grid_highlight_64`) | Settings > Rendering | Lines every 64 units are brighter. | Off | **Grid density limit** (`render.grid_min_px`) | Settings > Rendering | Grid lines closer than this (2 to 32 px) are hidden; the next larger step shows instead. | 4 px | **Grid size step** (`workflow.grid_step_factor`) | Settings > Viewports | Factor of `[` and `]`. | 2 |
+| Option | Where | What it does | Default |
+| --- | --- | --- | --- |
+| **Show grid** (`edit.show_grid`) | Map menu, `Shift+G` | Draws the 2D grid. | On |
+| **Snap to grid** (`edit.snap_to_grid`) | Map menu, `Shift+W` | Tools snap to the grid. | On |
+| **Highlight grid lines every** (`view.grid_highlight_every`) | Settings > Viewports | Major line interval of the 2D grid (2 to 64). | 8 |
+| **Show 1024 unit lines** (`view.show_1024_grid`) | Settings > Viewports | Lines every 1024 units. | On |
+| **Grid in the 3D view** (`view.show_3d_grid`) | Settings > Viewports | A grid on the z = 0 plane around the camera, the X axis red and the Y axis green. | Off |
+| **3D grid on faces (P)** (`render.grid_3d`) | Map menu, `P`, Settings > Rendering | Draws the grid on the faces of brushes, every grid step, brighter every major step. | Off |
+| **3D grid opacity** (`render.grid_3d_opacity`) | Settings > Rendering | 0.05 to 1. | 0.45 |
+| `render.grid_3d_fade_cells` | `settings.toml` | The 3D grid fades out beyond this many cells from the camera. | 64 |
+| **Dotted grid** (`render.grid_dotted`) | Settings > Rendering | Draws the 2D grid as dots where its lines cross. | Off |
+| **Highlight every 64 units** (`render.grid_highlight_64`) | Settings > Rendering | Lines every 64 units are brighter. | Off |
+| **Grid density limit** (`render.grid_min_px`) | Settings > Rendering | Grid lines closer than this (2 to 32 px) are hidden; the next larger step shows instead. | 4 px |
+| **Grid size step** (`workflow.grid_step_factor`) | Settings > Viewports | Factor of `[` and `]`. | 2 |
 
 Grid settings live in the `[grid]` table of `settings.toml`: `mode`, `custom`, `per_view`, `presets`, `object_grids` (on), `plane_3d` (on).
 

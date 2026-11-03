@@ -10,7 +10,7 @@ The full table of actions with their default shortcuts and the preset difference
 
 **Help > Keyboard shortcuts** (`F1`) opens a window listing every action by menu (File, Edit, Map, View, Tools, Window, Help) with its shortcut, plus extra shortcuts of the preset (shown as *also ...*). Actions without a shortcut show `-`.
 
-- **Search actions or shortcuts** filters the list, by action name (in English or in the interface language), by action id, or by shortcut (`ctrl+shift+s` finds Save as; the key names work too).
+- **Search actions or shortcuts** filters the list, by action name (in English or in the interface language), by action id, or by shortcut (`ctrl+shift+s` finds Save as; the French key names work too).
 - The end of the list shows **Viewport controls** for your camera scheme (mouse buttons, fly keys, wheel, grid keys, clicks, stretch handles). See [Camera and navigation](camera-navigation.md).
 - **Customize...** opens **Settings > Keyboard**.
 
@@ -18,7 +18,12 @@ The full table of actions with their default shortcuts and the preset difference
 
 Open it with **Tools > Options...** (`Ctrl+,`), page **Keyboard**, or with **Customize...** in the F1 window.
 
-| Control | What it does | --- | --- | **Shortcut set** | Chooses where the default shortcuts come from: **Hammer Pro**, **Hammer** or **Hammer++**. A confirmation follows (*Use the X shortcuts? The shortcuts you changed stay.*) with **Use these shortcuts** and **Cancel**. | **Search actions or shortcuts** | Filters the actions, like in the F1 window. | **Reset all shortcuts** | Restores every default shortcut of the current set (your changes are dropped). | Conflict line | *Shortcuts used by several actions: N*, shown in orange when some exist. |
+| Control | What it does |
+| --- | --- |
+| **Shortcut set** | Chooses where the default shortcuts come from: **Hammer Pro**, **Hammer** or **Hammer++**. A confirmation follows (*Use the X shortcuts? The shortcuts you changed stay.*) with **Use these shortcuts** and **Cancel**. |
+| **Search actions or shortcuts** | Filters the actions, like in the F1 window. |
+| **Reset all shortcuts** | Restores every default shortcut of the current set (your changes are dropped). |
+| Conflict line | *Shortcuts used by several actions: N*, shown in orange when some exist. |
 
 Below, the actions are grouped by menu. Each row has:
 
@@ -39,15 +44,36 @@ Changes apply at once and are saved automatically.
 
 ## Shortcut sets
 
-| Set | For whom | Defaults | --- | --- | --- | **Hammer Pro** | Default. | The Hammer Pro shortcuts, plus two extra Hammer keys that collide with nothing: `Shift+Q` also clears the selection, `Shift+R` also shows or hides the grid. | **Hammer** | Valve Hammer users (Garry's Mod and Source SDK builds). | The Hammer Pro shortcuts with the differences below. | **Hammer++** | Hammer++ users. | The Hammer keys plus the Hammer++ ones below. |
+| Set | For whom | Defaults |
+| --- | --- | --- |
+| **Hammer Pro** | Default. | The Hammer Pro shortcuts, plus two extra Hammer keys that collide with nothing: `Shift+Q` also clears the selection, `Shift+R` also shows or hides the grid. |
+| **Hammer** | Valve Hammer users (Garry's Mod and Source SDK builds). | The Hammer Pro shortcuts with the differences below. |
+| **Hammer++** | Hammer++ users. | The Hammer keys plus the Hammer++ ones below. |
 
 Differences of the **Hammer** set from Hammer Pro:
 
-| Action | Hammer Pro | Hammer | --- | --- | --- | Show grid | `Shift+G` | `Shift+R` | Select all | `Ctrl+A` | `Ctrl+Shift+A` | Clear selection | `Ctrl+Shift+A` | `Shift+Q` | Reset view splits | none | `Ctrl+A` | Flip vertically | none | `Ctrl+I` | Invert selection | `Ctrl+I` | `Ctrl+Shift+I` | Find and replace in entities... | `Ctrl+Alt+R` | `Ctrl+Shift+R` | Find and replace textures... | `Ctrl+Shift+R` | none | Compile and run... | `Ctrl+F9` | `F9` | Compile now | `F9` | `Ctrl+F9` |
+| Action | Hammer Pro | Hammer |
+| --- | --- | --- |
+| Show grid | `Shift+G` | `Shift+R` |
+| Select all | `Ctrl+A` | `Ctrl+Shift+A` |
+| Clear selection | `Ctrl+Shift+A` | `Shift+Q` |
+| Reset view splits | none | `Ctrl+A` |
+| Flip vertically | none | `Ctrl+I` |
+| Invert selection | `Ctrl+I` | `Ctrl+Shift+I` |
+| Find and replace in entities... | `Ctrl+Alt+R` | `Ctrl+Shift+R` |
+| Find and replace textures... | `Ctrl+Shift+R` | none |
+| Compile and run... | `Ctrl+F9` | `F9` |
+| Compile now | `F9` | `Ctrl+F9` |
 
 The **Hammer++** set adds:
 
-| Action | Hammer++ | --- | --- | Model browser | `Shift+F10` | Particle browser | `Shift+F11` | Sound browser | `Shift+F12` | Show tool textures | `Ctrl+Shift+F2` | Show editor objects | `Alt+O` |
+| Action | Hammer++ |
+| --- | --- |
+| Model browser | `Shift+F10` |
+| Particle browser | `Shift+F11` |
+| Sound browser | `Shift+F12` |
+| Show tool textures | `Ctrl+Shift+F2` |
+| Show editor objects | `Alt+O` |
 
 The set does not touch the shortcuts you changed yourself: they stay on top of any set. The camera controls (mouse and fly keys) are chosen separately, with **Camera controls** in **Settings > Viewports** (see [Camera and navigation](camera-navigation.md)). The first run wizard sets both from the editor you come from (reopen it with **Help > Setup assistant...**).
 

@@ -25,7 +25,16 @@ A compiled map cannot give everything back: instances are merged, visgroups, gro
 
 The header shows what the archive is: for a BSP its **Version**, **Revision**, number of **Entities**, **Pakfile** size and **Compressed lumps**; for a GMA its **Title**, **Type**, **Tags** and **Version**; for a VPK its **Version**.
 
-| Control | What it does | --- | --- | **Filter entries...** | Filters the list of files. | **Extract...** | Extracts the selected entry, or every listed entry when none is selected, into a folder you pick. | **Add files...** (BSP) | Adds files to the pakfile. | **Replace...** (BSP) | Replaces the selected entry with a file. | **Remove** (BSP) | Removes the selected entry. | **Entity lump** (BSP) | Shows the entity lump as text you can edit (it must start with `worldspawn`). | **Save the BSP** (BSP) | Writes your changes after a confirmation (**Rewrite the BSP?**): a new file replaces the old one once complete. Keep a copy if you may need the old version. | **Discard** | Drops the pending changes (*N to add, N to remove*). |
+| Control | What it does |
+| --- | --- |
+| **Filter entries...** | Filters the list of files. |
+| **Extract...** | Extracts the selected entry, or every listed entry when none is selected, into a folder you pick. |
+| **Add files...** (BSP) | Adds files to the pakfile. |
+| **Replace...** (BSP) | Replaces the selected entry with a file. |
+| **Remove** (BSP) | Removes the selected entry. |
+| **Entity lump** (BSP) | Shows the entity lump as text you can edit (it must start with `worldspawn`). |
+| **Save the BSP** (BSP) | Writes your changes after a confirmation (**Rewrite the BSP?**): a new file replaces the old one once complete. Keep a copy if you may need the old version. |
+| **Discard** | Drops the pending changes (*N to add, N to remove*). |
 
 Select an entry to preview it: text files (VMT, TXT, Lua, RES, CFG, JSON, VMF, RAD, FGD, VCD...), VTF textures (size, format, mipmaps, frames and the image), PNG, JPG, TGA and BMP images, MDL headers (version, textures, skins, bones), WAV files (channels, rate, bits) and PCF particle files (their systems). Entries the open map uses show in green (from the last analysis of the release window).
 

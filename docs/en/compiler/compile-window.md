@@ -17,14 +17,41 @@ The **Target game** row at the top tells which game the open map is for (kept in
 
 ## Settings
 
-| Option | What it does | Default |---|---|---| **Preset** | **Draft**, **Normal**, **Final** or **Custom** (see below). | Normal | **Smart recompile** | Runs only what the changes since the last compile need: entities only, lighting only, props only, or everything. Draft and Normal only. | on | **Steps: Geometry** | **No**, **Normal**, **Only entities** (`-onlyents`) or **Only props** (`-onlyprops`). The partial modes update the BSP of the last compile in seconds and keep its visibility and lighting; without an earlier BSP a full compile runs instead. | Normal | **Visibility** | **No**, **Fast** (`-fastvis`, coarse but quick) or **Normal** (`-vis`, what players need). Computed by the geometry step. | Normal | **Lighting** | **No**, **Draft**, **Normal** or **Final**. | Normal | **Dynamic range** | **LDR**, **HDR** or **LDR + HDR**. Final always computes both; Draft computes one (with LDR + HDR chosen, the one the game is set to: HDR when its `mat_hdr_level` is 2, else LDR). For Portal 2, CS:GO and the other HDR only games, LDR becomes HDR. | LDR | Command lines | Under the steps, the exact command line of each step. Hover a line for the meaning of every flag Hammer Pro added; right click > **Copy the command line**. |
-| **Compile only the cordoned area** | Shown when a cordon is active. Objects outside every box are left out, each box is sealed and the map is named `<map>_cordon`. | on | **Static props: Light static props (per vertex)** | When the quality asks for it (Final), bakes the light of every static prop vertex (`-StaticPropLighting`). Off: never. | on | **Static props: Static prop shadows** | Static props cast shadows in the lighting. Off: `-nostaticpropshadows`, much faster on maps with many props. | on | **Before: Save the map first** | Also saves your work. The compile itself uses a copy and never needs a save. | off | **Before: Compile hidden objects** | Like Hammer, objects hidden in the editor (visgroups, Hide) are left out unless this is checked. Hidden lights get a warning. | off | **Before: Compile leaking maps anyway** | Off: the compile stops right after the geometry when the map leaks (`-leaktest`). | off | **Content: Pack custom content** | Packs the custom materials and models the map uses into the BSP, with a policy: **Release builds only** (Final compiles and releases) or **Always**. | on, Release builds only | **Content: Development addon** | Builds that do not pack copy your custom materials into `garrysmod/addons/hammerpro_dev`, which the game loads (restart the game once after the first copy). Also holds the script of `point_hammerpro_skybox`. | on | **Content: Export custom materials** | Also copies the used materials of your custom texture folders into the game folder. Not needed to compile: the compiler always sees them. | off | **After: Copy to the maps folder** | Copies the BSP to `garrysmod/maps` (or the **Maps folder** of Advanced). | on | **After: Launch the game** | Starts the game on the map. **Through Steam** opens it with a `steam://` link instead of the game executable. | on, off | **After: Load the leak path on leak** | Loads `<map>.lin` in the views when the map leaks. | on | **Game arguments** | Extra game arguments. `-game`, `-hijack` (reuses a running game) and `+map` are added unless you set them; `{map}` is replaced by the map name. | `-console -dev` | **Threads** | **Automatic** (every core, or every core but one when a core is kept for the editor) or a number from 1 to 256 (`-threads`). | Automatic | **Keep a core for the editor** | The automatic thread count is one less than the cores, so the editor stays smooth. Needed by **Compile while idle**. | on |
+| Option | What it does | Default |
+|---|---|---|
+| **Preset** | **Draft**, **Normal**, **Final** or **Custom** (see below). | Normal |
+| **Smart recompile** | Runs only what the changes since the last compile need: entities only, lighting only, props only, or everything. Draft and Normal only. | on |
+| **Steps: Geometry** | **No**, **Normal**, **Only entities** (`-onlyents`) or **Only props** (`-onlyprops`). The partial modes update the BSP of the last compile in seconds and keep its visibility and lighting; without an earlier BSP a full compile runs instead. | Normal |
+| **Visibility** | **No**, **Fast** (`-fastvis`, coarse but quick) or **Normal** (`-vis`, what players need). Computed by the geometry step. | Normal |
+| **Lighting** | **No**, **Draft**, **Normal** or **Final**. | Normal |
+| **Dynamic range** | **LDR**, **HDR** or **LDR + HDR**. Final always computes both; Draft computes one (with LDR + HDR chosen, the one the game is set to: HDR when its `mat_hdr_level` is 2, else LDR). For Portal 2, CS:GO and the other HDR only games, LDR becomes HDR. | LDR |
+| Command lines | Under the steps, the exact command line of each step. Hover a line for the meaning of every flag Hammer Pro added; right click > **Copy the command line**. | |
+| **Compile only the cordoned area** | Shown when a cordon is active. Objects outside every box are left out, each box is sealed and the map is named `<map>_cordon`. | on |
+| **Static props: Light static props (per vertex)** | When the quality asks for it (Final), bakes the light of every static prop vertex (`-StaticPropLighting`). Off: never. | on |
+| **Static props: Static prop shadows** | Static props cast shadows in the lighting. Off: `-nostaticpropshadows`, much faster on maps with many props. | on |
+| **Before: Save the map first** | Also saves your work. The compile itself uses a copy and never needs a save. | off |
+| **Before: Compile hidden objects** | Like Hammer, objects hidden in the editor (visgroups, Hide) are left out unless this is checked. Hidden lights get a warning. | off |
+| **Before: Compile leaking maps anyway** | Off: the compile stops right after the geometry when the map leaks (`-leaktest`). | off |
+| **Content: Pack custom content** | Packs the custom materials and models the map uses into the BSP, with a policy: **Release builds only** (Final compiles and releases) or **Always**. | on, Release builds only |
+| **Content: Development addon** | Builds that do not pack copy your custom materials into `garrysmod/addons/hammerpro_dev`, which the game loads (restart the game once after the first copy). Also holds the script of `point_hammerpro_skybox`. | on |
+| **Content: Export custom materials** | Also copies the used materials of your custom texture folders into the game folder. Not needed to compile: the compiler always sees them. | off |
+| **After: Copy to the maps folder** | Copies the BSP to `garrysmod/maps` (or the **Maps folder** of Advanced). | on |
+| **After: Launch the game** | Starts the game on the map. **Through Steam** opens it with a `steam://` link instead of the game executable. | on, off |
+| **After: Load the leak path on leak** | Loads `<map>.lin` in the views when the map leaks. | on |
+| **Game arguments** | Extra game arguments. `-game`, `-hijack` (reuses a running game) and `+map` are added unless you set them; `{map}` is replaced by the map name. | `-console -dev` |
+| **Threads** | **Automatic** (every core, or every core but one when a core is kept for the editor) or a number from 1 to 256 (`-threads`). | Automatic |
+| **Keep a core for the editor** | The automatic thread count is one less than the cores, so the editor stays smooth. Needed by **Compile while idle**. | on |
 
 Under the game arguments, the launch options (**Start the game:** after the compile or when the compile starts, **Reuse the running game**, **Fast start**, **Skip unused Workshop and addons**, **Report the map load time**) are described in [Launch the game](../features/game-launch.md).
 
 ### The presets
 
-| Preset | Geometry | Visibility | Lighting | Packing |---|---|---|---|---| **Draft** | full, stops on leaks | Fast (`-fastvis`) | Draft (`-bounce 1 -fast`), one dynamic range, ambient occlusion off | no (development addon) | **Normal** | full | Normal (`-vis`) | Normal (no extra flag), ambient occlusion on | no (development addon) | **Final** | full | Normal (`-vis`) | Final (`-final -StaticPropLighting`), always LDR + HDR, ambient occlusion with 64 rays | yes | **Custom** | your choices of the step lists | | as the policy says |
+| Preset | Geometry | Visibility | Lighting | Packing |
+|---|---|---|---|---|
+| **Draft** | full, stops on leaks | Fast (`-fastvis`) | Draft (`-bounce 1 -fast`), one dynamic range, ambient occlusion off | no (development addon) |
+| **Normal** | full | Normal (`-vis`) | Normal (no extra flag), ambient occlusion on | no (development addon) |
+| **Final** | full | Normal (`-vis`) | Final (`-final -StaticPropLighting`), always LDR + HDR, ambient occlusion with 64 rays | yes |
+| **Custom** | your choices of the step lists | | | as the policy says |
 
 Changing a step list makes the preset **Custom** unless the choices match a named preset.
 
@@ -34,7 +61,16 @@ Two menus list every flag of the compiler, grouped (Quality, Speed, Geometry, Vi
 
 ## Advanced
 
-| Option | What it does | Default |---|---|---| **Extra geometry arguments** | Added to `hammerpro --bspc`, for example `-fastvis`. A flag here replaces the preset's. | empty | **Extra lighting arguments** | Added to `hammerpro --rad`, for example `-bounce 4`. | empty | **Compile while idle** | When the map has not changed for 3 seconds, the geometry and visibility are built in the background (one core kept for the editor): F9 then reuses them and leaks show up early. Paused on battery and while another compile runs; any edit cancels it. | on with 8 or more processor threads | **Play now, finish the lighting later** | Compiles a Draft, starts the game, then compiles Normal (or Final with `progressive_preset = "Final"` in `settings.toml`) in the background and replaces the map in the maps folder when you leave it in game (it waits up to five minutes, retrying). | off | **Keep a timing history** | Records the time of every step (History tab, estimates, slow step warnings). | on | **Cordon seal material** | Material of the brushes that seal a cordon box (shared with the cordon settings). | `TOOLS/TOOLSSKYBOX` | **Game** | The game executable. Empty: detected. | detected | **Maps folder** | Where the BSP is copied. Empty: `garrysmod/maps` of the game. | empty |
+| Option | What it does | Default |
+|---|---|---|
+| **Extra geometry arguments** | Added to `hammerpro --bspc`, for example `-fastvis`. A flag here replaces the preset's. | empty |
+| **Extra lighting arguments** | Added to `hammerpro --rad`, for example `-bounce 4`. | empty |
+| **Compile while idle** | When the map has not changed for 3 seconds, the geometry and visibility are built in the background (one core kept for the editor): F9 then reuses them and leaks show up early. Paused on battery and while another compile runs; any edit cancels it. | on with 8 or more processor threads |
+| **Play now, finish the lighting later** | Compiles a Draft, starts the game, then compiles Normal (or Final with `progressive_preset = "Final"` in `settings.toml`) in the background and replaces the map in the maps folder when you leave it in game (it waits up to five minutes, retrying). | off |
+| **Keep a timing history** | Records the time of every step (History tab, estimates, slow step warnings). | on |
+| **Cordon seal material** | Material of the brushes that seal a cordon box (shared with the cordon settings). | `TOOLS/TOOLSSKYBOX` |
+| **Game** | The game executable. Empty: detected. | detected |
+| **Maps folder** | Where the BSP is copied. Empty: `garrysmod/maps` of the game. | empty |
 
 ## Expert mode
 
@@ -52,7 +88,17 @@ Fresh install profiles: **Default**, **Fast** (`-fastvis`, `-bounce 2 -noextra`)
 
 Tokens are replaced in the arguments and the program (case insensitive; unknown `$words` stay as written):
 
-| Token | Value |---|---| `$file` | The map name (no folder, no extension) | `$ext` | The map extension (`vmf`) | `$path` | The folder of the compiled VMF (the `.hammerpro_build` folder) | `$bspdir` | The folder compiled maps are copied to | `$gamedir` | The game folder (with `gameinfo.txt`) | `$exedir` | The folder of the game executable | `$bsp_exe`, `$vis_exe`, `$light_exe` | The Hammer Pro executable (all three) | `$game_exe` | The game executable | `$$` | A literal dollar sign |
+| Token | Value |
+|---|---|
+| `$file` | The map name (no folder, no extension) |
+| `$ext` | The map extension (`vmf`) |
+| `$path` | The folder of the compiled VMF (the `.hammerpro_build` folder) |
+| `$bspdir` | The folder compiled maps are copied to |
+| `$gamedir` | The game folder (with `gameinfo.txt`) |
+| `$exedir` | The folder of the game executable |
+| `$bsp_exe`, `$vis_exe`, `$light_exe` | The Hammer Pro executable (all three) |
+| `$game_exe` | The game executable |
+| `$$` | A literal dollar sign |
 
 ## Log, Statistics, History
 

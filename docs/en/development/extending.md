@@ -10,11 +10,26 @@ Work in your own files. When a host file belongs to another package, plug in thr
 
 ## Extension points
 
-| Extension point | What it is for | Where | --- | --- | --- | Actions | Every command (menus, toolbar, shortcuts, command palette, `F1` reference, keyboard settings, scripts, MCP). One enum, declared in one file per package with `action_list!`: id, menu, menu group, default shortcut, status. | `crates/hp-app/src/actions/<package>.rs` | Menus | Placement of an action in a menu or submenu (`MenuGroup`), sorted by section and order. | `crates/hp-app/src/actions/groups.rs` | Dispatch | The code that runs an action. | `crates/hammerpro-medallium/src/dispatch/<package>.rs` | Settings | One struct per package, stored as its own TOML table, every field with a default. | `crates/hp-app/src/settings/<package>.rs` | Settings pages | Pages of the settings window. | `crates/hp-ui-shell/src/settings_dialog/<package>.rs` | Status bar | Segments of the status bar. | `crates/hp-ui-shell/src/status/` | Sidecar | Per map data kept outside the VMF. | `crates/hp-app/src/sidecar.rs` | Overlay layers | Geometry drawn by the views on top of the scene. | `crates/hp-ui-viewports/src/layers/` | Scene producers | Objects added to the rendered scene. | see EXTENDING.md | Tool hooks and picking | Tools reacting to input, picking in the views. | see EXTENDING.md | Editor extension | Extra VMF blocks (Hammer++ `*_plus` blocks are kept this way). | `crates/hp-editor` | Compile and launch | Steps of the compile pipeline, launch arguments. | `crates/hp-compile`, `crates/hp-ui-mapping/src/compile/` | Translations | Every UI text as `(key, English)` rows of a `TR` table. | each crate | MCP tools | Semantic tools of the MCP server. Every action and setting is already reachable through `run_action` and `set_setting`. | `crates/hammerpro-medallium/src/dispatch/mcp/tools_<area>.rs` |
+| Extension point | What it is for | Where |
+| --- | --- | --- |
+| Actions | Every command (menus, toolbar, shortcuts, command palette, `F1` reference, keyboard settings, scripts, MCP). One enum, declared in one file per package with `action_list!`: id, menu, menu group, default shortcut, status. | `crates/hp-app/src/actions/<package>.rs` |
+| Menus | Placement of an action in a menu or submenu (`MenuGroup`), sorted by section and order. | `crates/hp-app/src/actions/groups.rs` |
+| Dispatch | The code that runs an action. | `crates/hammerpro-medallium/src/dispatch/<package>.rs` |
+| Settings | One struct per package, stored as its own TOML table, every field with a default. | `crates/hp-app/src/settings/<package>.rs` |
+| Settings pages | Pages of the settings window. | `crates/hp-ui-shell/src/settings_dialog/<package>.rs` |
+| Status bar | Segments of the status bar. | `crates/hp-ui-shell/src/status/` |
+| Sidecar | Per map data kept outside the VMF. | `crates/hp-app/src/sidecar.rs` |
+| Overlay layers | Geometry drawn by the views on top of the scene. | `crates/hp-ui-viewports/src/layers/` |
+| Scene producers | Objects added to the rendered scene. | see EXTENDING.md |
+| Tool hooks and picking | Tools reacting to input, picking in the views. | see EXTENDING.md |
+| Editor extension | Extra VMF blocks (Hammer++ `*_plus` blocks are kept this way). | `crates/hp-editor` |
+| Compile and launch | Steps of the compile pipeline, launch arguments. | `crates/hp-compile`, `crates/hp-ui-mapping/src/compile/` |
+| Translations | Every UI text as `(key, English, French)` rows of a `TR` table. | each crate |
+| MCP tools | Semantic tools of the MCP server. Every action and setting is already reachable through `run_action` and `set_setting`. | `crates/hammerpro-medallium/src/dispatch/mcp/tools_<area>.rs` |
 
 ## Translations
 
-Every user-visible text goes through the i18n layer with an English and a text. Keys are prefixed with the area (`shell.`, `tex.`, `disp.`...) and must be unique across all crates. The table lint rejects empty texts, duplicate keys and the em dash or en dash characters. uses a space before `:`, `?` and `!`. Adding a language means adding a variant to `hp_app::i18n::Lang` and a column to the tables.
+Every user-visible text goes through the i18n layer with an English and a French text. Keys are prefixed with the area (`shell.`, `tex.`, `disp.`...) and must be unique across all crates. The table lint rejects empty texts, duplicate keys and the em dash or en dash characters. French uses a space before `:`, `?` and `!`. Adding a language means adding a variant to `hp_app::i18n::Lang` and a column to the tables.
 
 ## Look and colors
 

@@ -18,7 +18,12 @@ The brush is a circle drawn under the cursor (green, red when erasing).
 
 The plane is split into grid cells (the grid of the type, or the editor grid with **Use grid**). Each cell gets at most one entity, placed on the surface under the cell.
 
-| Gesture | What it does | --- | --- | Click or drag | Apply the current mode to the cells under the brush. Each cell is handled once per stroke. A whole stroke is one undo step. | `Ctrl`+drag | Erase every entity of the type under the brush, whatever the mode and density. | `Alt`+mouse wheel | Change the brush radius (about 15 % per notch). | `Escape` during a stroke | Drop the whole stroke. |
+| Gesture | What it does |
+| --- | --- |
+| Click or drag | Apply the current mode to the cells under the brush. Each cell is handled once per stroke. A whole stroke is one undo step. |
+| `Ctrl`+drag | Erase every entity of the type under the brush, whatever the mode and density. |
+| `Alt`+mouse wheel | Change the brush radius (about 15 % per notch). |
+| `Escape` during a stroke | Drop the whole stroke. |
 
 Entities only land on world brushes and on `func_detail`, `func_brush`, `func_wall` and `func_lod` brushes that have at least one face without a `tools/` material (triggers, clips and other volumes are skipped). Hidden entities are never touched.
 
@@ -26,16 +31,31 @@ An entity "belongs" to a type when its class is one of the classes of the type a
 
 ## Modes
 
-| Mode | What it does | --- | --- | **Add** | Fill empty cells: each empty cell gets an entity with the density as chance. | **Subtract** | Remove entities of the type, each one with the density as chance. | **Replace** | Pick a new entry for the cells that hold an entity of the type. | **Overwrite** | Empty the cells, then fill them again by the density. |
+| Mode | What it does |
+| --- | --- |
+| **Add** | Fill empty cells: each empty cell gets an entity with the density as chance. |
+| **Subtract** | Remove entities of the type, each one with the density as chance. |
+| **Replace** | Pick a new entry for the cells that hold an entity of the type. |
+| **Overwrite** | Empty the cells, then fill them again by the density. |
 
 ## Options
 
 The options are saved in `settings.toml` under `[placement.sprinkle]`.
 
-| Option | What it does | Default | --- | --- | --- | **Type:** | The sprinkle type to paint. The tooltip of each type tells the file it comes from. | none | Refresh button | Read the definitions again. |
-| Edit button | Open source: the definition file of the type in the text editor (disabled when the file is inside an archive). |
-| Folder button | Open the Hammer Pro sprinkle folder. |
-| Mode | **Add**, **Subtract**, **Replace** or **Overwrite** (see above). | **Add** | **Density:** | Chance in percent that a cell gets an entity (or loses it when subtracting), 0 to 100 %. | 50 % | **Radius:** | Brush radius in units, 8 to 4096 (`Alt`+wheel). | 128 | **Use grid** | Use the editor grid instead of the grid of the definition (the tooltip shows the grid of the type). | Off | **Random yaw** | Turn every entity to a random yaw. | On | **Offset:** | Random move inside the cell, in percent of half a cell, 0 to 100 %. | 50 % | **Z offset:** | Distance from the surface, -4096 to 4096 units. | 0 | **Align to normal** | Tilt entities to follow the surface they rest on. The Z offset then goes along the surface normal. | Off |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Type:** | The sprinkle type to paint. The tooltip of each type tells the file it comes from. | none |
+| Refresh button | Read the definitions again. | |
+| Edit button | Open source: the definition file of the type in the text editor (disabled when the file is inside an archive). | |
+| Folder button | Open the Hammer Pro sprinkle folder. | |
+| Mode | **Add**, **Subtract**, **Replace** or **Overwrite** (see above). | **Add** |
+| **Density:** | Chance in percent that a cell gets an entity (or loses it when subtracting), 0 to 100 %. | 50 % |
+| **Radius:** | Brush radius in units, 8 to 4096 (`Alt`+wheel). | 128 |
+| **Use grid** | Use the editor grid instead of the grid of the definition (the tooltip shows the grid of the type). | Off |
+| **Random yaw** | Turn every entity to a random yaw. | On |
+| **Offset:** | Random move inside the cell, in percent of half a cell, 0 to 100 %. | 50 % |
+| **Z offset:** | Distance from the surface, -4096 to 4096 units. | 0 |
+| **Align to normal** | Tilt entities to follow the surface they rest on. The Z offset then goes along the surface normal. | Off |
 
 When the grid is too small for the radius (more than 40,000 cells under the brush), nothing is placed and **The grid is too small for this radius: nothing was sprinkled** is shown: raise the grid or lower the radius.
 
@@ -60,7 +80,13 @@ A definition file is a `.txt` file holding one or more types:
 
 ### Where definitions are read
 
-| Place | Notes | --- | --- | `scripts/hammer/sprinkle/` of the game content | Read through the mounted game content (base game, addons, mounted folders). | `bin/hammerplusplus/scripts/sprinkle/` and `bin/win64/hammerplusplus/scripts/sprinkle/` of the Garry's Mod install | The Hammer++ folders, read only. | `bin/scripts/hammer/sprinkle/` and `bin/win64/scripts/hammer/sprinkle/` of the Garry's Mod install | The Hammer folders, read only. | `%APPDATA%\HammerPro\sprinkle` | The Hammer Pro folder (folder button of the options bar). | Extra folders | Added in **Settings > Prefabs > Sprinkle** with **Add a folder...**, saved as `extra_dirs`. |
+| Place | Notes |
+| --- | --- |
+| `scripts/hammer/sprinkle/` of the game content | Read through the mounted game content (base game, addons, mounted folders). |
+| `bin/hammerplusplus/scripts/sprinkle/` and `bin/win64/hammerplusplus/scripts/sprinkle/` of the Garry's Mod install | The Hammer++ folders, read only. |
+| `bin/scripts/hammer/sprinkle/` and `bin/win64/scripts/hammer/sprinkle/` of the Garry's Mod install | The Hammer folders, read only. |
+| `%APPDATA%\HammerPro\sprinkle` | The Hammer Pro folder (folder button of the options bar). |
+| Extra folders | Added in **Settings > Prefabs > Sprinkle** with **Add a folder...**, saved as `extra_dirs`. |
 
 Only `.txt` files are read, without subfolders, up to 1 MB per file and 512 files per place. Files are read on a worker thread and kept in a cache by modification time, so a refresh only parses changed files. Definitions are read again with the Refresh button, when you change the folder list, and when the game content is mounted again.
 

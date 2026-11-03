@@ -17,7 +17,13 @@ Cordons are saved in the VMF like Hammer does: a map with a single cordon is wri
 
 The tool edits one cordon at a time, the **target**. Pick it in the **Cordon:** list of the options bar, by clicking its row in the cordon list, with **Edit the box with the cordon tool** in that list, or by clicking inside its box in a 2D view (the smallest box wins where boxes overlap).
 
-| Gesture (2D views) | What it does | --- | --- | Drag in empty space | Redraws the box of the target cordon. Its depth along the axis you do not see is kept. | Drag a handle | Resizes the box. | Drag inside the box | Moves the box. | Click inside another cordon | Makes it the target. | `Escape` | Cancels the drag in progress, then leaves the **New cordon** mode. |
+| Gesture (2D views) | What it does |
+| --- | --- |
+| Drag in empty space | Redraws the box of the target cordon. Its depth along the axis you do not see is kept. |
+| Drag a handle | Resizes the box. |
+| Drag inside the box | Moves the box. |
+| Click inside another cordon | Makes it the target. |
+| `Escape` | Cancels the drag in progress, then leaves the **New cordon** mode. |
 
 Each change is applied when you release the mouse button, as one undo step. A drag that draws no area keeps the box as it was. The 3D view shows the boxes but does not edit them.
 
@@ -25,11 +31,22 @@ The depth of a new box (the axis you do not see in the view where you draw it) c
 
 ### Options bar
 
-| Option | What it does | --- | --- | **Cordon:** | The cordon the tool edits. Shows **New cordon** while the next box will be a new cordon, **(none)** when the map has no cordon. | **+** button | **New cordon**: the next box you draw becomes a new cordon. | **Active** | Includes this cordon in the cordoned area (tooltip: "Include this cordon in the cordoned area"). | Size | The size of the target box. | **x** button | Deletes this cordon. | **Use cordons** | Same as **View > Use cordons**. |
+| Option | What it does |
+| --- | --- |
+| **Cordon:** | The cordon the tool edits. Shows **New cordon** while the next box will be a new cordon, **(none)** when the map has no cordon. |
+| **+** button | **New cordon**: the next box you draw becomes a new cordon. |
+| **Active** | Includes this cordon in the cordoned area (tooltip: "Include this cordon in the cordoned area"). |
+| Size | The size of the target box. |
+| **x** button | Deletes this cordon. |
+| **Use cordons** | Same as **View > Use cordons**. |
 
 ### Right-click menu
 
-| Entry | What it does | --- | --- | **New cordon around the selection** | A new cordon fitting the selected objects. A flat selection gets one grid step of thickness. Needs a selection. | **Delete this cordon** | Deletes the target cordon. | **Use cordons** / **Stop using cordons** | Switches cordoning on or off. |
+| Entry | What it does |
+| --- | --- |
+| **New cordon around the selection** | A new cordon fitting the selected objects. A flat selection gets one grid step of thickness. Needs a selection. |
+| **Delete this cordon** | Deletes the target cordon. |
+| **Use cordons** / **Stop using cordons** | Switches cordoning on or off. |
 
 The status bar hint reminds you of the gestures and adds "(Cordons are not in use.)" when cordoning is off.
 
@@ -37,7 +54,18 @@ The status bar hint reminds you of the gestures and adds "(Cordons are not in us
 
 The **Cordons** section of the [Visgroups](visgroups.md) tab shows:
 
-| Element | What it does | --- | --- | **+** | New cordon around the selection, or a cube at the center of the 2D views when nothing is selected. The name starts in rename mode. | **Use** | Use cordons (same as **View > Use cordons**). | Count | Number of cordons. | Checkbox of a row | Active: includes the cordon in the cordoned area. | Click a row | Makes it the cordon the cordon tool edits. The tooltip gives its corners and size. | Double click a row | Renames it. | Frame button | **Frame the views on this cordon**. | Box button | **Edit the box with the cordon tool**. | **x** button | **Delete cordon**. | Right-click a row | **Edit the box with the cordon tool**, **Frame the views on this cordon**, **Rename**, **Delete cordon**. |
+| Element | What it does |
+| --- | --- |
+| **+** | New cordon around the selection, or a cube at the center of the 2D views when nothing is selected. The name starts in rename mode. |
+| **Use** | Use cordons (same as **View > Use cordons**). |
+| Count | Number of cordons. |
+| Checkbox of a row | Active: includes the cordon in the cordoned area. |
+| Click a row | Makes it the cordon the cordon tool edits. The tooltip gives its corners and size. |
+| Double click a row | Renames it. |
+| Frame button | **Frame the views on this cordon**. |
+| Box button | **Edit the box with the cordon tool**. |
+| **x** button | **Delete cordon**. |
+| Right-click a row | **Edit the box with the cordon tool**, **Frame the views on this cordon**, **Rename**, **Delete cordon**. |
 
 A cordon with no volume shows "This cordon has no volume: it is deleted at its next edit."
 
@@ -60,7 +88,12 @@ In the [Compile and run window](../compiler/compile-window.md), **Compile only t
 
 **Tools > Options... > Cordons and visgroups** (`[visibility]` in `settings.toml`):
 
-| Option | What it does | Default | --- | --- | --- | **Cordon material** (`cordon_material`) | Material of the brushes that seal the cordoned area when only the cordons are compiled. **Use the current material** fills in the current material. A blank value uses the default. | `tools/toolsskybox` | **Shade outside the cordons in 2D** (`shade_outside_2d`) | Darkens the 2D views outside every active cordon while cordons are used. | On | **Shade opacity** (`shade_opacity`) | Opacity of that shade, 0 to 1. | 0.45 | **Cordon names in 2D** (`show_cordon_names`) | Shows the name of each active cordon at its corner when there are several. | On |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Cordon material** (`cordon_material`) | Material of the brushes that seal the cordoned area when only the cordons are compiled. **Use the current material** fills in the current material. A blank value uses the default. | `tools/toolsskybox` |
+| **Shade outside the cordons in 2D** (`shade_outside_2d`) | Darkens the 2D views outside every active cordon while cordons are used. | On |
+| **Shade opacity** (`shade_opacity`) | Opacity of that shade, 0 to 1. | 0.45 |
+| **Cordon names in 2D** (`show_cordon_names`) | Shows the name of each active cordon at its corner when there are several. | On |
 
 ## Tips
 

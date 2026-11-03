@@ -6,7 +6,13 @@ Hammer Pro tests your map in game quickly: it loads the compiled map in the Garr
 
 ## Commands
 
-| Command | Default key | What it does | --- | --- | --- | **File > Compile and run...** | `Ctrl+F9` | Opens the compile window, where **Launch the game** runs the map after the compile. | **File > Compile now** | `F9` | Compiles with the current settings (and launches the game when **Launch the game** is on). | **File > Run the map in game** | Loads the compiled map of the open document in the running game, or starts the game on it. | **File > Reload the map in game** | The same, for a game already running. | **File > Import props from the game** | Brings the props placed in game into the map (needs the bridge). |
+| Command | Default key | What it does |
+| --- | --- | --- |
+| **File > Compile and run...** | `Ctrl+F9` | Opens the compile window, where **Launch the game** runs the map after the compile. |
+| **File > Compile now** | `F9` | Compiles with the current settings (and launches the game when **Launch the game** is on). |
+| **File > Run the map in game** | | Loads the compiled map of the open document in the running game, or starts the game on it. |
+| **File > Reload the map in game** | | The same, for a game already running. |
+| **File > Import props from the game** | | Brings the props placed in game into the map (needs the bridge). |
 
 With the Hammer or Hammer++ shortcut set, `F9` opens the compile window and `Ctrl+F9` compiles at once (see [Keyboard shortcuts](keyboard-shortcuts.md)).
 
@@ -22,14 +28,31 @@ The map must be saved and compiled: the compiled map takes the name of the VMF (
 
 Under the compile settings, the **Game** row holds the launch options. They apply when **Launch the game** is ticked and the game is not opened **Through Steam**.
 
-| Option | What it does | Default | --- | --- | --- | **Launch the game** | Runs the map after the compile. | on | **Through Steam** | Opens the map with a `steam://` link instead of starting the game executable. | off | **Game arguments** | Extra arguments for the game. `-game`, `-hijack` (reuses a running game) and `+map` are added unless you set them. `{map}` is replaced by the map name. | `-console -dev` (plus `-novid`, added once) | **Start the game:** **after the compile** | Starts the game once the map is compiled (like Hammer). | selected | **Start the game:** **when the compile starts** | Starts the game as soon as the compile starts: it boots while the compiler runs, then loads the map. Garry's Mod only. |
-| **Reuse the running game** | Loads the map in the game already running instead of starting it again. | on | Game state | **Game ready**, **Game starting** or **Game not running**. |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Launch the game** | Runs the map after the compile. | on |
+| **Through Steam** | Opens the map with a `steam://` link instead of starting the game executable. | off |
+| **Game arguments** | Extra arguments for the game. `-game`, `-hijack` (reuses a running game) and `+map` are added unless you set them. `{map}` is replaced by the map name. | `-console -dev` (plus `-novid`, added once) |
+| **Start the game:** **after the compile** | Starts the game once the map is compiled (like Hammer). | selected |
+| **Start the game:** **when the compile starts** | Starts the game as soon as the compile starts: it boots while the compiler runs, then loads the map. Garry's Mod only. | |
+| **Reuse the running game** | Loads the map in the game already running instead of starting it again. | on |
+| Game state | **Game ready**, **Game starting** or **Game not running**. | |
 
 ### Fast start
 
 The **Fast start** button opens options that make the game start faster for a test. Each option adds or removes its flag in **Game arguments**, so what you read in that field is what runs.
 
-| Option | Flag | What it does | --- | --- | --- | **Skip the intro video** | `-novid` | Saves a few seconds at every start. Added once to the game arguments at the first start. | **Windowed** | `-windowed` | Runs the game in a window. | **Borderless** | `-noborder` | Window without borders. | **Window size** | `-w`, `-h` | Width and height of the game window (1600 x 900 when turned on; 320 to 7680 by 240 to 4320). | **Open the console** | `-console` | Shows the developer console at start. | **Developer messages** | `-dev` | Shows developer messages; also skips the menu background map. | **Private local game** | `+sv_lan 1 +maxplayers 1` | A local server for you alone: no network setup, faster to start. | **Skip unused Workshop and addons** | `-noworkshop`, `-noaddons` | When the map uses nothing from them, the game does not mount Workshop downloads and addons: faster start, but addon tools and weapons are not available in game. Setting `launch.skip_unused_content`, off by default. | **Report the map load time** | Tells how long the game took to load the map and where the time went (files and content, entities and scripts). Needs the bridge. Setting `launch.load_report`, off by default. The last result shows below: *Last load: map in N s*. |
+| Option | Flag | What it does |
+| --- | --- | --- |
+| **Skip the intro video** | `-novid` | Saves a few seconds at every start. Added once to the game arguments at the first start. |
+| **Windowed** | `-windowed` | Runs the game in a window. |
+| **Borderless** | `-noborder` | Window without borders. |
+| **Window size** | `-w`, `-h` | Width and height of the game window (1600 x 900 when turned on; 320 to 7680 by 240 to 4320). |
+| **Open the console** | `-console` | Shows the developer console at start. |
+| **Developer messages** | `-dev` | Shows developer messages; also skips the menu background map. |
+| **Private local game** | `+sv_lan 1 +maxplayers 1` | A local server for you alone: no network setup, faster to start. |
+| **Skip unused Workshop and addons** | `-noworkshop`, `-noaddons` | When the map uses nothing from them, the game does not mount Workshop downloads and addons: faster start, but addon tools and weapons are not available in game. Setting `launch.skip_unused_content`, off by default. |
+| **Report the map load time** | | Tells how long the game took to load the map and where the time went (files and content, entities and scripts). Needs the bridge. Setting `launch.load_report`, off by default. The last result shows below: *Last load: map in N s*. |
 
 ## The Hammer Pro bridge
 
@@ -37,7 +60,11 @@ The bridge is a small addon in `garrysmod/addons/hammerpro_bridge` that lets Ham
 
 Install it from **Settings > Game**, section **Testing in game**:
 
-| Control | What it does | --- | --- | **Hammer Pro bridge: installed / not installed / no game folder** | State of the addon. | **Install** / **Update** / **Remove** | Installs, updates or removes the addon. Restart the game afterwards. | **Spawn at the editor camera** | When the map loads in game, places the player where the 3D camera of the editor is (noclip). Needs the bridge. Setting `launch.spawn_at_camera`, off by default. |
+| Control | What it does |
+| --- | --- |
+| **Hammer Pro bridge: installed / not installed / no game folder** | State of the addon. |
+| **Install** / **Update** / **Remove** | Installs, updates or removes the addon. Restart the game afterwards. |
+| **Spawn at the editor camera** | When the map loads in game, places the player where the 3D camera of the editor is (noclip). Needs the bridge. Setting `launch.spawn_at_camera`, off by default. |
 
 The editor and the game exchange small files in `garrysmod/data/hammerpro/` (`cmd.json`, `ack.json`, `props.json`); everything read back is size limited and checked.
 

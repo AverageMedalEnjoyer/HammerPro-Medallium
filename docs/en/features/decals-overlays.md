@@ -6,7 +6,10 @@ The decal tool places `infodecal` entities and the overlay tool places `info_ove
 
 ## Opening the tools
 
-| Tool | Menu | Default shortcut | --- | --- | --- | **Decal tool** | **Tools > Decal tool** | `Shift+D` | **Overlay tool** | **Tools > Overlay tool** | `Shift+O` |
+| Tool | Menu | Default shortcut |
+| --- | --- | --- |
+| **Decal tool** | **Tools > Decal tool** | `Shift+D` |
+| **Overlay tool** | **Tools > Overlay tool** | `Shift+O` |
 
 Both tools are also in the tool palette. Both work in the 3D view only: clicking in a 2D view shows the message **Click a face in the 3D view** and the cursor shows that the view is not usable.
 
@@ -24,22 +27,36 @@ Move the cursor over a face of the 3D view: a preview shows the decal with its r
 
 ### Options
 
-| Option | What it does | Default | --- | --- | --- | Material chip | Thumbnail and name of the current material. Click it to show the texture browser tab. |
-| **Size: W x H** | Size of the decal in world units (texture size). Read only. |
+| Option | What it does | Default |
+| --- | --- | --- |
+| Material chip | Thumbnail and name of the current material. Click it to show the texture browser tab. | |
+| **Size: W x H** | Size of the decal in world units (texture size). Read only. | |
 | **Snap to grid** | Snap the decal position to the grid on the surface (`Alt` while clicking: free). | Off |
 
 ## Overlay tool
 
 Move the cursor over a face of the 3D view: a preview shows the overlay with the material name and size. Then:
 
-| Gesture | What it does | --- | --- | Click a bare face | Place an `info_overlay` with the current material, centered on the point clicked (on the face plane). It becomes the selection. | `Shift`+click a bare face | Place an overlay and keep the current selection. | Click an overlay | Select it. When overlays overlap, the last one in the file (the one drawn on top) is picked. | `Shift`+click an overlay | Add it to or remove it from the selection. | `Ctrl`+click a face | Add the face to, or remove it from, the faces of the selected overlays. An overlay always keeps at least one face (**An overlay keeps at least one face**). One undo step. | Drag a corner handle | Reshape the selected overlay: the corner moves on the overlay plane, snapped to the grid and to the edges and corners of its faces, and stays on those faces. A label shows the corner key (`uv0` to `uv3`) and its value. One undo step per drag. | `Alt`+drag a corner | Move the corner off the grid. | `Shift`+drag a corner | Stick the corner to a corner of another overlay within a few pixels, for seamless roads and trims. | `Escape` during a drag | Cancel the drag. |
+| Gesture | What it does |
+| --- | --- |
+| Click a bare face | Place an `info_overlay` with the current material, centered on the point clicked (on the face plane). It becomes the selection. |
+| `Shift`+click a bare face | Place an overlay and keep the current selection. |
+| Click an overlay | Select it. When overlays overlap, the last one in the file (the one drawn on top) is picked. |
+| `Shift`+click an overlay | Add it to or remove it from the selection. |
+| `Ctrl`+click a face | Add the face to, or remove it from, the faces of the selected overlays. An overlay always keeps at least one face (**An overlay keeps at least one face**). One undo step. |
+| Drag a corner handle | Reshape the selected overlay: the corner moves on the overlay plane, snapped to the grid and to the edges and corners of its faces, and stays on those faces. A label shows the corner key (`uv0` to `uv3`) and its value. One undo step per drag. |
+| `Alt`+drag a corner | Move the corner off the grid. |
+| `Shift`+drag a corner | Stick the corner to a corner of another overlay within a few pixels, for seamless roads and trims. |
+| `Escape` during a drag | Cancel the drag. |
 
 A new overlay gets the keys Hammer writes so the compiler builds it: `material`, `sides` (the face clicked), `StartU`/`StartV` 0 and `EndU`/`EndV` 1, `BasisOrigin`, `BasisU`, `BasisV`, `BasisNormal` (the same basis as Hammer) and the four corners `uv0` to `uv3`, half the texture size around the center. The size is the texture size times `$decalscale`, like decals, and can be changed afterwards by dragging the corners. Corner handles are shown for up to 32 selected overlays at once.
 
 ### Options
 
-| Option | What it does | Default | --- | --- | --- | Material chip | Thumbnail and name of the current material. Click it to show the texture browser tab. |
-| **Size: W x H** | Size of a new overlay in world units (texture size, editable afterwards). Read only. |
+| Option | What it does | Default |
+| --- | --- | --- |
+| Material chip | Thumbnail and name of the current material. Click it to show the texture browser tab. | |
+| **Size: W x H** | Size of a new overlay in world units (texture size, editable afterwards). Read only. | |
 | **Snap to grid** | Snap the center of a new overlay to the grid on the face (`Alt`: free). | Off |
 
 ## Display in the views

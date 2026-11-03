@@ -14,7 +14,10 @@ The top of the window shows the file path, **(not saved)** when you have unsaved
 
 ## Buttons
 
-| Button | What it does |---|---| **Save** | Writes the file. Enabled when something changed. The file is written safely (a temporary file, then renamed over the old one) and only when you click **Save**. | **Reload** | Reads the file from disk again, dropping unsaved changes. |
+| Button | What it does |
+|---|---|
+| **Save** | Writes the file. Enabled when something changed. The file is written safely (a temporary file, then renamed over the old one) and only when you click **Save**. |
+| **Reload** | Reads the file from disk again, dropping unsaved changes. |
 
 If the file cannot be read (for example it is larger than 4 MB), the window shows **The file cannot be read (saving is disabled)** so that saving cannot destroy it.
 
@@ -39,7 +42,11 @@ Every field is plain text. Emptying a field removes its key; double quotes are n
 
 ### Rules
 
-| Rule | Fields | Added with |---|---|---| `playlooping` (a looping sound) | **Volume**, **Pitch**, **Wave**, **Position**, **Sound level** | `volume 1`, `pitch 100`, an empty wave | `playrandom` (random sounds at random times) | **Volume**, **Pitch**, **Time (min,max)**, the waves of its `rndwave` block, **Sound level** | `volume 1`, `pitch 100`, `time 10,20`, one empty wave | `playsoundscape` (plays another soundscape) | **Volume**, **Soundscape** (name of the other soundscape) | `volume 1`, an empty name |
+| Rule | Fields | Added with |
+|---|---|---|
+| `playlooping` (a looping sound) | **Volume**, **Pitch**, **Wave**, **Position**, **Sound level** | `volume 1`, `pitch 100`, an empty wave |
+| `playrandom` (random sounds at random times) | **Volume**, **Pitch**, **Time (min,max)**, the waves of its `rndwave` block, **Sound level** | `volume 1`, `pitch 100`, `time 10,20`, one empty wave |
+| `playsoundscape` (plays another soundscape) | **Volume**, **Soundscape** (name of the other soundscape) | `volume 1`, an empty name |
 
 Each **Wave** row has a text field, a **♪** picker listing the sound files of the game content, a **▶** button that plays the wave, and **×** (**Remove this wave**). **+ wave** adds a wave to a `playrandom` rule. The preview volume is the one of **Settings > Entities and browsers > Sound preview volume**.
 

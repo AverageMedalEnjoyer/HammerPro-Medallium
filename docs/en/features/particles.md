@@ -15,8 +15,15 @@ Hammer Pro has a particle browser that lists every particle system of the mounte
 
 ### Options
 
-| Control | What it does | Default |---|---|---| **Grid** / **List** | Thumbnail grid, or one row per system with a small thumbnail, its particle file and its source badge. Kept for the session. | Grid | Tile size slider (grid only) | **Tile size** of the particle and model grids, 48 to 256 points by steps of 8. `tile_size` in `[browser]`. | 96 | **Search particle systems (!word excludes)** | Keeps the systems whose name or file contains every word; `!word` excludes. |
-| Particle file dropdown | **All particle files**, or the systems of one file. | All | Source chips **All**, **Game**, **Addons**, **Workshop** | Keep the systems of one kind of source (a chip appears only when the content has it). | All | **Garry's Mod content only** | Only what every Garry's Mod player has. Shared with the model and sound browsers (`gmod_only` in `[browser]`). | Off | **Systems: N** | Number of systems listed ("Reading the particle files..." while they load). |
+| Control | What it does | Default |
+|---|---|---|
+| **Grid** / **List** | Thumbnail grid, or one row per system with a small thumbnail, its particle file and its source badge. Kept for the session. | Grid |
+| Tile size slider (grid only) | **Tile size** of the particle and model grids, 48 to 256 points by steps of 8. `tile_size` in `[browser]`. | 96 |
+| **Search particle systems (!word excludes)** | Keeps the systems whose name or file contains every word; `!word` excludes. | |
+| Particle file dropdown | **All particle files**, or the systems of one file. | All |
+| Source chips **All**, **Game**, **Addons**, **Workshop** | Keep the systems of one kind of source (a chip appears only when the content has it). | All |
+| **Garry's Mod content only** | Only what every Garry's Mod player has. Shared with the model and sound browsers (`gmod_only` in `[browser]`). | Off |
+| **Systems: N** | Number of systems listed ("Reading the particle files..." while they load). | |
 
 Thumbnails show the material of the system (a `?` when it has none or it is missing). Hover a system for its name, file, material and source.
 
@@ -36,7 +43,10 @@ In pick mode the browser shows "Pick for *key*: double click an item, or select 
 
 ### Turning it on
 
-| Option | Where | What it does | Default |---|---|---|---| **Show particles** | **View > Display options**, and **Settings > Nav mesh and particles** | Plays the effects of `info_particle_system` entities near the camera in the 3D views. `show_particles` in `[lab]`. | On | **Particles of the selection only** | Same places | Plays only the effects of the selected particle systems. `particles_selected_only` in `[lab]`. | Off |
+| Option | Where | What it does | Default |
+|---|---|---|---|
+| **Show particles** | **View > Display options**, and **Settings > Nav mesh and particles** | Plays the effects of `info_particle_system` entities near the camera in the 3D views. `show_particles` in `[lab]`. | On |
+| **Particles of the selection only** | Same places | Plays only the effects of the selected particle systems. `particles_selected_only` in `[lab]`. | Off |
 
 ### What plays
 

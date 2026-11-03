@@ -8,13 +8,23 @@ Hammer Pro checks the map in the background while you edit: invalid brushes, bro
 
 A moment after each change, the map is checked on a worker thread (setting **Check the map as I edit**, on by default). The status bar shows two segments on the right:
 
-| Segment | What it shows | Click | --- | --- | --- | Problem counts | Red cross and number of errors, warning sign and number of warnings, a check mark when there is nothing. `...` while a check runs. The tooltip also gives the number of notes. | Opens **Check for problems**. | Leak badge | **Leak** (red), only when the instant leak check found a way from an entity to the void. | Goes to the leak and draws its path (see [Leaks and pointfiles](leaks-pointfiles.md)). | Limit gauge | The engine limit closest to its maximum, in percent: green, yellow from 80%, red over 100%. The tooltip names the limit and the edicts used and left. | Opens **Map information**. |
+| Segment | What it shows | Click |
+| --- | --- | --- |
+| Problem counts | Red cross and number of errors, warning sign and number of warnings, a check mark when there is nothing. `...` while a check runs. The tooltip also gives the number of notes. | Opens **Check for problems**. |
+| Leak badge | **Leak** (red), only when the instant leak check found a way from an entity to the void. | Goes to the leak and draws its path (see [Leaks and pointfiles](leaks-pointfiles.md)). |
+| Limit gauge | The engine limit closest to its maximum, in percent: green, yellow from 80%, red over 100%. The tooltip names the limit and the edicts used and left. | Opens **Map information**. |
 
 ## The Check for problems window
 
 Open it with **Map > Check for problems** (`Alt+P`) or by clicking the problem counts. While it is open the list follows the live checks.
 
-| Control | What it does | --- | --- | Error, warning and information buttons | Each shows its count and hides or shows that severity (**Show errors**, **Show warnings**, **Show information**). | **Ignored (N)** | Shown when you ignore problems: lists them again (dimmed) so you can stop ignoring them. | **Visible objects only** | Lists only the problems of objects shown in the views, like Hammer's "Check visible objects only". Saved as `health.visible_only` (off by default). Hidden objects stay counted in the status bar. | **Check again** | Runs the checks now. | **Fix all (N)** | Fixes every fixable problem that is not ignored, in one undo step. |
+| Control | What it does |
+| --- | --- |
+| Error, warning and information buttons | Each shows its count and hides or shows that severity (**Show errors**, **Show warnings**, **Show information**). |
+| **Ignored (N)** | Shown when you ignore problems: lists them again (dimmed) so you can stop ignoring them. |
+| **Visible objects only** | Lists only the problems of objects shown in the views, like Hammer's "Check visible objects only". Saved as `health.visible_only` (off by default). Hidden objects stay counted in the status bar. |
+| **Check again** | Runs the checks now. |
+| **Fix all (N)** | Fixes every fixable problem that is not ignored, in one undo step. |
 
 Each row shows the severity icon, the description (full text in the tooltip), the number of objects or faces involved, and the buttons **Go to** (selects the objects and centers the views on them) and **Fix** when the problem can be fixed automatically (the tooltip says what the fix does). A click or double click on the row also goes to it. Right click a row for **Go to**, **Fix**, **Ignore** (hide this problem for this map, remembered with the map), **Ignore every "kind"**, **Stop ignoring** and **Copy text**.
 
@@ -22,11 +32,35 @@ Messages at the top tell you when the map is being checked, when the leak check 
 
 ### What is checked
 
-| Area | Problems | --- | --- | Brushes | invalid solid, tiny brush (smaller than 1 cubic unit), duplicate plane, too many sides (more than 128), mixed contents (water and solid faces on one brush), invalid texture axes, solid out of bounds, origin brush in the world, tool texture on the world (textures that only work on brush entities) | Ids and references | duplicate object id, duplicate face id, ids renumbered when the map was loaded, missing group, missing visgroup | Entities | unknown class, missing target, missing output target, unknown input, entity in a brush, entity out of bounds, entity outside of the map (may leak), empty brush entity, duplicate unique entity, key too long (31 and 1023 characters), bad content path (spaces or special characters), no player spawn, empty map | Content | missing material, missing model, missing sound, missing particle system, bad material name | Displacements and overlays | broken displacement (face without exactly 4 corners), displacement on a brush entity, overlay faces missing, overlay on too many faces (64 at most) | Lighting and sky | sky without sun (sky faces but no `light_environment`), too many named lights, several sky cameras, bad sky camera scale, skybox switch without sky camera, per player skybox | Areaportals | areaportal brushes (exactly one allowed), areaportal without a door, areaportal and door out of step, areaportal across water, areaportal across an occluder | Limits and leaks | limit close, limit exceeded (the compile will fail), edict budget, leak, leak check incomplete, func_detail candidate |
+| Area | Problems |
+| --- | --- |
+| Brushes | invalid solid, tiny brush (smaller than 1 cubic unit), duplicate plane, too many sides (more than 128), mixed contents (water and solid faces on one brush), invalid texture axes, solid out of bounds, origin brush in the world, tool texture on the world (textures that only work on brush entities) |
+| Ids and references | duplicate object id, duplicate face id, ids renumbered when the map was loaded, missing group, missing visgroup |
+| Entities | unknown class, missing target, missing output target, unknown input, entity in a brush, entity out of bounds, entity outside of the map (may leak), empty brush entity, duplicate unique entity, key too long (31 and 1023 characters), bad content path (spaces or special characters), no player spawn, empty map |
+| Content | missing material, missing model, missing sound, missing particle system, bad material name |
+| Displacements and overlays | broken displacement (face without exactly 4 corners), displacement on a brush entity, overlay faces missing, overlay on too many faces (64 at most) |
+| Lighting and sky | sky without sun (sky faces but no `light_environment`), too many named lights, several sky cameras, bad sky camera scale, skybox switch without sky camera, per player skybox |
+| Areaportals | areaportal brushes (exactly one allowed), areaportal without a door, areaportal and door out of step, areaportal across water, areaportal across an occluder |
+| Limits and leaks | limit close, limit exceeded (the compile will fail), edict budget, leak, leak check incomplete, func_detail candidate |
 
 ### Automatic fixes
 
-| Problem | Fix | --- | --- | invalid solid | Delete the invalid solids | duplicate object id, duplicate face id | Give new ids to the duplicates | missing output target | Remove the broken outputs | empty brush entity | Delete the empty brush entities | broken displacement | Turn the broken displacements back into plain faces | missing group, missing visgroup | Remove the references to missing groups | invalid texture axes | Realign the textures to the world | duplicate plane | Remove the duplicate faces | overlay faces missing | Remove the faces that do not exist from the lists (an overlay left on no face is deleted) | displacement on a brush entity | Move the solids to the world | tiny brush | Delete the tiny solids | origin brush in the world | Delete the origin brushes of the world | func_detail candidate | Tie them to one func_detail (one undo step) | areaportal and door out of step | Start the areaportal like its door |
+| Problem | Fix |
+| --- | --- |
+| invalid solid | Delete the invalid solids |
+| duplicate object id, duplicate face id | Give new ids to the duplicates |
+| missing output target | Remove the broken outputs |
+| empty brush entity | Delete the empty brush entities |
+| broken displacement | Turn the broken displacements back into plain faces |
+| missing group, missing visgroup | Remove the references to missing groups |
+| invalid texture axes | Realign the textures to the world |
+| duplicate plane | Remove the duplicate faces |
+| overlay faces missing | Remove the faces that do not exist from the lists (an overlay left on no face is deleted) |
+| displacement on a brush entity | Move the solids to the world |
+| tiny brush | Delete the tiny solids |
+| origin brush in the world | Delete the origin brushes of the world |
+| func_detail candidate | Tie them to one func_detail (one undo step) |
+| areaportal and door out of step | Start the areaportal like its door |
 
 Every fix is an undo step: `Ctrl+Z` brings the map back.
 
@@ -52,7 +86,13 @@ Each row (**Solid N**, its number of faces, *small* or *complex*) selects the br
 
 Limits differ between Source builds. **Limits of:** (in the Map information window, and in **Settings > Map health**) chooses the maxima:
 
-| Profile | Use it for | --- | --- | **Automatic** | Default (`auto`): Garry's Mod 64-bit for Garry's Mod maps, Valve's limits for the other games. | **Source SDK 2013** | Stock Valve limits. | **Garry's Mod 32-bit** | The 32-bit build of Garry's Mod. | **Garry's Mod 64-bit** | The 64-bit build of Garry's Mod. | **VBSP++ (Tools++)** | Maps compiled with the Hammer++ tools. |
+| Profile | Use it for |
+| --- | --- |
+| **Automatic** | Default (`auto`): Garry's Mod 64-bit for Garry's Mod maps, Valve's limits for the other games. |
+| **Source SDK 2013** | Stock Valve limits. |
+| **Garry's Mod 32-bit** | The 32-bit build of Garry's Mod. |
+| **Garry's Mod 64-bit** | The 64-bit build of Garry's Mod. |
+| **VBSP++ (Tools++)** | Maps compiled with the Hammer++ tools. |
 
 ## Go to an id or a position
 
@@ -71,7 +111,14 @@ Limits differ between Source builds. **Limits of:** (in the Map information wind
 
 **Settings > Map health** (`[health]` in settings.toml):
 
-| Option | Default | --- | --- | **Check the map as I edit** | on | **Look for leaks as I edit** | on | **Draw the path of the leak found** | on | **Check for problems lists visible objects only** | off | **Limits of:** | Automatic | Portal options | see [Leaks and pointfiles](leaks-pointfiles.md) |
+| Option | Default |
+| --- | --- |
+| **Check the map as I edit** | on |
+| **Look for leaks as I edit** | on |
+| **Draw the path of the leak found** | on |
+| **Check for problems lists visible objects only** | off |
+| **Limits of:** | Automatic |
+| Portal options | see [Leaks and pointfiles](leaks-pointfiles.md) |
 
 ## MCP
 

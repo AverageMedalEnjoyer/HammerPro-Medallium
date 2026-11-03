@@ -10,7 +10,10 @@ Every few minutes, each open map with unsaved changes is written to a new autosa
 
 Set it in **Settings > General**, section **Autosave**:
 
-| Option | What it does | Default | --- | --- | --- | **Save every** | Minutes between autosaves, 0 to 120. 0 turns autosave off (**Disabled**). Key `edit.autosave_minutes`. | 5 min | **Copies kept per map** | Autosaves kept for each map, 1 to 100; the oldest are deleted. Key `edit.autosave_keep`. | 10 |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Save every** | Minutes between autosaves, 0 to 120. 0 turns autosave off (**Disabled**). Key `edit.autosave_minutes`. | 5 min |
+| **Copies kept per map** | Autosaves kept for each map, 1 to 100; the oldest are deleted. Key `edit.autosave_keep`. | 10 |
 
 The page shows the folder: *Autosaves are stored in ...*. On Windows it is `%LOCALAPPDATA%\HammerPro\autosave`. Files are named `<map>_<hash>_<time>.vmf`, where the hash comes from the full path of the map: two maps with the same name in different folders never share their copies.
 
@@ -20,7 +23,11 @@ Autosaves are ordinary VMF files: open one with **File > Open map...** like any 
 
 When you open a map that has an autosave newer than the file (work you did not save), Hammer Pro asks **Recover autosave?** (*An autosave newer than map was found. Open it?*), with the autosave name:
 
-| Button | What it does | --- | --- | **Open the autosave** | Opens the autosave instead (*Autosave opened. Save to keep it.*). | **Keep the saved map** | Opens the map file as it is. | **Open the autosave folder** | Shows the folder of the autosaves. |
+| Button | What it does |
+| --- | --- |
+| **Open the autosave** | Opens the autosave instead (*Autosave opened. Save to keep it.*). |
+| **Keep the saved map** | Opens the map file as it is. |
+| **Open the autosave folder** | Shows the folder of the autosaves. |
 
 If you closed a map with **Don't save**, its autosaves up to then are not offered: you threw that work away on purpose (the files stay until the rotation removes them).
 
@@ -36,7 +43,12 @@ When Hammer Pro crashes, it writes a report (message, location, thread, backtrac
 
 On the next start, a window **Hammer Pro closed unexpectedly** shows it once:
 
-| Control | What it does | --- | --- | **Report file:** | Where the report is. | **Show the report file** | Opens its folder with the report selected. | **Copy the report** | Copies its text to the clipboard, to paste it in a message. | **Open the saved changes** | Opens the emergency save, when there is one (*Your unsaved changes were saved to ...*). |
+| Control | What it does |
+| --- | --- |
+| **Report file:** | Where the report is. |
+| **Show the report file** | Opens its folder with the report selected. |
+| **Copy the report** | Copies its text to the clipboard, to paste it in a message. |
+| **Open the saved changes** | Opens the emergency save, when there is one (*Your unsaved changes were saved to ...*). |
 
 Crashes that leave no chance to write anything (a crash of the graphics driver, an allocation failure, a stack overflow, the process killed) are caught too: each run leaves a marker that a normal close removes, and the next start turns a marker left by a dead process into a report with the end of the previous run's log.
 

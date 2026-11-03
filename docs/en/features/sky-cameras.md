@@ -6,7 +6,12 @@ A `sky_camera` sits in a small room (the 3D skybox) that the game draws around t
 
 ## Opening it
 
-| Action | Menu | Default shortcut | --- | --- | --- | **3D skybox** (preview) | **View > Display options > 3D skybox** | `Alt+V` | **Sky preview** (2D sky) | **View > Display options > Sky preview** | none | **3D skybox camera** | **View > 3D skybox camera** (shown when the map has two sky cameras or more) | none | **Use the previewed sky camera in game** | **View > Display options**, or the **3D skybox camera** submenu | none |
+| Action | Menu | Default shortcut |
+| --- | --- | --- |
+| **3D skybox** (preview) | **View > Display options > 3D skybox** | `Alt+V` |
+| **Sky preview** (2D sky) | **View > Display options > Sky preview** | none |
+| **3D skybox camera** | **View > 3D skybox camera** (shown when the map has two sky cameras or more) | none |
+| **Use the previewed sky camera in game** | **View > Display options**, or the **3D skybox camera** submenu | none |
 
 ## Previewing the 3D skybox
 
@@ -36,9 +41,23 @@ Set up:
 
 Keys and flags:
 
-| Key | What it does | Default | --- | --- | --- | **Name** | Name of the switch. |
-| **Sky camera** (`skycamera`) | Name of the `sky_camera` whose 3D skybox this switch shows. |
-| **Mode** (`mode`) | **Global (everyone)**: changes the 3D skybox for every player. **Per player**: drawn on each client, for the player who activated the switch, so several players can see different skyboxes at once. Per player draws the 3D skybox geometry of the chosen camera; the far 2D sky and the fog stay the map's own. | Global | **Start active (global)** (spawnflag 1) | Shows this skybox when the map starts (global mode only). | Off | Input | What it does | --- | --- | `Activate` | Shows the 3D skybox of the sky camera. | `Deactivate` | Shows the map's own 3D skybox again, when this switch is the one shown. | `Toggle` | Activate when inactive, else deactivate. | Output | When | --- | --- | `OnActivated` | The skybox of this switch is shown. | `OnDeactivated` | The skybox of this switch stops being shown. |
+| Key | What it does | Default |
+| --- | --- | --- |
+| **Name** | Name of the switch. | |
+| **Sky camera** (`skycamera`) | Name of the `sky_camera` whose 3D skybox this switch shows. | |
+| **Mode** (`mode`) | **Global (everyone)**: changes the 3D skybox for every player. **Per player**: drawn on each client, for the player who activated the switch, so several players can see different skyboxes at once. Per player draws the 3D skybox geometry of the chosen camera; the far 2D sky and the fog stay the map's own. | Global |
+| **Start active (global)** (spawnflag 1) | Shows this skybox when the map starts (global mode only). | Off |
+
+| Input | What it does |
+| --- | --- |
+| `Activate` | Shows the 3D skybox of the sky camera. |
+| `Deactivate` | Shows the map's own 3D skybox again, when this switch is the one shown. |
+| `Toggle` | Activate when inactive, else deactivate. |
+
+| Output | When |
+| --- | --- |
+| `OnActivated` | The skybox of this switch is shown. |
+| `OnDeactivated` | The skybox of this switch stops being shown. |
 
 When the map compiles, each switch gets the keys of its sky camera (`sky_origin`, `sky_scale`, fog keys...), so it works in game without looking the camera up. The fog keys of the camera are copied in global mode.
 

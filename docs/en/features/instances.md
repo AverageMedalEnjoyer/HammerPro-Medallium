@@ -8,7 +8,13 @@ A `func_instance` places the content of another VMF file in your map: build a do
 
 **Tools > Instancing**:
 
-| Action | What it does | Default shortcut | --- | --- | --- | **Create instance from selection...** | Saves the selection to a new instance file and replaces it with a `func_instance`. | `Alt+S` | **Edit instance** | Opens the file of the selected instance. | none | **Collapse selected instances** | Replaces the selected instances with their content. | none | **Collapse all instances...** | Same for every visible instance of the map, after a confirmation. | none | **Instances: hidden** / **Instances: tinted** / **Instances: normal** | How the content of instances is drawn. | none |
+| Action | What it does | Default shortcut |
+| --- | --- | --- |
+| **Create instance from selection...** | Saves the selection to a new instance file and replaces it with a `func_instance`. | `Alt+S` |
+| **Edit instance** | Opens the file of the selected instance. | none |
+| **Collapse selected instances** | Replaces the selected instances with their content. | none |
+| **Collapse all instances...** | Same for every visible instance of the map, after a confirmation. | none |
+| **Instances: hidden** / **Instances: tinted** / **Instances: normal** | How the content of instances is drawn. | none |
 
 The **Instance** tab of the right dock shows the file and the parameters of the selected instance.
 
@@ -26,7 +32,11 @@ Instance files are looked for from the folder of the map (the `file` key is rela
 
 ## Display
 
-| Mode | What you see | --- | --- | **Instances: hidden** | Only the `func_instance` entity. | **Instances: tinted** (default) | The content, tinted, like Hammer. | **Instances: normal** | The content drawn like the rest of the map. |
+| Mode | What you see |
+| --- | --- |
+| **Instances: hidden** | Only the `func_instance` entity. |
+| **Instances: tinted** (default) | The content, tinted, like Hammer. |
+| **Instances: normal** | The content drawn like the rest of the map. |
 
 The content of the selected instances is outlined (nested instances included) and their file is named in every view. An instance whose file cannot be found or read gets a red cross and a label at its origin.
 
@@ -34,7 +44,13 @@ The content of the selected instances is outlined (nested instances included) an
 
 `Alt+S` (Hammer++'s key) opens **Create instance from selection**:
 
-| Field | What it does | --- | --- | **File name:** | Name of the new VMF (no folder separator, no `: * ? " < > |`). | **Folder:** | Where it is saved, with **Browse...**. Defaults to the **Default folder** setting (`instances`, relative to the map folder). An unsaved map needs a full folder path. | **Origin:** | X, Y, Z. The selection is saved around this point, which becomes the origin of the `func_instance`. Starts at the center of the selection, snapped to the grid. | **Replace the existing file** | Shown when the file exists. | Instance file key | The `file` value the instance will get (relative to the map folder when it can be). |
+| Field | What it does |
+| --- | --- |
+| **File name:** | Name of the new VMF (no folder separator, no `: * ? " < > |`). |
+| **Folder:** | Where it is saved, with **Browse...**. Defaults to the **Default folder** setting (`instances`, relative to the map folder). An unsaved map needs a full folder path. |
+| **Origin:** | X, Y, Z. The selection is saved around this point, which becomes the origin of the `func_instance`. Starts at the center of the selection, snapped to the grid. |
+| **Replace the existing file** | Shown when the file exists. |
+| Instance file key | The `file` value the instance will get (relative to the map folder when it can be). |
 
 **Create** writes the file in the background (atomic write), then replaces the selection with a `func_instance` of that file in one undo step. The selection is moved by minus the origin (textures locked); groups entirely selected are kept, visgroups are not.
 
@@ -61,7 +77,13 @@ The same parameter fields appear under the keyvalues of a `func_instance` in the
 
 **Tools > Options... > Instances** (`[instances]` in `settings.toml`):
 
-| Option | What it does | Default | --- | --- | --- | **Contents of func_instance** (`display`) | **Hidden**, **Tinted** or **Normal**. | Tinted | **Outline the selected instances** (`outline_selected`) | Draws the bounds of the content of the selected instances and the name of their file. | On | **Show the map around an edited instance** (`show_context`) | Draws the parent map around an instance opened with **Edit instance**, tinted and read only. | On | **Default folder** (`folder`) | Where **Create instance from selection** saves new instances: relative to the map folder, or a full path. | `instances` | **Leave out hidden objects of the instance files** (`collapse_skips_hidden`) | Like Hammer++: objects hidden in an instance file are not added to the map when it is collapsed. | On |
+| Option | What it does | Default |
+| --- | --- | --- |
+| **Contents of func_instance** (`display`) | **Hidden**, **Tinted** or **Normal**. | Tinted |
+| **Outline the selected instances** (`outline_selected`) | Draws the bounds of the content of the selected instances and the name of their file. | On |
+| **Show the map around an edited instance** (`show_context`) | Draws the parent map around an instance opened with **Edit instance**, tinted and read only. | On |
+| **Default folder** (`folder`) | Where **Create instance from selection** saves new instances: relative to the map folder, or a full path. | `instances` |
+| **Leave out hidden objects of the instance files** (`collapse_skips_hidden`) | Like Hammer++: objects hidden in an instance file are not added to the map when it is collapsed. | On |
 
 ## Tips
 
