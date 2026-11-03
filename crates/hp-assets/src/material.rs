@@ -236,7 +236,7 @@ pub(crate) fn analyze(name: &str, mat: &Material, texture_flags: &dyn Fn(&str) -
         |t: &str| texture_flags(t) & (hp_vtf::flags::ONEBITALPHA | hp_vtf::flags::EIGHTBITALPHA) != 0;
     let mat = mat.resolve_fallbacks(hp_vmt::DEFAULT_DX_LEVEL, false);
     let tool = mat.tool_kind(name);
-    let texture = mat.preview_texture();
+    let texture = mat.render_texture();
     let texture2 = if mat.is_blend() { mat.base_texture2() } else { None };
     let blend4 = mat.shader_kind() == hp_vmt::ShaderKind::Lightmapped4WayBlend;
     let (texture3, texture4) =
@@ -519,12 +519,27 @@ pub(crate) fn load_fresh(fs: &hp_fs::GameFs, name: &str) -> Option<Material> {
     }
 }
 
+/// A lit material that names a normal map but no base texture: Valve's naming puts the colour
+/// texture next to it without the `_normal` suffix, so use that one when it exists.
+fn base_from_normal_name(fs: &hp_fs::GameFs, mat: &Material) -> Option<String> {
+    let bump = mat.bump_map()?.to_ascii_lowercase();
+    ["_normal", "_normalmap", "_nrm", "_bump", "_n"]
+        .iter()
+        .filter_map(|suffix| bump.strip_suffix(suffix))
+        .filter(|stem| !stem.is_empty() && !stem.ends_with('/'))
+        .find(|stem| fs.texture_size(stem).is_some())
+        .map(str::to_owned)
+}
+
 pub(crate) fn material_job(fs: &hp_fs::GameFs, name: &str, fresh: bool) -> MaterialData {
     let mat: Option<Arc<Material>> = if fresh { load_fresh(fs, name).map(Arc::new) } else { fs.material(name) };
     match mat {
         None => MaterialData { analysis: None, info: Arc::new(make_info(name, None, None, (0, 0), 0)) },
         Some(m) => {
             let mut analysis = analyze(name, &m, &|t| fs.texture_flags(t).unwrap_or(0));
+            if analysis.texture.is_none() && m.is_coloured_by_base_texture() {
+                analysis.texture = base_from_normal_name(fs, &m);
+            }
             if let Some(w) = analysis.water.as_mut() {
                 crate::water::finish(fs, w);
             }

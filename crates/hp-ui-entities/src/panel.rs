@@ -228,7 +228,7 @@ impl EntityPanel {
                         .auto_shrink([false, false])
                         .show(ui, |ui| smart.flags(ui, view, &mut ops));
                 }
-                EntityTab::Outputs => io.outputs(ui, &mut cx, view, names, &mut ops),
+                EntityTab::Outputs => io.outputs(ui, &mut cx, view, names, &mut smart.picks, &mut ops),
                 EntityTab::Inputs => go_to = io.inputs(ui, view),
                 EntityTab::Raw => {
                     ScrollArea::vertical()

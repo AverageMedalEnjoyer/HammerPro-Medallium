@@ -444,6 +444,8 @@ const PREVIEW_KEYS: &[&str] = &[
     "$dudvmap",
 ];
 
+const NORMAL_LIKE_KEYS: &[&str] = &["$normalmap", "$bumpmap", "$dudvmap", "$refracttinttexture", "$iris"];
+
 fn is_virtual_texture(name: &str) -> bool {
     name.starts_with("_rt_") || name == "env_cubemap"
 }
@@ -481,6 +483,47 @@ impl Material {
             return Some(t);
         }
         PREVIEW_KEYS.iter().filter_map(|key| self.texture(key)).find(|t| !is_virtual_texture(t))
+    }
+
+    /// The texture that gives a material its colour when it is drawn in the editor.
+    ///
+    /// `preview_texture` falls back to the normal, bump and dudv maps so that a browser thumbnail of
+    /// a water or refract material shows something. A surface that is coloured by a base texture must
+    /// never use those: drawing a normal map as the colour turns a model blue and purple.
+    pub fn render_texture(&self) -> Option<String> {
+        if !self.is_coloured_by_base_texture() {
+            return self.preview_texture();
+        }
+        if (self.is_tool() || self.is_water())
+            && let Some(t) = self.tool_texture()
+            && !is_virtual_texture(&t)
+        {
+            return Some(t);
+        }
+        PREVIEW_KEYS
+            .iter()
+            .filter(|key| !NORMAL_LIKE_KEYS.contains(key))
+            .filter_map(|key| self.texture(key))
+            .find(|t| !is_virtual_texture(t))
+    }
+
+    /// `true` for the shaders whose surface colour comes from `$basetexture` and its relatives.
+    pub fn is_coloured_by_base_texture(&self) -> bool {
+        matches!(
+            self.shader_kind(),
+            ShaderKind::LightmappedGeneric
+                | ShaderKind::WorldVertexTransition
+                | ShaderKind::Lightmapped4WayBlend
+                | ShaderKind::WorldTwoTextureBlend
+                | ShaderKind::VertexLitGeneric
+                | ShaderKind::UnlitGeneric
+                | ShaderKind::UnlitTwoTexture
+                | ShaderKind::DecalModulate
+                | ShaderKind::Modulate
+                | ShaderKind::Sprite
+                | ShaderKind::SpriteCard
+                | ShaderKind::Cable
+        )
     }
 
     pub fn surface_prop(&self) -> Option<&str> {
@@ -874,5 +917,31 @@ mod tests {
         let m = mat("WorldVertexTransition { }");
         assert_eq!(m.shader_base_name(), "worldvertextransition");
         assert!(!m.is_model() && !m.is_unlit());
+    }
+}
+
+#[cfg(test)]
+mod render_texture_tests {
+    use super::*;
+
+    fn mat(src: &str) -> Material {
+        crate::parse(src).unwrap_or_default()
+    }
+
+    #[test]
+    fn a_lit_material_never_gets_its_colour_from_a_normal_map() {
+        let m = mat(r#""VertexLitGeneric" { "$bumpmap" "models/x/skin_normal" "$phong" 1 }"#);
+        assert_eq!(m.render_texture(), None);
+        assert_eq!(m.preview_texture().as_deref(), Some("models/x/skin_normal"), "thumbnails keep their fallback");
+        let m = mat(r#""LightmappedGeneric" { "$normalmap" "walls/a_normal" "$basetexture" "walls/a" }"#);
+        assert_eq!(m.render_texture().as_deref(), Some("walls/a"));
+    }
+
+    #[test]
+    fn water_and_refract_keep_using_their_maps() {
+        let m = mat(r#""Water" { "$normalmap" "dev/water_normal" }"#);
+        assert_eq!(m.render_texture().as_deref(), Some("dev/water_normal"));
+        let m = mat(r#""Refract" { "$normalmap" "glass/refract_normal" }"#);
+        assert_eq!(m.render_texture().as_deref(), Some("glass/refract_normal"));
     }
 }

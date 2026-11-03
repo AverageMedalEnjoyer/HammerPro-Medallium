@@ -2,13 +2,15 @@
 
 # Hammer Pro
 
-**A modern, fast level editor for Source engine maps, built for every Source game.**
+**A level editor for Source engine maps. That's all.**
+
+**!!! MOST CODE IN THIS USES AND IS ASSISTED AI, YOU WILL HAVE TO KILL ME TO CODE WITH RUST. THIS IS A PROJECT MAINLY FOR ME. IF ANYONE WANTS TO USE THIS FOR ANYTHING, FEEL FREE. PERMISSION IS NOT NEEDED. !!!**
 
 [Lire en français](README.fr.md) | [Documentation](docs/en/README.md) | [Documentation en français](docs/fr/README.md)
 
 Hammer Pro opens and saves standard `.vmf` files, so you can use it side by side with Hammer and Hammer++. It is written in Rust, renders with the GPU through wgpu, stays smooth on huge maps and compiles maps with its own built in compiler: no VBSP, VVIS or VRAD needed.
 
-Version **1.0.0**.
+Version **1.0.1**.
 
 ## Highlights
 

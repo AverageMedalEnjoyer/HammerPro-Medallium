@@ -434,11 +434,16 @@ fn fs_water(in: WaterOut, @builtin(front_facing) front: bool) -> @location(0) ve
             if (flags & W_CHEAP_BLEND) != 0u {
                 let span = max(water.ranges.w - water.ranges.z, 1.0);
                 let amount = clamp((length(to_eye) - water.ranges.z) / span, 0.0, 1.0);
-                var a = clamp(f + amount, 0.0, 1.0);
+                var gate = 1.0;
                 if want_refract {
-                    a *= clamp((fog0 - 0.05) * 20.0, 0.0, 1.0);
+                    gate = clamp((fog0 - 0.05) * 20.0, 0.0, 1.0);
                 }
-                rgb = mix(rgb, spec, a);
+                // Up close the water keeps its own colour and only gains the Fresnel reflection. Far
+                // away it turns into the cheap water of the game: the fog colour lit by that same
+                // reflection. Blending towards the reflection alone made distant water pure sky.
+                let near_rgb = mix(rgb, spec, f * gate);
+                let far_rgb = mix(water.fog.rgb, spec, f);
+                rgb = mix(near_rgb, far_rgb, amount * gate);
             } else {
                 rgb = mix(water.fog.rgb, spec, f);
             }

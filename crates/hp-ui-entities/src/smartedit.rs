@@ -144,12 +144,26 @@ impl SmartEdit {
                 });
             });
         if accept && is_valid_name(&prompt.name) {
-            ops.push(Op::NameAndSet {
-                named: prompt.entity,
-                name: prompt.name.trim().to_owned(),
-                target: prompt.target.clone(),
-                key: prompt.key.clone(),
-            });
+            if prompt.rows.is_empty() {
+                ops.push(Op::NameAndSet {
+                    named: prompt.entity,
+                    name: prompt.name.trim().to_owned(),
+                    target: prompt.target.clone(),
+                    key: prompt.key.clone(),
+                });
+            } else {
+                let name = prompt.name.trim().to_owned();
+                ops.push(Op::Targetname {
+                    target: Target::Entities(vec![prompt.entity]),
+                    value: name.clone(),
+                    update_references: false,
+                });
+                ops.push(Op::ConnEdit {
+                    rows: prompt.rows.clone(),
+                    field: crate::edit::ConnField::Target(name),
+                    merge: false,
+                });
+            }
             done = true;
         }
         if done {
@@ -909,11 +923,18 @@ impl SmartEdit {
         let live = self.buffers.live_text(id).unwrap_or(display).to_owned();
         let exists = !opts.validate || live.trim().is_empty() || names.target_exists(&live);
         let color = (!exists).then_some(theme::error());
+        let duplicates = names.name_count(&live);
         let spacing = ui.spacing().item_spacing.x;
         let text_w = if opts.dropdown { (width - BUTTON_W - spacing).max(40.0) } else { width };
-        let field_opts = FieldOpts { hint, width: text_w, color, ..FieldOpts::default() };
+        let field_opts = FieldOpts { hint, width: text_w, color, bold: exists && duplicates >= 2, ..FieldOpts::default() };
         let resp = self.buffers.field(ui, id, display, field_opts, action.clone());
-        let resp = if exists { resp } else { resp.on_hover_text(t!("entities.target_missing")) };
+        let resp = if !exists {
+            resp.on_hover_text(t!("entities.target_missing"))
+        } else if duplicates >= 2 {
+            resp.on_hover_text(tf!("entities.target_duplicate", duplicates))
+        } else {
+            resp
+        };
         if resp.has_focus() || resp.lost_focus() {
             let typed = self.buffers.live_text(id).unwrap_or(display).to_owned();
             let candidates: Vec<&str> = list.iter().map(String::as_str).collect();

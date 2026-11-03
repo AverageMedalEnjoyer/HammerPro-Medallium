@@ -10,12 +10,14 @@ use hp_vmf::Connection;
 use crate::cx::Cx;
 use crate::edit::{ConnField, Op};
 use crate::names::{MapNames, SPECIAL_TARGETS};
-use crate::smartedit::picker_is_open;
+use crate::pick::{ViewPicks, entities_matching_target, mark};
+use crate::smartedit::{MARK_GLYPH, PICK_GLYPH, picker_is_open};
 use crate::values::fmt_num_rounded;
 use crate::view::{Agg, ConnIssues, ConnRow, EntityView, Target};
 use crate::widgets::{
     CommitAction, CompleteMode, ConnText, FieldOpts, PickerItem, ROW_HEIGHT, TextBuffers, autocomplete_keys,
-    autocomplete_popup, column_widths, empty_note, picker_button, picker_popup, table_header, table_row,
+    SIDE_BUTTON_W, autocomplete_popup, column_widths, empty_note, icon, picker_button, picker_popup, side_button,
+    table_header, table_row, table_row_styled,
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -111,7 +113,15 @@ impl IoEditor {
         self.salt.with("target_field")
     }
 
-    pub fn outputs(&mut self, ui: &mut Ui, cx: &mut Cx, view: &EntityView, names: &MapNames, ops: &mut Vec<Op>) {
+    pub fn outputs(
+        &mut self,
+        ui: &mut Ui,
+        cx: &mut Cx,
+        view: &EntityView,
+        names: &MapNames,
+        picks: &mut ViewPicks,
+        ops: &mut Vec<Op>,
+    ) {
         let Target::Entities(ids) = &view.target else {
             empty_note(ui, t!("entities.world_no_outputs"));
             return;
@@ -218,7 +228,8 @@ impl IoEditor {
                 .show_rows(ui, ROW_HEIGHT, n, |ui, range| {
                     for i in range {
                         let row = &view.conns[i];
-                        let resp = conn_row(ui, row, &widths, self.selected.contains(&i), i % 2 == 1);
+                        let shared = !row.issues.missing_target && names.is_duplicate(&row.conn.target);
+                        let resp = conn_row(ui, row, &widths, self.selected.contains(&i), i % 2 == 1, shared);
                         let resp = resp.on_hover_ui(|ui| conn_tooltip(ui, &row.conn, &row.issues));
                         if resp.clicked() {
                             let mods = ui.input(|inp| inp.modifiers);
@@ -228,7 +239,7 @@ impl IoEditor {
                 });
         }
         ui.separator();
-        self.output_editor(ui, cx, view, names, ops);
+        self.output_editor(ui, cx, view, names, picks, ops);
     }
 
     fn selected_targets(&self, cx: &Cx, view: &EntityView) -> Vec<EntityId> {
@@ -309,7 +320,15 @@ impl IoEditor {
         }
     }
 
-    fn output_editor(&mut self, ui: &mut Ui, cx: &mut Cx, view: &EntityView, names: &MapNames, ops: &mut Vec<Op>) {
+    fn output_editor(
+        &mut self,
+        ui: &mut Ui,
+        cx: &mut Cx,
+        view: &EntityView,
+        names: &MapNames,
+        picks: &mut ViewPicks,
+        ops: &mut Vec<Op>,
+    ) {
         let rows: Vec<&ConnRow> = self.selected.iter().filter_map(|&i| view.conns.get(i)).collect();
         if rows.is_empty() {
             ui.label(RichText::new(t!("entities.select_output_hint")).weak());
@@ -354,14 +373,45 @@ impl IoEditor {
             let color = (!exists).then_some(theme::error());
             let hint = if target.is_mixed() { multiple } else { "" };
             let action = || CommitAction::Conn { rows: refs.clone(), field: ConnText::Target };
-            let resp = self.buffers.field(
-                ui,
-                id,
-                display,
-                FieldOpts { hint, width: field_w, color, ..FieldOpts::default() },
-                action,
-            );
-            let resp = if exists { resp } else { resp.on_hover_text(t!("entities.target_missing")) };
+            let duplicates = names.name_count(&live);
+            let resp = ui
+                .horizontal(|ui| {
+                    let spacing = ui.spacing().item_spacing.x;
+                    let text_w = (field_w - 2.0 * (SIDE_BUTTON_W + spacing)).max(40.0);
+                    let opts = FieldOpts { hint, width: text_w, color, bold: exists && duplicates >= 2, ..FieldOpts::default() };
+                    let resp = self.buffers.field(ui, id, display, opts, action);
+                    let waiting = picks.is_waiting(cx.pick, OUTPUT_PICK_KEY);
+                    let pick_btn = side_button(ui, icon(PICK_GLYPH), waiting).on_hover_text(t!("entities.pick_entity"));
+                    if pick_btn.clicked() {
+                        if waiting {
+                            picks.cancel(cx.pick, OUTPUT_PICK_KEY);
+                        } else {
+                            picks.start_output(cx.pick, view.target.clone(), OUTPUT_PICK_KEY, refs.clone());
+                        }
+                    }
+                    let current = target.value().unwrap_or("").trim().to_owned();
+                    let can_mark = !current.is_empty() && !current.starts_with('!') && names.target_exists(&current);
+                    let mark_btn = ui.add_enabled_ui(can_mark, |ui| side_button(ui, icon(MARK_GLYPH), false)).inner;
+                    let doc: &hp_editor::Document = cx.doc;
+                    let mark_btn = mark_btn
+                        .on_hover_ui(|ui| {
+                            ui.label(tf!("entities.mark_tip", entities_matching_target(doc, &current).len()));
+                        })
+                        .on_disabled_hover_text(t!("entities.mark_none"));
+                    if mark_btn.clicked() {
+                        let marked = entities_matching_target(cx.doc, &current);
+                        mark(cx.doc, cx.requested_actions, &marked);
+                    }
+                    resp
+                })
+                .inner;
+            let resp = if !exists {
+                resp.on_hover_text(t!("entities.target_missing"))
+            } else if duplicates >= 2 {
+                resp.on_hover_text(tf!("entities.target_duplicate", duplicates))
+            } else {
+                resp
+            };
             if resp.has_focus() || resp.lost_focus() {
                 let typed = self.buffers.live_text(id).unwrap_or(display).to_owned();
                 let mut candidates: Vec<&str> = SPECIAL_TARGETS.to_vec();
@@ -583,7 +633,14 @@ fn io_item(def: Option<&IoDef>) -> PickerItem<'_> {
     }
 }
 
-fn conn_row(ui: &mut Ui, row: &ConnRow, widths: &[f32], selected: bool, striped: bool) -> egui::Response {
+fn conn_row(
+    ui: &mut Ui,
+    row: &ConnRow,
+    widths: &[f32],
+    selected: bool,
+    striped: bool,
+    shared_target: bool,
+) -> egui::Response {
     let c = &row.conn;
     let err = Some(theme::error());
     let icon = if row.issues.any() {
@@ -602,8 +659,10 @@ fn conn_row(ui: &mut Ui, row: &ConnRow, widths: &[f32], selected: bool, striped:
         (c.param.as_str(), None),
         (delay.as_str(), None),
     ];
-    table_row(ui, &cells, widths, selected, striped)
+    table_row_styled(ui, &cells, widths, selected, striped, if shared_target { &[2] } else { &[] })
 }
+
+const OUTPUT_PICK_KEY: &str = "output target";
 
 fn conn_tooltip(ui: &mut Ui, c: &Connection, issues: &ConnIssues) {
     ui.label(RichText::new(format!("{} → {}.{}", c.output, c.target, c.input)).monospace().strong());

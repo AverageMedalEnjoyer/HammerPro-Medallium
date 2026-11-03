@@ -13,6 +13,42 @@ use crate::view::Target;
 
 pub(crate) const ROW_HEIGHT: f32 = 18.0;
 
+pub(crate) const BOLD_FAMILY: &str = "hp_bold";
+
+static BOLD_INSTALLED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Registers a bold font family once: a bold system font when Windows has one, otherwise the
+/// heaviest font that ships with egui. The editor has no bold font of its own.
+fn install_bold_font(ctx: &egui::Context) {
+    if BOLD_INSTALLED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        return;
+    }
+    let mut fonts = egui::FontDefinitions::default();
+    let mut family: Vec<String> = Vec::new();
+    let windir = std::env::var_os("WINDIR").map_or_else(|| std::path::PathBuf::from("C:\\Windows"), std::path::PathBuf::from);
+    for name in ["segoeuib.ttf", "arialbd.ttf", "calibrib.ttf", "tahomabd.ttf"] {
+        if let Ok(bytes) = std::fs::read(windir.join("Fonts").join(name)) {
+            fonts.font_data.insert("hp_bold_system".to_owned(), std::sync::Arc::new(egui::FontData::from_owned(bytes)));
+            family.push("hp_bold_system".to_owned());
+            break;
+        }
+    }
+    if family.is_empty() && fonts.font_data.contains_key("Hack") {
+        family.push("Hack".to_owned());
+    }
+    family.extend(fonts.families.get(&egui::FontFamily::Proportional).cloned().unwrap_or_default());
+    fonts.families.insert(egui::FontFamily::Name(BOLD_FAMILY.into()), family);
+    ctx.set_fonts(fonts);
+}
+
+/// The body font in bold; plain until the bold family is ready (the next frame).
+pub(crate) fn bold_font(ui: &Ui) -> FontId {
+    install_bold_font(ui.ctx());
+    let size = ui.style().text_styles.get(&egui::TextStyle::Body).map_or(14.0, |f| f.size);
+    let family = egui::FontFamily::Name(BOLD_FAMILY.into());
+    if ui.ctx().fonts(|f| f.families().contains(&family)) { FontId::new(size, family) } else { FontId::proportional(size) }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum ConnText {
     Target,
@@ -66,11 +102,12 @@ pub(crate) struct FieldOpts<'a> {
     pub color: Option<Color32>,
     pub enabled: bool,
     pub multiline: bool,
+    pub bold: bool,
 }
 
 impl Default for FieldOpts<'_> {
     fn default() -> Self {
-        Self { hint: "", width: f32::INFINITY, color: None, enabled: true, multiline: false }
+        Self { hint: "", width: f32::INFINITY, color: None, enabled: true, multiline: false, bold: false }
     }
 }
 
@@ -145,6 +182,9 @@ impl TextBuffers {
         .hint_text(opts.hint.to_owned());
         if let Some(c) = opts.color {
             edit = edit.text_color(c);
+        }
+        if opts.bold {
+            edit = edit.font(bold_font(ui));
         }
         let resp = ui.add_enabled(opts.enabled, edit);
         match &mut self.active {
@@ -838,6 +878,18 @@ pub(crate) fn table_row(
     selected: bool,
     striped: bool,
 ) -> Response {
+    table_row_styled(ui, cells, widths, selected, striped, &[])
+}
+
+/// Like `table_row`; the cells whose index is in `bold` are drawn in bold.
+pub(crate) fn table_row_styled(
+    ui: &mut Ui,
+    cells: &[(&str, Option<Color32>)],
+    widths: &[f32],
+    selected: bool,
+    striped: bool,
+    bold: &[usize],
+) -> Response {
     let total: f32 = widths.iter().sum::<f32>().max(ui.available_width());
     let (rect, resp) = ui.allocate_exact_size(vec2(total, ROW_HEIGHT), CLICK);
     if !ui.is_rect_visible(rect) {
@@ -852,15 +904,20 @@ pub(crate) fn table_row(
         ui.painter().rect_filled(rect, CornerRadius::ZERO, stripe_color(ui));
     }
     let mut x = rect.left();
-    for ((text, color), w) in cells.iter().zip(widths) {
+    for (i, ((text, color), w)) in cells.iter().zip(widths).enumerate() {
         let cell = Rect::from_min_size(pos2(x, rect.top()), vec2(*w, rect.height()));
-        ui.painter().with_clip_rect(cell.shrink2(vec2(1.0, 0.0))).text(
-            pos2(cell.left() + 4.0, cell.center().y),
-            Align2::LEFT_CENTER,
-            *text,
-            FontId::proportional(12.5),
-            color.unwrap_or(if selected { visuals.strong_text_color() } else { visuals.text_color() }),
-        );
+        let painter = ui.painter().with_clip_rect(cell.shrink2(vec2(1.0, 0.0)));
+        let color = color.unwrap_or(if selected { visuals.strong_text_color() } else { visuals.text_color() });
+        let passes: &[f32] = if bold.contains(&i) { &[0.0, 0.7] } else { &[0.0] };
+        for dx in passes {
+            painter.text(
+                pos2(cell.left() + 4.0 + dx, cell.center().y),
+                Align2::LEFT_CENTER,
+                *text,
+                FontId::proportional(12.5),
+                color,
+            );
+        }
         x += w;
     }
     resp

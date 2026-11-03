@@ -118,6 +118,7 @@ pub const TR: TrTable = &[
     ),
     ("entities.play_failed", "Could not play the sound {0}", "Impossible de lire le son {0}"),
     ("entities.target_missing", "No entity has this name", "Aucune entité ne porte ce nom"),
+    ("entities.target_duplicate", "{0} entities share this name", "{0} entités portent ce nom"),
     ("entities.pitch", "Pitch (degrees)", "Tangage (degrés)"),
     ("entities.yaw", "Yaw (degrees)", "Lacet (degrés)"),
     ("entities.roll", "Roll (degrees)", "Roulis (degrés)"),

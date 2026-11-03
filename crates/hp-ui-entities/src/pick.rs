@@ -11,6 +11,7 @@ use crate::view::Target;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum PickPurpose {
     Target,
+    OutputTarget,
     Faces { add: bool },
     Aim { negative_pitch: bool },
 }
@@ -18,7 +19,7 @@ pub(crate) enum PickPurpose {
 impl PickPurpose {
     fn kind(self) -> PickKind {
         match self {
-            PickPurpose::Target => PickKind::Entity,
+            PickPurpose::Target | PickPurpose::OutputTarget => PickKind::Entity,
             PickPurpose::Faces { .. } => PickKind::Faces,
             PickPurpose::Aim { .. } => PickKind::Angles,
         }
@@ -31,6 +32,7 @@ struct Pending {
     target: Target,
     key: String,
     purpose: PickPurpose,
+    rows: Vec<Vec<(Id, usize)>>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -41,6 +43,8 @@ pub(crate) struct NamePrompt {
     pub key: String,
     pub name: String,
     pub focus: bool,
+    /// Output rows that get the name as their target; empty when a keyvalue is being set.
+    pub rows: Vec<Vec<(Id, usize)>>,
 }
 
 #[derive(Debug)]
@@ -62,7 +66,21 @@ impl ViewPicks {
     pub fn start(&mut self, pick: &mut Option<PickRequest>, target: Target, key: &str, purpose: PickPurpose) {
         let requester = self.requester(key);
         *pick = Some(PickRequest { kind: purpose.kind(), requester: requester.clone(), result: None });
-        self.pending = Some(Pending { requester, target, key: key.to_owned(), purpose });
+        self.pending = Some(Pending { requester, target, key: key.to_owned(), purpose, rows: Vec::new() });
+    }
+
+    /// Picks an entity whose name becomes the target of the given output rows.
+    pub fn start_output(
+        &mut self,
+        pick: &mut Option<PickRequest>,
+        target: Target,
+        key: &str,
+        rows: Vec<Vec<(Id, usize)>>,
+    ) {
+        let requester = self.requester(key);
+        let purpose = PickPurpose::OutputTarget;
+        *pick = Some(PickRequest { kind: purpose.kind(), requester: requester.clone(), result: None });
+        self.pending = Some(Pending { requester, target, key: key.to_owned(), purpose, rows });
     }
 
     pub fn is_waiting(&self, pick: &Option<PickRequest>, key: &str) -> bool {
@@ -92,6 +110,11 @@ impl ViewPicks {
             PickResult::Entity(id) => {
                 let Some(e) = doc.scene().entity(id).map(|n| &n.entity) else { return };
                 match e.get("targetname").map(str::trim).filter(|n| !n.is_empty()) {
+                    Some(name) if p.purpose == PickPurpose::OutputTarget => ops.push(Op::ConnEdit {
+                        rows: p.rows,
+                        field: crate::edit::ConnField::Target(name.to_owned()),
+                        merge: false,
+                    }),
                     Some(name) => {
                         ops.push(Op::SetKey { target: p.target, key: p.key, value: name.to_owned(), merge: false })
                     }
@@ -103,6 +126,7 @@ impl ViewPicks {
                             name: suggest_name(doc, &e.classname),
                             key: p.key,
                             focus: true,
+                            rows: p.rows,
                         });
                     }
                 }

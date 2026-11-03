@@ -109,6 +109,20 @@ impl MapNames {
         false
     }
 
+    /// How many entities carry exactly this name (names are not case sensitive, as in the engine).
+    pub fn name_count(&self, target: &str) -> usize {
+        let t = target.trim();
+        if t.is_empty() || t.starts_with('!') || t.contains('*') {
+            return 0;
+        }
+        self.by_name.get(lower(t).as_ref()).map_or(0, Vec::len)
+    }
+
+    /// `true` when two or more entities share this exact name.
+    pub fn is_duplicate(&self, target: &str) -> bool {
+        self.name_count(target) >= 2
+    }
+
     pub fn target_classes(&self, target: &str) -> Vec<String> {
         let t = target.trim();
         if t.is_empty() || t.starts_with('!') {
@@ -352,5 +366,37 @@ mod tests {
         let mut cached = names.clone();
         cached.refresh(&state.doc);
         assert_eq!(cached.names().len(), 1);
+    }
+}
+
+#[cfg(test)]
+mod duplicate_tests {
+    use super::*;
+
+    fn names(list: &[(&str, usize)]) -> MapNames {
+        let mut n = MapNames::default();
+        let mut next = 1u32;
+        for (name, count) in list {
+            let entries = (0..*count)
+                .map(|_| {
+                    next += 1;
+                    (next, 0u32)
+                })
+                .collect();
+            n.by_name.insert(name.to_ascii_lowercase(), entries);
+            n.names.push((*name).to_owned());
+        }
+        n
+    }
+
+    #[test]
+    fn only_a_name_given_to_two_entities_is_a_duplicate() {
+        let n = names(&[("door_a", 1), ("Elevator", 2)]);
+        assert!(!n.is_duplicate("door_a"));
+        assert!(n.is_duplicate("elevator"), "names are not case sensitive");
+        assert_eq!(n.name_count(" ELEVATOR "), 2);
+        assert!(!n.is_duplicate("!self"));
+        assert!(!n.is_duplicate("elev*"));
+        assert!(!n.is_duplicate("missing"));
     }
 }
