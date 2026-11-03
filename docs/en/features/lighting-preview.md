@@ -6,19 +6,7 @@ Hammer Pro shows lighting in the editor in two ways: the **Lit** mode, real-time
 
 ## Opening it
 
-| Action | Menu | Default shortcut |
-| --- | --- | --- |
-| **Lighting preview** (Lit mode) | **View > 3D render mode** | `Alt+5` |
-| **Lightmap grid** | **View > 3D render mode** | `Alt+8` |
-| **Baked lighting preview** | **View > 3D render mode** | `Ctrl+F5` |
-| **Bake lighting** | **Map > Lighting** | none |
-| **Bake around the camera** | **Map > Lighting** | none |
-| **Stop baking** | **Map > Lighting** | none |
-| **Select faces with a tiny lightmap scale** | **Map > Lighting** | none |
-| **Rebuild cubemaps** | **Map > Lighting** | none |
-| **Write cubemaps into the compiled map** | **Map > Lighting** | none |
-| **Cubemap reflections** | **View > Display options** | none |
-| Lighting tab | **View > Panels > Lighting** | none |
+| Action | Menu | Default shortcut | --- | --- | --- | **Lighting preview** (Lit mode) | **View > 3D render mode** | `Alt+5` | **Lightmap grid** | **View > 3D render mode** | `Alt+8` | **Baked lighting preview** | **View > 3D render mode** | `Ctrl+F5` | **Bake lighting** | **Map > Lighting** | none | **Bake around the camera** | **Map > Lighting** | none | **Stop baking** | **Map > Lighting** | none | **Select faces with a tiny lightmap scale** | **Map > Lighting** | none | **Rebuild cubemaps** | **Map > Lighting** | none | **Write cubemaps into the compiled map** | **Map > Lighting** | none | **Cubemap reflections** | **View > Display options** | none | Lighting tab | **View > Panels > Lighting** | none |
 
 ## Lit mode (Alt+5)
 
@@ -45,27 +33,11 @@ Like Hammer++'s "3D Lighting Preview", but the numbers are the compiler's: the m
 
 **Lighting preview** section:
 
-| Element | What it does |
-| --- | --- |
-| **Bake lighting** | Bakes the whole map. |
-| **Bake around the camera** | Bakes the area around the 3D camera (tooltip gives the radius). |
-| **Stop baking** | Enabled while a bake runs. |
-| Progress | Kind (**Whole map**, **Around the camera**, **Update**), phase (**Preparing**, **Compiling the map**, **Direct light**, **Bounced light**, **Finishing**) and time. |
-| Last result | "N faces baked in N s", or **Baking stopped**, or **Not baked yet**; video memory and shadow triangles. |
-| Warnings | "The map has no light entity", **Lighting is out of date** with **Bake again**. |
-| **Quality** | **Draft** (same light levels, noisier shadows, the default), **Normal** (a normal compile), **Final** (a final compile, slowest). |
+| Element | What it does | --- | --- | **Bake lighting** | Bakes the whole map. | **Bake around the camera** | Bakes the area around the 3D camera (tooltip gives the radius). | **Stop baking** | Enabled while a bake runs. | Progress | Kind (**Whole map**, **Around the camera**, **Update**), phase (**Preparing**, **Compiling the map**, **Direct light**, **Bounced light**, **Finishing**) and time. | Last result | "N faces baked in N s", or **Baking stopped**, or **Not baked yet**; video memory and shadow triangles. | Warnings | "The map has no light entity", **Lighting is out of date** with **Bake again**. | **Quality** | **Draft** (same light levels, noisier shadows, the default), **Normal** (a normal compile), **Final** (a final compile, slowest). |
 
 **Options (saved in the map)**: stored in the Hammer++ `light_plus` block of the VMF, so they travel with the map.
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Brightness** | Brightness of the preview, 0 to 4. | 1 |
-| **Bounced light** | Light reflected by surfaces (slower bakes). | On |
-| **Dynamic updates** | Bakes again automatically once edits stop for the update delay. | On |
-| **Update delay** | 0 to 60 s. | 0 s |
-| **Radius around the camera** | Radius of **Bake around the camera**, 64 to 65536. | 1024 |
-| **Advanced > Show light reach** | Draws how far the selected lights reach. | Off |
-| **Advanced > Restore defaults** | Resets these options. | |
+| Option | What it does | Default | --- | --- | --- | **Brightness** | Brightness of the preview, 0 to 4. | 1 | **Bounced light** | Light reflected by surfaces (slower bakes). | On | **Dynamic updates** | Bakes again automatically once edits stop for the update delay. | On | **Update delay** | 0 to 60 s. | 0 s | **Radius around the camera** | Radius of **Bake around the camera**, 64 to 65536. | 1024 | **Advanced > Show light reach** | Draws how far the selected lights reach. | Off | **Advanced > Restore defaults** | Resets these options. |
 
 **Color correction**: lookups (`.raw`) applied to the baked preview with a weight each (0 to 1), saved in the map like Hammer++. **From the map** uses the files and maximum weights of the `color_correction` entities; **Clear** removes them.
 
@@ -89,15 +61,7 @@ With **Cubemap reflections** on (default), materials with `$envmap` reflect thei
 
 **Tools > Options... > Lighting** (`[lighting]` in `settings.toml`):
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Bake when the preview is turned on** (`auto_bake`) | Starts a full bake when the baked preview is turned on and nothing is baked yet. | On |
-| **Baking threads** (`threads`) | 0 uses every core (every core but two to compile the map). Used by the next bake. | 0 |
-| **Full resolution luxels (millions)** (`max_luxels_millions`) | Maps with more luxels are previewed with coarser lightmaps (1 to 64). | 16 |
-| **Show the lightmap budget in the status bar** (`show_budget`) | | On |
-| **Tiny lightmap scale** (`tiny_scale`) | Faces at or under this scale count as tiny (1 to 64). | 4 |
-| **Light styles** (`budget_styles`) | Lightmaps per face counted by the budget: 1 without switchable lights, up to 4. | 1 |
-| Quality (`quality`) | Set in the Lighting tab: `Draft`, `Normal`, `Final`. | Draft |
+| Option | What it does | Default | --- | --- | --- | **Bake when the preview is turned on** (`auto_bake`) | Starts a full bake when the baked preview is turned on and nothing is baked yet. | On | **Baking threads** (`threads`) | 0 uses every core (every core but two to compile the map). Used by the next bake. | 0 | **Full resolution luxels (millions)** (`max_luxels_millions`) | Maps with more luxels are previewed with coarser lightmaps (1 to 64). | 16 | **Show the lightmap budget in the status bar** (`show_budget`) | On | **Tiny lightmap scale** (`tiny_scale`) | Faces at or under this scale count as tiny (1 to 64). | 4 | **Light styles** (`budget_styles`) | Lightmaps per face counted by the budget: 1 without switchable lights, up to 4. | 1 | Quality (`quality`) | Set in the Lighting tab: `Draft`, `Normal`, `Final`. | Draft |
 
 Rendering options used here: **Shadowed lights** (`render.light_shadows`, 4), **Relief (normal maps)** (`render.normal_maps`, on), **Cubemap reflections** (`render.cubemaps`, on), **Redraw the cubemaps after edits** (`render.cubemaps_auto`, on).
 

@@ -15,15 +15,7 @@ The **Entity** tab of the right dock is Hammer's Object Properties: it edits the
 
 ## The panel header
 
-| Element | What it does |
-|---|---|
-| Kind icon | Point entity, brush entity, mixed selection or world. Its color is the class color of the FGD. |
-| Class button | The class of the selection (or "N classes"). Click it to pick another class from a searchable list (point classes for point entities, brush classes for brush entities). Changing the class adds the default keys of the new class that are missing and applies to every selected entity. |
-| **?** | Opens the entity help of the class. |
-| **☰** (**More**) | Menu with **Copy keyvalues**, **Paste keyvalues** (with the name of the copied class and its key count), the **Paste the name (targetname) too** check box, **Find and replace in entities...**, **Set maximum distance...** and **Entity help**. |
-| **Entities selected: N** | Shown when several entities are edited. |
-| **Move to world** | Shown for brush entities: gives the brushes back to the world and deletes the brush entities (`Ctrl+Shift+W`). |
-| **Description** | Collapsed section with the FGD description of the class. |
+| Element | What it does |---|---| Kind icon | Point entity, brush entity, mixed selection or world. Its color is the class color of the FGD. | Class button | The class of the selection (or "N classes"). Click it to pick another class from a searchable list (point classes for point entities, brush classes for brush entities). Changing the class adds the default keys of the new class that are missing and applies to every selected entity. | **?** | Opens the entity help of the class. | **☰** (**More**) | Menu with **Copy keyvalues**, **Paste keyvalues** (with the name of the copied class and its key count), the **Paste the name (targetname) too** check box, **Find and replace in entities...**, **Set maximum distance...** and **Entity help**. | **Entities selected: N** | Shown when several entities are edited. | **Move to world** | Shown for brush entities: gives the brushes back to the world and deletes the brush entities (`Ctrl+Shift+W`). | **Description** | Collapsed section with the FGD description of the class. |
 
 Warnings appear under the header when no FGD is loaded (**No game data (FGD) loaded: properties are shown as plain text**) or when a class is not defined in the FGD (its keys are then shown as plain text).
 
@@ -33,15 +25,7 @@ The panel shows **World brushes selected: N** and offers to give them a class: p
 
 ## Tabs
 
-| Tab | Content | Shown |
-|---|---|---|
-| **Properties** | SmartEdit: one typed widget per key. | Always |
-| **Flags** | Spawnflags check boxes. | Entities |
-| **Outputs (N)** | Outputs of the selected entities, with an editor. Highlighted when an output has a problem. | Entities |
-| **Inputs (N)** | Outputs of other entities that target the selection. | Entities |
-| **Model** | Skin, body groups and default animation of a studio model, with a preview. | When the common `model` key is a `.mdl` file |
-| **Visgroups** | Visgroup membership of the selection. | Entities |
-| **Raw** | Every key and value as a plain table. | Always |
+| Tab | Content | Shown |---|---|---| **Properties** | SmartEdit: one typed widget per key. | Always | **Flags** | Spawnflags check boxes. | Entities | **Outputs (N)** | Outputs of the selected entities, with an editor. Highlighted when an output has a problem. | Entities | **Inputs (N)** | Outputs of other entities that target the selection. | Entities | **Model** | Skin, body groups and default animation of a studio model, with a preview. | When the common `model` key is a `.mdl` file | **Visgroups** | Visgroup membership of the selection. | Entities | **Raw** | Every key and value as a plain table. | Always |
 
 The **Outputs** and **Inputs** tabs are described in [I/O and logical view](io-logical-view.md).
 
@@ -67,29 +51,7 @@ Text fields apply on `Enter` or when they lose the focus; `Escape` cancels the e
 
 ### Widgets by key type
 
-| Key type | Widget |
-|---|---|
-| Boolean | Check box (mixed state when the entities differ). |
-| Choices | Drop-down list of the FGD choices. |
-| Integer, float | Text field, red with a tooltip when the number is not valid (the value is then not applied). |
-| Color (`color255`) | Color button, a **Brightness** field for light values (`r g b brightness`), and the text. A light value of `-1` (HDR not set) says that the regular value is used. |
-| Color (`color1`) | Color button and text. |
-| Studio model | Text, a browse button that opens the **Models** tab in "pick for this key" mode, and a **Recently used models** menu. A model missing from the mounted content gets a warning icon. See [Model browser](model-browser.md). |
-| Material, decal, sprite | Thumbnail (bigger on hover), text, **Use the current material** button, and a browse button that opens the texture browser in pick mode (double click a material). Sprites get the `.vmt` extension. |
-| Sound | Text, a picker listing the game sounds of the soundscripts then the sound files (with play buttons), a play/stop button, and a browse button to the sound browser. Only WAV, MP3 and OGG files can be played. See [Sound browser](sound-browser.md). |
-| Particle system | Text, a picker of the particle systems of the content, and a browse button to the particle browser. See [Particles](particles.md). |
-| Scene, script | Text and a picker of the `scenes/*.vcd` or `scripts/vscripts` files of the content. |
-| Script list | Text and a **+** picker that appends a script to the list. |
-| Face list (`sidelist`) | Text (the tooltip counts the faces) and a face eyedropper. |
-| Name of this entity | Text with suggestions of the names of the map. |
-| Target name, filter | Text with name completion, red when no entity has the name, an entity eyedropper and a **Mark** button. Filter keys also get a drop-down of the filters of the map. |
-| Angles | Pitch, yaw and roll fields, a yaw dial (drag it, hold `Shift` for 15 degree steps) and an aim eyedropper. |
-| Pitch (`light_spot`) | One number from -90 (straight down) to 90 (straight up), and an aim eyedropper. |
-| Origin, vector | X, Y and Z fields. |
-| Axis | Two points, X Y Z each. |
-| NPC class, point class | Text and a class picker. |
-| Instance file | Text and a browse button (a VMF file dialog; the path is stored relative to the map folder when possible). |
-| `skyname` (worldspawn) | Text, a picker of the skies found in the content, and a hover preview of the six faces with **HDR faces found** or **No HDR faces**. |
+| Key type | Widget |---|---| Boolean | Check box (mixed state when the entities differ). | Choices | Drop-down list of the FGD choices. | Integer, float | Text field, red with a tooltip when the number is not valid (the value is then not applied). | Color (`color255`) | Color button, a **Brightness** field for light values (`r g b brightness`), and the text. A light value of `-1` (HDR not set) says that the regular value is used. | Color (`color1`) | Color button and text. | Studio model | Text, a browse button that opens the **Models** tab in "pick for this key" mode, and a **Recently used models** menu. A model missing from the mounted content gets a warning icon. See [Model browser](model-browser.md). | Material, decal, sprite | Thumbnail (bigger on hover), text, **Use the current material** button, and a browse button that opens the texture browser in pick mode (double click a material). Sprites get the `.vmt` extension. | Sound | Text, a picker listing the game sounds of the soundscripts then the sound files (with play buttons), a play/stop button, and a browse button to the sound browser. Only WAV, MP3 and OGG files can be played. See [Sound browser](sound-browser.md). | Particle system | Text, a picker of the particle systems of the content, and a browse button to the particle browser. See [Particles](particles.md). | Scene, script | Text and a picker of the `scenes/*.vcd` or `scripts/vscripts` files of the content. | Script list | Text and a **+** picker that appends a script to the list. | Face list (`sidelist`) | Text (the tooltip counts the faces) and a face eyedropper. | Name of this entity | Text with suggestions of the names of the map. | Target name, filter | Text with name completion, red when no entity has the name, an entity eyedropper and a **Mark** button. Filter keys also get a drop-down of the filters of the map. | Angles | Pitch, yaw and roll fields, a yaw dial (drag it, hold `Shift` for 15 degree steps) and an aim eyedropper. | Pitch (`light_spot`) | One number from -90 (straight down) to 90 (straight up), and an aim eyedropper. | Origin, vector | X, Y and Z fields. | Axis | Two points, X Y Z each. | NPC class, point class | Text and a class picker. | Instance file | Text and a browse button (a VMF file dialog; the path is stored relative to the map folder when possible). | `skyname` (worldspawn) | Text, a picker of the skies found in the content, and a hover preview of the six faces with **HDR faces found** or **No HDR faces**. |
 
 For a single `func_instance`, its parameters are shown as typed fields under the list, with **Edit instance** and **Collapse selected instances**: see [Instances](instances.md).
 
@@ -97,12 +59,7 @@ Name completion: in target fields, `Tab` completes with the first name, the arro
 
 ### Eyedroppers and Mark
 
-| Button | Use |
-|---|---|
-| Entity eyedropper (target keys) | Click an entity in the views: its name is written to the key. If it has no name, a prompt suggests a free one (`class_1`, `class_2`...), names it and sets the key in one step. `Escape` cancels; clicking the button again also cancels. |
-| Face eyedropper (`sidelist` keys) | Click faces in the 3D view (`Ctrl+click` for several, `Enter` to finish). `Ctrl+click` the button to add faces to the list instead of replacing it. |
-| Aim eyedropper (angles) | Click a point in the views: each selected entity turns toward it (roll is kept). |
-| **Mark** | Selects the entities the value names (names, `*` wildcards, class names) and centers the views on them. The tooltip gives their count. |
+| Button | Use |---|---| Entity eyedropper (target keys) | Click an entity in the views: its name is written to the key. If it has no name, a prompt suggests a free one (`class_1`, `class_2`...), names it and sets the key in one step. `Escape` cancels; clicking the button again also cancels. | Face eyedropper (`sidelist` keys) | Click faces in the 3D view (`Ctrl+click` for several, `Enter` to finish). `Ctrl+click` the button to add faces to the list instead of replacing it. | Aim eyedropper (angles) | Click a point in the views: each selected entity turns toward it (roll is kept). | **Mark** | Selects the entities the value names (names, `*` wildcards, class names) and centers the views on them. The tooltip gives their count. |
 
 ## Flags tab
 
@@ -146,13 +103,7 @@ Changes apply live to every selected entity and merge into one undo step per key
 
 **Edit > Set maximum distance...** opens the **Maximum distance** window: one distance (2048 units at first, up to 1 000 000; the **0** button means no limit) written to the key each class honours in game.
 
-| Classes | Key written |
-|---|---|
-| `light`, `light_spot` | `_distance`: the light stops there (models in game; Hammer Pro's compiler also fades the lightmaps over the last quarter). |
-| `light_dynamic`, `point_spotlight` | `distance`, `SpotlightLength`: only shortened, never lengthened. |
-| Props, items, weapons and other classes with fade keys, `info_overlay`, `env_detail_controller` | `fademaxdist`, with a `fademindist` start so they fade out instead of popping. For `env_detail_controller` it applies to every detail prop of the map. |
-| `env_lightglow` | `OuterMaxDist`. |
-| `func_lod` | `DisappearMaxDist` and `DisappearMinDist`. |
+| Classes | Key written |---|---| `light`, `light_spot` | `_distance`: the light stops there (models in game; Hammer Pro's compiler also fades the lightmaps over the last quarter). | `light_dynamic`, `point_spotlight` | `distance`, `SpotlightLength`: only shortened, never lengthened. | Props, items, weapons and other classes with fade keys, `info_overlay`, `env_detail_controller` | `fademaxdist`, with a `fademindist` start so they fade out instead of popping. For `env_detail_controller` it applies to every detail prop of the map. | `env_lightglow` | `OuterMaxDist`. | `func_lod` | `DisappearMaxDist` and `DisappearMinDist`. |
 
 Logic entities, triggers and other classes the game cannot limit are skipped. The window shows how many entities will change, are already set and are skipped; **Apply** is enabled when something changes. The result is reported in a notification.
 
@@ -164,13 +115,7 @@ Logic entities, triggers and other classes the game cannot limit are skipped. Th
 
 **Edit > Find entities...** (`Ctrl+Shift+F`) opens **Find entities**.
 
-| Option | What it does |
-|---|---|
-| Mode | **Name or class** (a text with `=` searches `key=value`), **Name**, **Class**, **Key=value**. |
-| Search field | Text with `*` and `?` wildcards. Without wildcards the text can appear anywhere. |
-| **Visible only** | Leaves hidden entities out. |
-| **Exact match** | Off: the text can appear anywhere in the name. |
-| **Select all results** | Selects every result. |
+| Option | What it does |---|---| Mode | **Name or class** (a text with `=` searches `key=value`), **Name**, **Class**, **Key=value**. | Search field | Text with `*` and `?` wildcards. Without wildcards the text can appear anywhere. | **Visible only** | Leaves hidden entities out. | **Exact match** | Off: the text can appear anywhere in the name. | **Select all results** | Selects every result. |
 
 Results list class, name and origin. Double click a row (or `Enter` in the field) to select the entity and center the views on it. `Escape` closes the window.
 
@@ -178,14 +123,7 @@ Results list class, name and origin. Double click a row (or `Enter` in the field
 
 **Edit > Find and replace in entities...** (`Ctrl+Alt+R`, `Ctrl+Shift+R` with the Hammer and Hammer++ key presets) opens **Find and replace in entities**. It searches key values, class names and outputs (output, target, input, parameter).
 
-| Option | Default |
-|---|---|
-| **Find what**, **Replace with** | empty |
-| **Whole words only** | off |
-| **Match case** | off |
-| **Key names too** (also find and rename key names) | off |
-| **Whole map** / **Selection** | Whole map |
-| **Visible only** | off |
+| Option | Default |---|---| **Find what**, **Replace with** | empty | **Whole words only** | off | **Match case** | off | **Key names too** (also find and rename key names) | off | **Whole map** / **Selection** | Whole map | **Visible only** | off |
 
 The status line counts matches, fields and entities. **Find next** (or `Enter` in the find field) goes to the next match and selects its entity; **Replace** replaces in the current field and moves on; **Replace all** replaces every match in one undo step. Double click a result row to select its entity. Double quotes in the replacement are refused.
 
@@ -203,24 +141,13 @@ Brush entities are placed at the center of their brushes. On maps with more than
 
 **Map > Map properties...** opens **Map properties**: the worldspawn with **Properties** and **Raw** tabs (the same editor as the panel, which also shows it when nothing is selected). Besides the FGD keys, it always shows the keys of Hammer Pro's lighting compiler:
 
-| Key | Values |
-|---|---|
-| **Ambient occlusion (Hammer Pro)** (`_ao`) | **Compile default**, **On**, **Off**. Empty: on for Normal and Final, off for Draft. |
-| **Ambient occlusion radius** (`_aoradius`) | 4 to 1024 units, default 96. |
-| **Ambient occlusion strength** (`_aostrength`) | 0 to 1, default 0.75. |
-| **Ambient occlusion rays** (`_aosamples`) | 4 to 512. Empty: 32, 64 with Final. |
-| **Light file (lights.rad)** (`_lightsrad`) | A texture light file for this map. |
+| Key | Values |---|---| **Ambient occlusion (Hammer Pro)** (`_ao`) | **Compile default**, **On**, **Off**. Empty: on for Normal and Final, off for Draft. | **Ambient occlusion radius** (`_aoradius`) | 4 to 1024 units, default 96. | **Ambient occlusion strength** (`_aostrength`) | 0 to 1, default 0.75. | **Ambient occlusion rays** (`_aosamples`) | 4 to 512. Empty: 32, 64 with Final. | **Light file (lights.rad)** (`_lightsrad`) | A texture light file for this map. |
 
 The compile options `-ao`, `-noao`, `-aoradius`, `-aostrength` and `-aosamples` win over these keys. See [Worldspawn keys](../compiler/worldspawn-keys.md).
 
 ## Options
 
-| Option | Where | Default |
-|---|---|---|
-| Paste keyvalues also pastes the name | **Settings > Entities and browsers**, `[entities] paste_targetname` | off |
-| New outputs use the ESC separator | **Settings > Entities and browsers**, `[entities] io_esc_delimiter` | on |
-| Sound preview volume | **Settings > Entities and browsers**, `[browser] sound_volume` | 80% |
-| Renaming updates outputs | right click a name label | on |
+| Option | Where | Default |---|---|---| Paste keyvalues also pastes the name | **Settings > Entities and browsers**, `[entities] paste_targetname` | off | New outputs use the ESC separator | **Settings > Entities and browsers**, `[entities] io_esc_delimiter` | on | Sound preview volume | **Settings > Entities and browsers**, `[browser] sound_volume` | 80% | Renaming updates outputs | right click a name label | on |
 
 ## Tips
 

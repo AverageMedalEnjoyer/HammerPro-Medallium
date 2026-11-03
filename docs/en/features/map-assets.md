@@ -16,26 +16,13 @@ The list is built in the background (*Looking for the files the map uses...*) fr
 
 The header shows a summary: number of entries, files, textures, model files and total size, plus the number of missing files in red.
 
-| Control | What it does |
-| --- | --- |
-| **Custom only** | Default view. Files that are not part of the base game (addons, Workshop, custom folders, loose files) and the missing files. |
-| **All** | Every file, base game included. |
-| **Missing** | Only the missing files. |
-| **Search a path...** | Filters the entries by path. |
-| **Check all** / **Check none** | Checks or unchecks every listed entry for the collect. |
-| **Collapse all** | Folds every expanded entry. |
-| **Refresh** | Builds the list again. |
+| Control | What it does | --- | --- | **Custom only** | Default view. Files that are not part of the base game (addons, Workshop, custom folders, loose files) and the missing files. | **All** | Every file, base game included. | **Missing** | Only the missing files. | **Search a path...** | Filters the entries by path. | **Check all** / **Check none** | Checks or unchecks every listed entry for the collect. | **Collapse all** | Folds every expanded entry. | **Refresh** | Builds the list again. |
 
 Entries are grouped in **Materials**, **Models**, **Sounds**, **Particles** and **Other**. Click a group name to fold it, click the arrow of an entry to see the files it needs (a model shows its model files and materials, a material its textures). The checkbox of an entry means *Collect this entry and everything it needs*.
 
 Each file line shows a mark, the path, the size and the origin:
 
-| Mark | Meaning |
-| --- | --- |
-| Filled dot (green) | Custom content: it will be collected. |
-| Hollow dot (gray) | Part of the base game: only collected with **Also copy base game assets**. |
-| Warning sign | The entry is present but something it needs is missing. |
-| Cross (red) | Missing: no mounted content has this file. |
+| Mark | Meaning | --- | --- | Filled dot (green) | Custom content: it will be collected. | Hollow dot (gray) | Part of the base game: only collected with **Also copy base game assets**. | Warning sign | The entry is present but something it needs is missing. | Cross (red) | Missing: no mounted content has this file. |
 
 Origins: **Base game**, **Addon**, **Workshop**, **Custom folder**, **Loose file**, **Download**, **Mounted game**, **Extra**, **Generated**, **Missing**. Hover a line for the full path, the kind of file, where it comes from, its size and why the map needs it (which faces, entity keys or instances). Right click a line for **Copy the path**.
 
@@ -43,12 +30,7 @@ Origins: **Base game**, **Addon**, **Workshop**, **Custom folder**, **Loose file
 
 The **Collect** section copies the checked entries and everything they need into an output folder, under `materials/`, `models/`, `sound/`... Files that live inside VPKs and GMAs are extracted. A report is written in the output folder at the end.
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Output** | Folder to copy the files into (full path). The folder button opens a folder picker. Remembered in `content.collect_folder`. | empty |
-| **Also copy base game assets** | Every player already has them: off, only the other files are copied. | off |
-| **Replace existing files** | Off: a file the folder already has with other content is kept and listed in the report. On: it is replaced, after a confirmation (**Replace files?**). | off |
-| **Collect N files (size)** | Starts the copy. A progress bar and **Cancel** show while it runs. | |
+| Option | What it does | Default | --- | --- | --- | **Output** | Folder to copy the files into (full path). The folder button opens a folder picker. Remembered in `content.collect_folder`. | empty | **Also copy base game assets** | Every player already has them: off, only the other files are copied. | off | **Replace existing files** | Off: a file the folder already has with other content is kept and listed in the report. On: it is replaced, after a confirmation (**Replace files?**). | off | **Collect N files (size)** | Starts the copy. A progress bar and **Cancel** show while it runs. |
 
 The output folder cannot be a folder of mounted game content (you get an error asking for another folder). Files with the same content as the copy already there are counted as *already there* and not rewritten.
 

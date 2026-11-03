@@ -13,14 +13,7 @@ The sound browser lists the sounds of the mounted game content, either the game 
 
 ## The list
 
-| Control | What it does |
-|---|---|
-| **Game sounds** / **Files** | What the list shows: game sounds of the soundscripts, or sound files. |
-| `⟳` **Reload the soundscripts** | Reads the soundscripts again (after you edited one). |
-| **Search sounds (!word excludes)** | Keeps the sounds containing every word (any case). In game sounds mode a word can match the name or the file it plays. A word starting with `!` excludes. |
-| Source chips **All**, **Game**, **Addons**, **Workshop** | Keep the sounds of one kind of source (a chip appears only when the content has that kind). |
-| **Garry's Mod content only** | Only what every Garry's Mod player has. Shared with the model and particle browsers (`gmod_only` in `[browser]`). |
-| **Sounds: N** | Number of sounds listed ("Reading the soundscripts..." while they load). |
+| Control | What it does |---|---| **Game sounds** / **Files** | What the list shows: game sounds of the soundscripts, or sound files. | `⟳` **Reload the soundscripts** | Reads the soundscripts again (after you edited one). | **Search sounds (!word excludes)** | Keeps the sounds containing every word (any case). In game sounds mode a word can match the name or the file it plays. A word starting with `!` excludes. | Source chips **All**, **Game**, **Addons**, **Workshop** | Keep the sounds of one kind of source (a chip appears only when the content has that kind). | **Garry's Mod content only** | Only what every Garry's Mod player has. Shared with the model and particle browsers (`gmod_only` in `[browser]`). | **Sounds: N** | Number of sounds listed ("Reading the soundscripts..." while they load). |
 
 Each row has a play button, the name, and in game sounds mode the first wave file it plays, then a badge telling where the file comes from (**GMod**, **game: ...**, **addon**, **Workshop ...**, **custom**, or **not found** when no mounted file matches). The sound playing is in bold. Hover a row for the full source name.
 
@@ -35,15 +28,11 @@ Game sounds come from `scripts/game_sounds_manifest.txt` (its `precache_file`, `
 
 ## Footer
 
-| Control | What it does | Default |
-|---|---|---|
-| Selected sound | Its name (or "Select a sound"). | |
-| **▶ Play** / **■ Stop** | Plays or stops the selected sound. | |
-| Volume slider (0 to 100 %) | **Preview volume** of every sound preview, also the ones of the entity panel. `sound_volume` in `[browser]` (0 to 1). | 80 % |
-| **Play on select** | Selecting a sound plays it. `sound_autoplay` in `[browser]`. | On |
-| **Soundscript...** | For a game sound: opens a small window with its soundscript entry (the file name first). Hover the button for the soundscript file. | |
-| **Copy name** | Copies the selected name to the clipboard. | |
-| **Replace all uses (N)** | In pick mode, when the key already has another sound: every entity whose key holds the old sound gets the selected one (one undo step), and pick mode ends. | |
+| Control | What it does | Default |---|---|---| Selected sound | Its name (or "Select a sound"). |
+| **▶ Play** / **■ Stop** | Plays or stops the selected sound. |
+| Volume slider (0 to 100 %) | **Preview volume** of every sound preview, also the ones of the entity panel. `sound_volume` in `[browser]` (0 to 1). | 80 % | **Play on select** | Selecting a sound plays it. `sound_autoplay` in `[browser]`. | On | **Soundscript...** | For a game sound: opens a small window with its soundscript entry (the file name first). Hover the button for the soundscript file. |
+| **Copy name** | Copies the selected name to the clipboard. |
+| **Replace all uses (N)** | In pick mode, when the key already has another sound: every entity whose key holds the old sound gets the selected one (one undo step), and pick mode ends. |
 
 Previews play WAV (PCM and ADPCM), MP3 and OGG files of the mounted content, on Windows only; elsewhere the footer says that no preview is possible. A game sound plays its first wave file.
 

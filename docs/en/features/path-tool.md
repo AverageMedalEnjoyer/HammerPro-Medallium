@@ -32,15 +32,7 @@ Points are named from the base name: `path` gives `path_1`, `path_2`... Each poi
 
 While the tool is active, every chain of the map is drawn with direction arrows. The chains of the selection and of the path being drawn are highlighted with the point names. Branch links (`altpath` of `path_track`) are drawn in another color.
 
-| Gesture | What it does |
-| --- | --- |
-| Click a point | Select it (when no path is being drawn). |
-| `Ctrl`+click a point | Add it to or remove it from the selection. |
-| Drag a point | Move it. When it is part of the selection, all the selected points move together. Snapped to the grid (`Alt`: free). One undo step. |
-| `Shift`+drag a point | Insert a new point after it, at the place where you release. Dragging from the last point of a chain extends the chain, and the tool goes on drawing from the new point. |
-| `Escape` during a drag | Cancel the drag. |
-| `Delete` | With **Relink on delete** on, removes the selected path points and links the point before each one to the point after it. |
-| Right click | Context menu: **Insert path point after**, **Remove path point and relink**, **End path**, **Close path loop**. |
+| Gesture | What it does | --- | --- | Click a point | Select it (when no path is being drawn). | `Ctrl`+click a point | Add it to or remove it from the selection. | Drag a point | Move it. When it is part of the selection, all the selected points move together. Snapped to the grid (`Alt`: free). One undo step. | `Shift`+drag a point | Insert a new point after it, at the place where you release. Dragging from the last point of a chain extends the chain, and the tool goes on drawing from the new point. | `Escape` during a drag | Cancel the drag. | `Delete` | With **Relink on delete** on, removes the selected path points and links the point before each one to the point after it. | Right click | Context menu: **Insert path point after**, **Remove path point and relink**, **End path**, **Close path loop**. |
 
 Inserting a point without dragging (button, menu or context menu) puts it halfway between the selected point and its next point, or one segment further when the selected point ends its chain. When a removed point was where a train starts, the train starts on the next point. At the end of a chain the link is cleared.
 
@@ -48,13 +40,7 @@ Inserting a point without dragging (button, menu or context menu) puts it halfwa
 
 The options are saved in `settings.toml` under `[entities.path]`.
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Class** | Class of the new points. The list holds the chaining point classes of the loaded FGDs (`path_track` and `path_corner` first), or the stock classes listed above when no FGD is loaded. The tooltip shows the key that names the next point. | `path_corner` |
-| **Name** | Base name of the points (up to 120 characters). | `path` |
-| **Loop** | Ending a path links its last point back to the first one (a closed track). | Off |
-| **Relink on delete** | Deleting path points with this tool links the point before each one to the point after it. Off: `Delete` deletes normally. | On |
-| **Height** | Extra distance above the surface for points placed in the 3D view (-1024 to 1024 units). | 0 |
+| Option | What it does | Default | --- | --- | --- | **Class** | Class of the new points. The list holds the chaining point classes of the loaded FGDs (`path_track` and `path_corner` first), or the stock classes listed above when no FGD is loaded. The tooltip shows the key that names the next point. | `path_corner` | **Name** | Base name of the points (up to 120 characters). | `path` | **Loop** | Ending a path links its last point back to the first one (a closed track). | Off | **Relink on delete** | Deleting path points with this tool links the point before each one to the point after it. Off: `Delete` deletes normally. | On | **Height** | Extra distance above the surface for points placed in the 3D view (-1024 to 1024 units). | 0 |
 
 The options bar also has the buttons **End path**, **Close loop**, **Insert point** (needs exactly one selected path point) and **Remove and relink** (needs selected path points), and shows the number of points of the path being drawn and the number of paths in the map.
 
@@ -62,11 +48,7 @@ The options bar also has the buttons **End path**, **Close loop**, **Insert poin
 
 These work from any tool, on the selected path points:
 
-| Command | Menu | Default shortcut |
-| --- | --- | --- |
-| **Path tool** | **Tools** | none |
-| **Insert path point after selection** | **Tools** | none |
-| **Remove path points and relink** | **Tools** | none |
+| Command | Menu | Default shortcut | --- | --- | --- | **Path tool** | **Tools** | none | **Insert path point after selection** | **Tools** | none | **Remove path points and relink** | **Tools** | none |
 
 ## Tips
 

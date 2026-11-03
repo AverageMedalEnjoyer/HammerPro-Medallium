@@ -8,13 +8,7 @@ Hammer Pro compiles maps itself. The geometry, portals, leak test and visibility
 
 A compile runs these steps in order (a step whose mode is **No** is left out):
 
-| Step | What it does | Program |
-|---|---|---|
-| **Geometry** | Merges the `func_instance` files, reads the brushes, builds the BSP tree, the portals, finds leaks, then (when asked) computes the visibility. Writes `<map>.bsp`, `<map>.prt` (sealed maps) or `<map>.lin` (leaks). | `hammerpro --bspc` |
-| **Lighting** | Lights the BSP in place: lightmaps, ambient cubes, world lights, detail props, optionally static prop vertex lighting and ambient occlusion. | `hammerpro --rad` |
-| **Pack content** | Packs the custom materials, models and other files the map uses into the pakfile of the BSP, then reads the pakfile back and reports anything missing. | built in |
-| **Copy to the maps folder** | Copies the BSP to `garrysmod/maps` (or the folder you chose), through a temporary file and a rename so the game never sees a half written map. Cubemaps already built in game are carried over. | built in |
-| **Launch the game** | Starts the game on the map, or loads it in the game that is already running. | built in |
+| Step | What it does | Program |---|---|---| **Geometry** | Merges the `func_instance` files, reads the brushes, builds the BSP tree, the portals, finds leaks, then (when asked) computes the visibility. Writes `<map>.bsp`, `<map>.prt` (sealed maps) or `<map>.lin` (leaks). | `hammerpro --bspc` | **Lighting** | Lights the BSP in place: lightmaps, ambient cubes, world lights, detail props, optionally static prop vertex lighting and ambient occlusion. | `hammerpro --rad` | **Pack content** | Packs the custom materials, models and other files the map uses into the pakfile of the BSP, then reads the pakfile back and reports anything missing. | built in | **Copy to the maps folder** | Copies the BSP to `garrysmod/maps` (or the folder you chose), through a temporary file and a rename so the game never sees a half written map. Cubemaps already built in game are carried over. | built in | **Launch the game** | Starts the game on the map, or loads it in the game that is already running. | built in |
 
 Inside the geometry step the compiler follows the steps of Valve's VBSP: planes, material contents (from the `%compile` keys of the VMT), brushes with collision bevels, texture and lightmap mappings, a first tree of the structural brushes to find the inside of the map and the leaks, the final tree with the detail, faces (merged, cut for their lightmaps, without T-junctions), areas and areaportals, `func_viscluster`, occluders, `env_cubemap` samples, detail props (`detail.vbsp`), water, then the lumps of the file. The visibility follows Valve's VVIS (base portal vis, portal flow, cluster merge, PAS).
 
@@ -28,14 +22,7 @@ The open map is never saved by a compile. Hammer Pro takes a snapshot of the doc
 
 ## Files produced
 
-| File | Where | When |
-|---|---|---|
-| `<map>.vmf` (the snapshot) | `.hammerpro_build/` next to your map | every compile |
-| `<map>.bsp` | `.hammerpro_build/`, then copied to the maps folder | every successful geometry step |
-| `<map>.prt` | `.hammerpro_build/` | sealed maps (no portal file for a leaking map) |
-| `<map>.lin` | `.hammerpro_build/` | when the map leaks (loaded as the leak path on its own), or with `-trace` |
-| `<map>.log` | `.hammerpro_build/` | every compile: each line of the compiler, appended, CRLF line ends like Valve's tools |
-| `<map>_cordon.bsp` | as above | with **Compile only the cordoned area**: the full map is never overwritten |
+| File | Where | When |---|---|---| `<map>.vmf` (the snapshot) | `.hammerpro_build/` next to your map | every compile | `<map>.bsp` | `.hammerpro_build/`, then copied to the maps folder | every successful geometry step | `<map>.prt` | `.hammerpro_build/` | sealed maps (no portal file for a leaking map) | `<map>.lin` | `.hammerpro_build/` | when the map leaks (loaded as the leak path on its own), or with `-trace` | `<map>.log` | `.hammerpro_build/` | every compile: each line of the compiler, appended, CRLF line ends like Valve's tools | `<map>_cordon.bsp` | as above | with **Compile only the cordoned area**: the full map is never overwritten |
 
 Hammer Pro also keeps, in its cache folder (`%LOCALAPPDATA%\HammerPro` on Windows): the stage build cache (`builds`, 2 GB at most, oldest first), the background pre-compiles (`spec`), the timing history (`compile_history/<map>.jsonl`) and the progressive lighting builds (`progressive`).
 

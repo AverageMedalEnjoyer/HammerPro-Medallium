@@ -8,26 +8,7 @@ Every command below works on the current selection and is one undo step. Most of
 
 ## Command summary
 
-| Command | Menu | Default shortcut |
-|---|---|---|
-| **Transform...** | Tools | `Ctrl+M` |
-| **Snap selection to grid** | Tools | `Ctrl+B` |
-| **Snap each object to grid** | Tools | `Ctrl+Shift+B` |
-| **Move to floor** | Tools | `Alt+N` |
-| **Move to ceiling** | Tools | `Alt+U` |
-| **Move to floor, aligned to the surface** | Tools | `Ctrl+Alt+N` |
-| **Move to ceiling, aligned to the surface** | Tools | `Ctrl+Alt+U` |
-| **Center origins** | Tools | none |
-| **Movable pivot** | Tools | none |
-| **Physics placement (drop and settle)** | Tools | none |
-| **Flip X**, **Flip Y**, **Flip Z** | Tools > Flip | none |
-| **Flip horizontally** | Tools > Flip | `Ctrl+L` |
-| **Flip vertically** | Tools > Flip | none (`Ctrl+I` with the Hammer and Hammer++ key presets) |
-| **Align left**, **Align right**, **Align top**, **Align bottom** | Tools > Align | none |
-| **Align centers horizontally**, **Align centers vertically** | Tools > Align | none |
-| **Paste special...** | Edit | `Ctrl+Shift+V` |
-| **Texture lock** | Tools | `Shift+L` |
-| **Texture scale lock** | Tools | `Shift+K` |
+| Command | Menu | Default shortcut |---|---|---| **Transform...** | Tools | `Ctrl+M` | **Snap selection to grid** | Tools | `Ctrl+B` | **Snap each object to grid** | Tools | `Ctrl+Shift+B` | **Move to floor** | Tools | `Alt+N` | **Move to ceiling** | Tools | `Alt+U` | **Move to floor, aligned to the surface** | Tools | `Ctrl+Alt+N` | **Move to ceiling, aligned to the surface** | Tools | `Ctrl+Alt+U` | **Center origins** | Tools | none | **Movable pivot** | Tools | none | **Physics placement (drop and settle)** | Tools | none | **Flip X**, **Flip Y**, **Flip Z** | Tools > Flip | none | **Flip horizontally** | Tools > Flip | `Ctrl+L` | **Flip vertically** | Tools > Flip | none (`Ctrl+I` with the Hammer and Hammer++ key presets) | **Align left**, **Align right**, **Align top**, **Align bottom** | Tools > Align | none | **Align centers horizontally**, **Align centers vertically** | Tools > Align | none | **Paste special...** | Edit | `Ctrl+Shift+V` | **Texture lock** | Tools | `Shift+L` | **Texture scale lock** | Tools | `Shift+K` |
 
 Commands without a shortcut can get one in **Settings > Keyboard** (see [Keyboard shortcuts](keyboard-shortcuts.md)) or be run from the [command palette](command-palette.md) (`Ctrl+P`).
 
@@ -35,17 +16,9 @@ Commands without a shortcut can get one in **Settings > Keyboard** (see [Keyboar
 
 **Tools > Transform...** (`Ctrl+M`) opens the **Transform** window: move, rotate or scale the selection by typed values. The window keeps its values for the whole session, so you can apply the same transform several times.
 
-| Field | What it does | Default |
-|---|---|---|
-| **Move** / **Rotate** / **Scale** | Mode buttons at the top. | **Move** |
-| **Offset** (Move) | X, Y, Z distance in units added to the selection. | 0 0 0 |
-| **Angles (degrees)** (Rotate) | Rotation around X, Y and Z, applied Z first, then Y, then X (the same order as Paste special). | 0 0 0 |
-| **Factors** (Scale) | Scale factor on X, Y and Z (drag step 0.01). A factor of 0 is refused (**Scale factors cannot be zero**). Negative factors mirror. | 1 1 1 |
-| **Pivot** (Rotate and Scale only) | **Selection center**: center of the selection bounds. **World origin**: the point 0 0 0. **Movable pivot**: the pivot cross (see below); the button is greyed out while the pivot is hidden, and its tooltip gives the pivot position. | **Selection center** |
-| **Texture lock** | Shows whether texture lock is enabled; **Toggle** switches it (same as `Shift+L`). | follows the setting |
-| **Reset** | Puts the values of the current mode back to their default (0 or 1). | |
-| **Apply** | Applies the transform (also `Enter`). Greyed out with nothing selected. | |
-| **Close** | Closes the window (also `Esc`). | |
+| Field | What it does | Default |---|---|---| **Move** / **Rotate** / **Scale** | Mode buttons at the top. | **Move** | **Offset** (Move) | X, Y, Z distance in units added to the selection. | 0 0 0 | **Angles (degrees)** (Rotate) | Rotation around X, Y and Z, applied Z first, then Y, then X (the same order as Paste special). | 0 0 0 | **Factors** (Scale) | Scale factor on X, Y and Z (drag step 0.01). A factor of 0 is refused (**Scale factors cannot be zero**). Negative factors mirror. | 1 1 1 | **Pivot** (Rotate and Scale only) | **Selection center**: center of the selection bounds. **World origin**: the point 0 0 0. **Movable pivot**: the pivot cross (see below); the button is greyed out while the pivot is hidden, and its tooltip gives the pivot position. | **Selection center** | **Texture lock** | Shows whether texture lock is enabled; **Toggle** switches it (same as `Shift+L`). | follows the setting | **Reset** | Puts the values of the current mode back to their default (0 or 1). |
+| **Apply** | Applies the transform (also `Enter`). Greyed out with nothing selected. |
+| **Close** | Closes the window (also `Esc`). |
 
 The line under the fields counts the selected objects. Errors (nothing selected, invalid values, transform failed) show in red in the window.
 
@@ -88,14 +61,7 @@ Brushes keep outward faces and their displacements are mirrored with them. Textu
 
 Hammer style align: the selected objects line up with the **last selected object**, which does not move. At least two objects are needed (**Select at least two objects**).
 
-| Command | Lines up |
-|---|---|
-| **Align left** | the minimum of the bounds on the horizontal axis of the view |
-| **Align right** | the maximum on the horizontal axis |
-| **Align top** | the maximum on the vertical axis |
-| **Align bottom** | the minimum on the vertical axis |
-| **Align centers horizontally** | the centers on the horizontal axis |
-| **Align centers vertically** | the centers on the vertical axis |
+| Command | Lines up |---|---| **Align left** | the minimum of the bounds on the horizontal axis of the view | **Align right** | the maximum on the horizontal axis | **Align top** | the maximum on the vertical axis | **Align bottom** | the minimum on the vertical axis | **Align centers horizontally** | the centers on the horizontal axis | **Align centers vertically** | the centers on the vertical axis |
 
 The axes are those of the 2D view under the pointer (or the last one used). From the 3D view, the Top view axes are used. The other objects move together as one block.
 

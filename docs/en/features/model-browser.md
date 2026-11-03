@@ -14,16 +14,7 @@ While the game content is mounting, the tab shows a spinner. Without a game fold
 
 ## Finding a model
 
-| Control | What it does |
-|---|---|
-| **Search models** | Keeps the models whose path contains every word you type (any case). A word starting with `!` excludes the models that contain it: `vent office !dynamic`. |
-| Source chips **All**, **Game**, **Addons**, **Workshop** | Keep only the models of that kind of source. A chip appears only when the mounted content has that kind of source. |
-| **Garry's Mod content only** | Lists only what every Garry's Mod player has (no mounted games, addons or Workshop items). Shared with the sound and particle browsers and saved (`gmod_only` in `[browser]`, default off). |
-| Folder dropdown | **All folders**, or one top level folder under `models/` (for example `props_c17`). |
-| **Models: N** | Number of models listed. |
-| Grid / list button (`⊞` / `☰`) | Switches between the thumbnail grid and the list. Saved (`model_grid_view` in `[browser]`, default: grid). |
-| **+** | **File > Import a model (FBX, OBJ, glTF)...**, see [Model import](model-import.md). |
-| **Recent (N)** | The last models you used (up to 8 shown, 16 remembered for the session), above the list. Click to select, double click to use. |
+| Control | What it does |---|---| **Search models** | Keeps the models whose path contains every word you type (any case). A word starting with `!` excludes the models that contain it: `vent office !dynamic`. | Source chips **All**, **Game**, **Addons**, **Workshop** | Keep only the models of that kind of source. A chip appears only when the mounted content has that kind of source. | **Garry's Mod content only** | Lists only what every Garry's Mod player has (no mounted games, addons or Workshop items). Shared with the sound and particle browsers and saved (`gmod_only` in `[browser]`, default off). | Folder dropdown | **All folders**, or one top level folder under `models/` (for example `props_c17`). | **Models: N** | Number of models listed. | Grid / list button (`⊞` / `☰`) | Switches between the thumbnail grid and the list. Saved (`model_grid_view` in `[browser]`, default: grid). | **+** | **File > Import a model (FBX, OBJ, glTF)...**, see [Model import](model-import.md). | **Recent (N)** | The last models you used (up to 8 shown, 16 remembered for the session), above the list. Click to select, double click to use. |
 
 In the list, models are grouped under folder headers with their count; click a header to fold or unfold it. Each row shows the file name and, when the content has several sources, a badge telling where the model comes from: **GMod**, **game: cstrike**, **garrysmod folder**, **addon**, **Workshop 123456**, **custom** (a custom content folder). Hover a row for the full path.
 
@@ -37,12 +28,7 @@ Keyboard, while the pointer is over the list or grid: `Up` / `Down` move the sel
 - **Double click** (or `Enter`) uses the model for new props, or writes it into the key you are picking for.
 - The buttons under the model name:
 
-| Button | What it does |
-|---|---|
-| **+ Use for new props** | The [entity tool](entity-tool.md) becomes active and places this model, as `prop_static` for a static prop model, else `prop_physics`, with the skin shown in the preview. |
-| **Apply to selected props (N)** | Sets this model (and the preview skin, when it is not skin 0) on the selected entities that take a model (`prop_*` classes, and classes whose FGD gives them a studio model). One undo step. |
-| **Apply to the property** | Only while picking for a key: writes the model into that key. |
-| **Copy** | Copies the model path to the clipboard. |
+| Button | What it does |---|---| **+ Use for new props** | The [entity tool](entity-tool.md) becomes active and places this model, as `prop_static` for a static prop model, else `prop_physics`, with the skin shown in the preview. | **Apply to selected props (N)** | Sets this model (and the preview skin, when it is not skin 0) on the selected entities that take a model (`prop_*` classes, and classes whose FGD gives them a studio model). One undo step. | **Apply to the property** | Only while picking for a key: writes the model into that key. | **Copy** | Copies the model path to the clipboard. |
 
 ## Choosing a model for a key
 
@@ -59,21 +45,7 @@ The preview shows the selected model in 3D:
 
 The **Display** section has helpers drawn over the model (the options of the Half-Life Model Viewer):
 
-| Option | Shows |
-|---|---|
-| **Wireframe** | The mesh as lines. |
-| **Bounding box** | Box around the visible mesh. |
-| **Movement box** | Movement hull of the model header (`$bbox`), the box Hammer uses to place entities like `info_player_start`. |
-| **Hitboxes** | Hitboxes of the default set, in the bind pose. |
-| **Sequence box** | Bounding box of the playing sequence (else the first one). |
-| **Bones** | Skeleton in the bind pose, joints in orange. |
-| **Attachments** | Attachment points (`$attachment`). |
-| **Normals** | Vertex normals. |
-| **Origin axes** | X in red, Y in green, Z in blue at the model origin. |
-| **Illum. position** | The point the engine lights the model from (`$illumposition`). |
-| **Ground** | Grid at the height of the model origin. |
-| **Physics model** | Collision model of the `.phy` file. |
-| **Field of view** | 10 to 120 degrees, default 40. |
+| Option | Shows |---|---| **Wireframe** | The mesh as lines. | **Bounding box** | Box around the visible mesh. | **Movement box** | Movement hull of the model header (`$bbox`), the box Hammer uses to place entities like `info_player_start`. | **Hitboxes** | Hitboxes of the default set, in the bind pose. | **Sequence box** | Bounding box of the playing sequence (else the first one). | **Bones** | Skeleton in the bind pose, joints in orange. | **Attachments** | Attachment points (`$attachment`). | **Normals** | Vertex normals. | **Origin axes** | X in red, Y in green, Z in blue at the model origin. | **Illum. position** | The point the engine lights the model from (`$illumposition`). | **Ground** | Grid at the height of the model origin. | **Physics model** | Collision model of the `.phy` file. | **Field of view** | 10 to 120 degrees, default 40. |
 
 These helpers and the camera are for the session; they are not saved.
 
@@ -99,32 +71,17 @@ The **Inspector** tab reads the model header (no geometry) and checks the files 
 
 Tools under it:
 
-| Button | What it does |
-|---|---|
-| **Extract files...** | Copies the model and its VVD, VTX, PHY and ANI files from the game content (VPK, GMA or folders) to a folder you choose, keeping their folders (`models/props/x.mdl`). |
-| **Decompile with Crowbar** | Extracts the model to a temporary folder (`hammerpro_models` in the system temporary folder) and opens it in Crowbar. Crowbar.exe is asked the first time and remembered (`crowbar_exe` in `[entities]`); right click the button and pick **Choose another Crowbar.exe...** to change it. |
-| **Compile a QC...** | Runs the game's studiomdl (`bin/win64/studiomdl.exe`, else `bin/studiomdl.exe` of the Garry's Mod folder) on a QC file you choose, with `-game <game folder> -nop4 -verbose`. Its output goes to the console; a **Cancel** button stops it. Greyed out when studiomdl is not found. |
+| Button | What it does |---|---| **Extract files...** | Copies the model and its VVD, VTX, PHY and ANI files from the game content (VPK, GMA or folders) to a folder you choose, keeping their folders (`models/props/x.mdl`). | **Decompile with Crowbar** | Extracts the model to a temporary folder (`hammerpro_models` in the system temporary folder) and opens it in Crowbar. Crowbar.exe is asked the first time and remembered (`crowbar_exe` in `[entities]`); right click the button and pick **Choose another Crowbar.exe...** to change it. | **Compile a QC...** | Runs the game's studiomdl (`bin/win64/studiomdl.exe`, else `bin/studiomdl.exe` of the Garry's Mod folder) on a QC file you choose, with `-game <game folder> -nop4 -verbose`. Its output goes to the console; a **Cancel** button stops it. Greyed out when studiomdl is not found. |
 
 ## Collision models in the views
 
 Two toggles of **View > Display options** show the collisions of props:
 
-| Option | What it does | Default |
-|---|---|---|
-| **Collision models** | Draws the collision hull of props over them in the 3D view, and in the model browser preview. Also in **Settings > Rendering**. `collision_models` in `[render]`. | Off |
-| **Show model collisions** | The 3D views show each model as its collision model only (what the player bumps into); an orange box marks a model that has no collision model. Also a toolbar button. `collision_only` in `[render]`. | Off |
+| Option | What it does | Default |---|---|---| **Collision models** | Draws the collision hull of props over them in the 3D view, and in the model browser preview. Also in **Settings > Rendering**. `collision_models` in `[render]`. | Off | **Show model collisions** | The 3D views show each model as its collision model only (what the player bumps into); an orange box marks a model that has no collision model. Also a toolbar button. `collision_only` in `[render]`. | Off |
 
 ## Settings
 
-| Key | What it does | Default |
-|---|---|---|
-| `[ui] show_model_browser` | The Models tab is in the dock. | `false` |
-| `[browser] model_grid_view` | Grid instead of list. | `true` |
-| `[browser] tile_size` | Grid tile size (48 to 256). | `96` |
-| `[browser] gmod_only` | Garry's Mod content only (models, sounds, particles). | `false` |
-| `[entities] crowbar_exe` | Crowbar chosen from the inspector. | none |
-| `[render] collision_models` | Collision models over props. | `false` |
-| `[render] collision_only` | Collision models instead of models. | `false` |
+| Key | What it does | Default |---|---|---| `[ui] show_model_browser` | The Models tab is in the dock. | `false` | `[browser] model_grid_view` | Grid instead of list. | `true` | `[browser] tile_size` | Grid tile size (48 to 256). | `96` | `[browser] gmod_only` | Garry's Mod content only (models, sounds, particles). | `false` | `[entities] crowbar_exe` | Crowbar chosen from the inspector. | none | `[render] collision_models` | Collision models over props. | `false` | `[render] collision_only` | Collision models instead of models. | `false` |
 
 ## Tips
 

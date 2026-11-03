@@ -8,20 +8,8 @@ All of them are in the **Tools** menu (except **Make hint brush**, only in the [
 
 ## Command summary
 
-| Command | Default shortcut | Needs |
-|---|---|---|
-| **Carve** | `Ctrl+Shift+C` | one or more brushes |
-| **Make hollow** | `Ctrl+H` | one or more brushes |
-| **Merge brushes** | `Ctrl+Shift+M` | at least two brushes |
-| **Merge into convex solid** | none | at least two brushes |
-| **Tie to entity** | `Ctrl+T` | a selection |
-| **Tie each to its own entity** | `Ctrl+Shift+T` | a selection with world brushes |
-| **Move to world** | `Ctrl+Shift+W` | brushes of brush entities |
-| **Convert to func_detail** | none | a selection |
-| **Nodraw on hidden faces...** | none | nothing (scans the whole map) |
-| **Make hint brush** | none (command palette) | faces selected with the texture tool |
-| **Texture lock** | `Shift+L` | |
-| **Texture scale lock** | `Shift+K` | |
+| Command | Default shortcut | Needs |---|---|---| **Carve** | `Ctrl+Shift+C` | one or more brushes | **Make hollow** | `Ctrl+H` | one or more brushes | **Merge brushes** | `Ctrl+Shift+M` | at least two brushes | **Merge into convex solid** | none | at least two brushes | **Tie to entity** | `Ctrl+T` | a selection | **Tie each to its own entity** | `Ctrl+Shift+T` | a selection with world brushes | **Move to world** | `Ctrl+Shift+W` | brushes of brush entities | **Convert to func_detail** | none | a selection | **Nodraw on hidden faces...** | none | nothing (scans the whole map) | **Make hint brush** | none (command palette) | faces selected with the texture tool | **Texture lock** | `Shift+L` |
+| **Texture scale lock** | `Shift+K` |
 
 When a command needs brushes and none are selected, the notice **Select one or more brushes first** (or **Select at least two brushes**) shows. Shortcuts can be changed in **Settings > Keyboard** (see [Keyboard shortcuts](keyboard-shortcuts.md)).
 
@@ -39,11 +27,8 @@ Carve makes many small brushes. For simple openings, the [clipping tool](clip-to
 
 **Tools > Make hollow** (`Ctrl+H`) turns each selected brush into walls. A small window asks for the **Wall thickness**:
 
-| Field | What it does | Default |
-|---|---|---|
-| **Wall thickness** | Thickness of the walls in units, from -4096 to 4096. A negative value hollows outward: the walls are built outside the brush, so the original volume becomes the inside room. | 32 |
-| **OK** / `Enter` | Hollows the selection. | |
-| **Cancel** / `Esc` | Closes without change. | |
+| Field | What it does | Default |---|---|---| **Wall thickness** | Thickness of the walls in units, from -4096 to 4096. A negative value hollows outward: the walls are built outside the brush, so the original volume becomes the inside room. | 32 | **OK** / `Enter` | Hollows the selection. |
+| **Cancel** / `Esc` | Closes without change. |
 
 The thickness field has the keyboard focus when the window opens, so you can type the value and press `Enter`. The walls of each world brush are grouped (like Hammer) and selected. If a brush is too small for the thickness, nothing changes and an error is shown. Overlay and cubemap face lists move to the outer faces of the walls.
 
@@ -102,10 +87,7 @@ If a brush involved changed between the search and **Apply nodraw**, nothing is 
 
 ## Texture lock and texture scale lock
 
-| Option | What it does | Default |
-|---|---|---|
-| **Texture lock** (`Shift+L`, `texture_lock`) | Textures follow brushes when they are moved, rotated, scaled or flipped. Off, textures stay fixed in the world (and are reset to world alignment when a rotated face can no longer use them). | on |
-| **Texture scale lock** (`Shift+K`, `texture_scale_lock`) | Scaling a brush also scales its texture. Only used with texture lock on. Without it, the texture keeps its scale and stays anchored at the brush center. | off |
+| Option | What it does | Default |---|---|---| **Texture lock** (`Shift+L`, `texture_lock`) | Textures follow brushes when they are moved, rotated, scaled or flipped. Off, textures stay fixed in the world (and are reset to world alignment when a rotated face can no longer use them). | on | **Texture scale lock** (`Shift+K`, `texture_scale_lock`) | Scaling a brush also scales its texture. Only used with texture lock on. Without it, the texture keeps its scale and stays anchored at the brush center. | off |
 
 Both are in the **Tools** menu, in **Settings > Editing > Behavior**, and the Transform dialog shows texture lock with a **Toggle** button (see [Transform and align](transform-align.md)). They are saved in the `[edit]` table of `settings.toml`.
 

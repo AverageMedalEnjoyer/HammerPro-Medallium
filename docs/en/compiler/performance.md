@@ -15,15 +15,7 @@ How to make compiles fast while you iterate, and what costs time in a release bu
 
 ## While iterating
 
-| Do | Why |
-|---|---|
-| Use **Draft** | Fast visibility, one bounce, `-fast` lighting, one dynamic range, no ambient occlusion, no packing. |
-| Keep **Compile leaking maps anyway** off | A leaking map stops after the geometry instead of lighting for nothing. |
-| Use **Only entities** for I/O and entity work | Seconds instead of a full compile (the smart recompile picks it on its own). |
-| Turn on **Play now, finish the lighting later** | You play a Draft at once; Normal or Final lighting replaces it in the background. |
-| Use **Compile only the cordoned area** | Only the part inside the cordon is compiled (as `<map>_cordon`). |
-| Turn off **Static prop shadows** on prop heavy maps | `-nostaticpropshadows`: prop models are not even loaded. Turn it back on for the release. |
-| Keep **Development addon** on | Iteration builds copy custom content to an addon instead of packing it into the BSP. |
+| Do | Why |---|---| Use **Draft** | Fast visibility, one bounce, `-fast` lighting, one dynamic range, no ambient occlusion, no packing. | Keep **Compile leaking maps anyway** off | A leaking map stops after the geometry instead of lighting for nothing. | Use **Only entities** for I/O and entity work | Seconds instead of a full compile (the smart recompile picks it on its own). | Turn on **Play now, finish the lighting later** | You play a Draft at once; Normal or Final lighting replaces it in the background. | Use **Compile only the cordoned area** | Only the part inside the cordon is compiled (as `<map>_cordon`). | Turn off **Static prop shadows** on prop heavy maps | `-nostaticpropshadows`: prop models are not even loaded. Turn it back on for the release. | Keep **Development addon** on | Iteration builds copy custom content to an addon instead of packing it into the BSP. |
 
 ## Threads and priority
 
@@ -34,16 +26,7 @@ How to make compiles fast while you iterate, and what costs time in a release bu
 
 ## What costs time in a release
 
-| Cost | Lever |
-|---|---|
-| Full visibility (`-vis`) on big open maps | Turn small and decorative brushes into `func_detail` (the statistics name them), add hint brushes and areaportals, use `-radius_override` or a fog `farz` for outdoor maps. `-fulldetail` makes it slower. |
-| `-final` (more sky and indirect rays) | Needed for release quality; `-extrasky` adds more rays still. |
-| Both dynamic ranges | Final always computes LDR and HDR (two passes). |
-| `-StaticPropLighting` | Every vertex of every static prop is lit; slow on big maps. **Light static props (per vertex)** off skips it. `-staticpropsamplescale` lowers its rays. |
-| Ambient occlusion | `-aosamples` (default 32, 64 with `-final`) sets its rays; `-noao` or `_ao 0` turns it off. |
-| `-StaticPropPolys`, `-textureshadows` | Finer prop shadows, slower. |
-| Lightmap resolution | Raise the lightmap scale of big or unseen faces (16 or more); the statistics list the faces and materials with the most luxels. `-luxeldensity` below 1 makes all lightmaps coarser. |
-| Many bounces | `-bounce` (default 100) stops earlier; bounces stop on their own when they add almost nothing. |
+| Cost | Lever |---|---| Full visibility (`-vis`) on big open maps | Turn small and decorative brushes into `func_detail` (the statistics name them), add hint brushes and areaportals, use `-radius_override` or a fog `farz` for outdoor maps. `-fulldetail` makes it slower. | `-final` (more sky and indirect rays) | Needed for release quality; `-extrasky` adds more rays still. | Both dynamic ranges | Final always computes LDR and HDR (two passes). | `-StaticPropLighting` | Every vertex of every static prop is lit; slow on big maps. **Light static props (per vertex)** off skips it. `-staticpropsamplescale` lowers its rays. | Ambient occlusion | `-aosamples` (default 32, 64 with `-final`) sets its rays; `-noao` or `_ao 0` turns it off. | `-StaticPropPolys`, `-textureshadows` | Finer prop shadows, slower. | Lightmap resolution | Raise the lightmap scale of big or unseen faces (16 or more); the statistics list the faces and materials with the most luxels. `-luxeldensity` below 1 makes all lightmaps coarser. | Many bounces | `-bounce` (default 100) stops earlier; bounces stop on their own when they add almost nothing. |
 
 ## Measuring
 

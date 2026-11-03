@@ -17,10 +17,7 @@ The entity tool places point entities: on surfaces in the 3D view (resting on fl
 
 Modifiers:
 
-| Key | Effect |
-|---|---|
-| `Shift` + click | Keep the current selection (otherwise the new entity becomes the selection). |
-| `Alt` + click | No grid snapping (the resting offset is then rounded to 0.01 unit). |
+| Key | Effect |---|---| `Shift` + click | Keep the current selection (otherwise the new entity becomes the selection). | `Alt` + click | No grid snapping (the resting offset is then rounded to 0.01 unit). |
 
 Positions snap to the grid of the view; on a brush that carries its own grid, the entity lands on that grid (see [Grids](grids.md)). The resting offset is rounded to whole units (or to the grid when it is finer than one unit), so origins stay clean.
 
@@ -32,12 +29,9 @@ The box used to rest the entity on surfaces is, in this order: the collision hul
 
 ## Options
 
-| Option | What it does | Default |
-|---|---|---|
-| **Class** | Searchable class picker (see below). Its tooltip shows the FGD description of the class. Without loaded entity definitions it becomes a plain text field (**Class name**). | **Default point entity** setting |
-| **Model** | Only for prop classes (`prop_*` and classes with a studio model helper and no fixed model): the model chosen in the model browser, or **No model selected**. | |
-| **Skin N** | Skin chosen in the model browser, written to new props (shown when it is not the default skin). | |
-| **Models...** | Opens the Models tab of the model browser to choose the model. | |
+| Option | What it does | Default |---|---|---| **Class** | Searchable class picker (see below). Its tooltip shows the FGD description of the class. Without loaded entity definitions it becomes a plain text field (**Class name**). | **Default point entity** setting | **Model** | Only for prop classes (`prop_*` and classes with a studio model helper and no fixed model): the model chosen in the model browser, or **No model selected**. |
+| **Skin N** | Skin chosen in the model browser, written to new props (shown when it is not the default skin). |
+| **Models...** | Opens the Models tab of the model browser to choose the model. |
 | **Align to surface** | Prop classes only: rotate props so their up axis follows the surface normal (the `angles` keyvalue is set). | off |
 
 A prop placed with no model selected is created without a model and a warning is written to the console.
@@ -56,12 +50,7 @@ Click the class button to open the list:
 
 Double click a prefab in the **Prefabs** tab: the entity tool switches to prefab placement. The options bar then shows **Prefab:** with its name, a **Back to entities** button and the **Group** checkbox.
 
-| Gesture | Result |
-|---|---|
-| Click in the 3D view | Insert the prefab at its original size, resting on the surface under the cursor. |
-| Click in a 2D view | Insert it centered on the grid point (at the depth the entity tool uses). |
-| Drag a box in a 2D view | Insert it scaled to the box drawn. |
-| `Escape` | Drop the box being drawn, else go back to placing entities. |
+| Gesture | Result |---|---| Click in the 3D view | Insert the prefab at its original size, resting on the surface under the cursor. | Click in a 2D view | Insert it centered on the grid point (at the depth the entity tool uses). | Drag a box in a 2D view | Insert it scaled to the box drawn. | `Escape` | Drop the box being drawn, else go back to placing entities. |
 
 Offsets snap to the grid, so prefabs built on the grid stay on it. Each insertion replaces the `&i` token of the prefab by the next number of the map. **Group** (setting `[placement] group_prefabs`, on by default) groups the objects of each inserted prefab. See [Prefabs](prefabs.md) for the library.
 

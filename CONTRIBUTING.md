@@ -28,7 +28,7 @@ CI runs the same commands on Windows and Linux.
 - Keep the UI thread free: heavy work runs on worker threads and reports back
   through channels.
 - Every user-visible string goes through `hp_app::i18n` with an English and a
-  French translation in the crate's `TR` table. Run the crate tests: each table
+  translation in the crate's `TR` table. Run the crate tests: each table
   is linted for missing translations.
 - Do not use the em dash or en dash characters anywhere (code, comments, UI
   text, docs). CI rejects them.
@@ -42,7 +42,7 @@ CI runs the same commands on Windows and Linux.
 
 ## Translations
 
-Each UI crate has a `TR` table of `(key, English, French)` entries. To improve
+Each UI crate has a `TR` table of `(key, English)` entries. To improve
 a translation, edit the text in that table. To add a language, add a variant to
 `hp_app::i18n::Lang` and a column to the tables (a script can help).
 

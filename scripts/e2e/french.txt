@@ -1,4 +1,4 @@
-# French UI with the settings dialog open.
+# UI with the settings dialog open.
 wait 60
 action settings
 wait 20

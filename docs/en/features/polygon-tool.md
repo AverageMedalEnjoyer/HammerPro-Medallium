@@ -27,15 +27,9 @@ The polygon tool (like the one of Hammer++) creates one brush from a convex outl
 
 ## Options
 
-| Option | What it does | Default |
-|---|---|---|
-| **Scale** | Texture scale of the new faces (world units per texel, 0.01 to 64). | **Default texture scale** setting (0.25) |
-| Create as | **World brush**, **func_detail** or any brush entity class of the FGD (searchable list, a typed class name is accepted). With a class, the brush becomes a new brush entity with the FGD default keyvalues. | World brush |
-| Current material | Material put on every face (the default material when none is chosen). Click it to show the texture browser. | `dev/dev_measuregeneric01b` |
-| Pin (keep active) | Keep the polygon tool active after creating a brush. When off, the selection tool comes back. | on |
-| **Remove point** | Remove the last point (`Backspace`). | |
-| **Create** | Create the brush (`Enter` or double click). | |
-| Point count | **N point(s)**: number of points of the outline. | |
+| Option | What it does | Default |---|---|---| **Scale** | Texture scale of the new faces (world units per texel, 0.01 to 64). | **Default texture scale** setting (0.25) | Create as | **World brush**, **func_detail** or any brush entity class of the FGD (searchable list, a typed class name is accepted). With a class, the brush becomes a new brush entity with the FGD default keyvalues. | World brush | Current material | Material put on every face (the default material when none is chosen). Click it to show the texture browser. | `dev/dev_measuregeneric01b` | Pin (keep active) | Keep the polygon tool active after creating a brush. When off, the selection tool comes back. | on | **Remove point** | Remove the last point (`Backspace`). |
+| **Create** | Create the brush (`Enter` or double click). |
+| Point count | **N point(s)**: number of points of the outline. |
 
 The new brush becomes the selection; the creation is one undo step.
 

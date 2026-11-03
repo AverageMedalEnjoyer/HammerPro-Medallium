@@ -15,11 +15,7 @@ The file is read in the background ("Reading ..."), then the **Import a model** 
 
 ## Supported files
 
-| Format | What is read |
-|---|---|
-| Wavefront OBJ (`.obj` with its `.mtl`) | Meshes and materials. Faces without normals get smooth normals per smoothing group (`s off` is flat), or across edges that are not too sharp when the file has no smoothing group. |
-| glTF 2.0 (`.gltf`, `.glb`) | The meshes of the default scene with their node transforms (skinned meshes in their bind pose); the base color of the materials (texture with its coordinate set and `KHR_texture_transform`, color factor, alpha mode, double sided). Draco or meshopt compressed meshes are refused with a message. |
-| FBX 7.x, binary and ASCII | Meshes placed by their models (translation, rotation and its order, pivots, offsets, scale, geometric transform, parents), materials (color, diffuse texture as a file or embedded), the axis system and the unit of the file. |
+| Format | What is read |---|---| Wavefront OBJ (`.obj` with its `.mtl`) | Meshes and materials. Faces without normals get smooth normals per smoothing group (`s off` is flat), or across edges that are not too sharp when the file has no smoothing group. | glTF 2.0 (`.gltf`, `.glb`) | The meshes of the default scene with their node transforms (skinned meshes in their bind pose); the base color of the materials (texture with its coordinate set and `KHR_texture_transform`, color factor, alpha mode, double sided). Draco or meshopt compressed meshes are refused with a message. | FBX 7.x, binary and ASCII | Meshes placed by their models (translation, rotation and its order, pivots, offsets, scale, geometric transform, parents), materials (color, diffuse texture as a file or embedded), the axis system and the unit of the file. |
 
 Only static geometry is imported: animations are ignored. Textures can be PNG, JPG, TGA or BMP.
 
@@ -27,21 +23,7 @@ Only static geometry is imported: animations are ignored. Textures can be PNG, J
 
 The window first shows the file path and a summary: triangles, materials and size in units. Warnings appear for more than 65000 triangles (a heavy prop), and for a model smaller than 2 units or larger than 4096 units (check the scale).
 
-| Option | What it does | Default |
-|---|---|---|
-| **Name** | `models/hammerpro/<name>.mdl`. Cleaned to lowercase letters, digits and `_` (48 characters at most). A warning says when a model of that name exists: it is replaced. | The file name |
-| **Kind** | **prop_static**, or **Physics prop** (`prop_physics`). | prop_static |
-| **Scale** | Extra scale after the unit conversion (0.001 to 1000). | 1 |
-| **Convert the units** | Meters of the file become Source units (inches): 1 m = 39.37 units. Off: one unit of the file is one Source unit. | On |
-| **Up axis** | **From the file**, **Y** or **Z**. Y up models are turned so that Z is up and the front stays in front. | From the file |
-| **Origin** - **At the bottom center** | Puts the model origin at the center of its bottom. | On |
-| **Surface property** | Physics and sound material: `default`, `concrete`, `metal`, `solidmetal`, `metal_box`, `metalpanel`, `wood`, `wood_crate`, `wood_furniture`, `plastic`, `plastic_barrel`, `glass`, `rock`, `dirt`, `grass`, `gravel`, `brick`, `tile`, `carpet`, `cardboard`, `paper`, `rubber`, `flesh`, `ice`, `porcelain`, `computer`, `pottery`. | default |
-| **Collision** | **Pieces**: each separate piece of the model gets a convex hull. **Box**: the box of the model. **None**: no collision model. | Pieces |
-| **Mass** (physics prop only) | 0.1 to 50000 kg. | 20 kg |
-| **Levels of detail (LOD)** | Simplified versions of the model that the game draws far away. Shared with [Propper](propper.md) and saved (`[lab.model_lod]`). | On |
-| **Levels** | Levels below the full model, 3 to 6 (big models get one or two more). | 4 |
-| **Each keeps** | Part of the triangles of the level above that each level keeps, 20 to 90 % (small models are reduced more gently). | 50 % |
-| **Place it in front of the camera** | After the import, places a prop of the model where the 3D camera looks. | On |
+| Option | What it does | Default |---|---|---| **Name** | `models/hammerpro/<name>.mdl`. Cleaned to lowercase letters, digits and `_` (48 characters at most). A warning says when a model of that name exists: it is replaced. | The file name | **Kind** | **prop_static**, or **Physics prop** (`prop_physics`). | prop_static | **Scale** | Extra scale after the unit conversion (0.001 to 1000). | 1 | **Convert the units** | Meters of the file become Source units (inches): 1 m = 39.37 units. Off: one unit of the file is one Source unit. | On | **Up axis** | **From the file**, **Y** or **Z**. Y up models are turned so that Z is up and the front stays in front. | From the file | **Origin** - **At the bottom center** | Puts the model origin at the center of its bottom. | On | **Surface property** | Physics and sound material: `default`, `concrete`, `metal`, `solidmetal`, `metal_box`, `metalpanel`, `wood`, `wood_crate`, `wood_furniture`, `plastic`, `plastic_barrel`, `glass`, `rock`, `dirt`, `grass`, `gravel`, `brick`, `tile`, `carpet`, `cardboard`, `paper`, `rubber`, `flesh`, `ice`, `porcelain`, `computer`, `pottery`. | default | **Collision** | **Pieces**: each separate piece of the model gets a convex hull. **Box**: the box of the model. **None**: no collision model. | Pieces | **Mass** (physics prop only) | 0.1 to 50000 kg. | 20 kg | **Levels of detail (LOD)** | Simplified versions of the model that the game draws far away. Shared with [Propper](propper.md) and saved (`[lab.model_lod]`). | On | **Levels** | Levels below the full model, 3 to 6 (big models get one or two more). | 4 | **Each keeps** | Part of the triangles of the level above that each level keeps, 20 to 90 % (small models are reduced more gently). | 50 % | **Place it in front of the camera** | After the import, places a prop of the model where the 3D camera looks. | On |
 
 A physics prop without collision gets a warning: it cannot move in game.
 

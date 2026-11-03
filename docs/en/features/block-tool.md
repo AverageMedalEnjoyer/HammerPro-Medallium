@@ -36,15 +36,7 @@ Drawn on a wall, the box grows away from the wall; drawn under a ceiling, it gro
 
 The primitive buttons are at the left of the options bar.
 
-| Primitive | Shape | Solids created |
-|---|---|---|
-| **Block** | Box filling the bounds. | 1 |
-| **Wedge** | Ramp: full bottom, vertical back face at the maximum Y side, slope down to the minimum Y side. | 1 |
-| **Cylinder** | Vertical prism with a regular polygon section inscribed in the box. | 1 |
-| **Spike** | Pyramid with a regular polygon base, apex at the top center. | 1 |
-| **Sphere** | Sphere (ellipsoid) inscribed in the box, one convex solid per stack (number of stacks: half the sides, at least 2). | several |
-| **Arch** | Arch or ring of wall segments, one convex solid per segment. If the wall is as thick as the radius, the segments become pie slices. | one per side |
-| **Torus** | Ring with a polygonal tube, one convex solid per segment. Can be a spiral with a rise. | one per side |
+| Primitive | Shape | Solids created |---|---|---| **Block** | Box filling the bounds. | 1 | **Wedge** | Ramp: full bottom, vertical back face at the maximum Y side, slope down to the minimum Y side. | 1 | **Cylinder** | Vertical prism with a regular polygon section inscribed in the box. | 1 | **Spike** | Pyramid with a regular polygon base, apex at the top center. | 1 | **Sphere** | Sphere (ellipsoid) inscribed in the box, one convex solid per stack (number of stacks: half the sides, at least 2). | several | **Arch** | Arch or ring of wall segments, one convex solid per segment. If the wall is as thick as the radius, the segments become pie slices. | one per side | **Torus** | Ring with a polygonal tube, one convex solid per segment. Can be a spiral with a rise. | one per side |
 
 Cylinders and arches get integer vertices when that keeps the shape valid; spheres and tori are never rounded (their faces would stop being planar). When the parameters cannot make a shape in the box, the 2D views show **Invalid parameters for this size** under the box.
 
@@ -52,24 +44,7 @@ Cylinders and arches get integer vertices when that keeps the shape valid; spher
 
 The parameters shown depend on the primitive. Angles use Hammer's convention: 0 points to +Y and angles increase toward +X.
 
-| Option | Primitives | What it does | Default |
-|---|---|---|---|
-| **Sides** | cylinder, spike, sphere, arch, torus | Number of sides of round shapes (3 to 128). | 8 |
-| **Wall** | arch | Wall width of the arch (1 to 16384 units). | 16 |
-| **Arc** | arch | Angle covered by the arch, 1 to 360 degrees (360 for a full ring). | 360 |
-| **Start** | arch | Start angle, -360 to 360 degrees. | 0 |
-| **Rise** | arch | Height added to each segment, -4096 to 4096 units (spiral stairs). | 0 |
-| **Tube** | torus | Sides of the tube cross section (3 to 128). | 8 |
-| **Ring** | torus | Width of the ring, that is the tube diameter (1 to 16384 units). It must stay smaller than the box. | 32 |
-| **Arc** | torus | Angle swept by the ring: 1 to 360 degrees, or up to 3600 (ten turns) when **Rise** is not 0. | 360 |
-| **Start** | torus | Start angle of the sweep, -360 to 360 degrees. | 0 |
-| **Rise** | torus | Height gained over the whole sweep, -16384 to 16384 units (spiral ramps and pipes). | 0 |
-| **Orient to view** | every primitive but the block | Shapes drawn in the Front or Side view (or on a wall in 3D) stand along the depth axis of that view: a cylinder drawn in the Front view lies along X. Saved as the setting `reorient_primitives`. | on |
-| **Scale** | all | Texture scale of the new faces (world units per texel, 0.01 to 64). | **Default texture scale** setting (0.25) |
-| Create as | all | **World brush**, **func_detail** or any brush entity class of the FGD (searchable list, a typed class name is accepted). With a class, every solid of the primitive goes into one new brush entity with the FGD default keyvalues. World primitives made of several solids are grouped. | World brush |
-| Current material | all | Thumbnail and name of the current material used for every face (the default material when none is chosen). Click it to show the texture browser. | `dev/dev_measuregeneric01b` |
-| Pin (keep active) | all | Keep the block tool active after creating an object. When off, the selection tool comes back after each creation. | on |
-| **Create** | all | Create the pending object (`Enter`). | |
+| Option | Primitives | What it does | Default |---|---|---|---| **Sides** | cylinder, spike, sphere, arch, torus | Number of sides of round shapes (3 to 128). | 8 | **Wall** | arch | Wall width of the arch (1 to 16384 units). | 16 | **Arc** | arch | Angle covered by the arch, 1 to 360 degrees (360 for a full ring). | 360 | **Start** | arch | Start angle, -360 to 360 degrees. | 0 | **Rise** | arch | Height added to each segment, -4096 to 4096 units (spiral stairs). | 0 | **Tube** | torus | Sides of the tube cross section (3 to 128). | 8 | **Ring** | torus | Width of the ring, that is the tube diameter (1 to 16384 units). It must stay smaller than the box. | 32 | **Arc** | torus | Angle swept by the ring: 1 to 360 degrees, or up to 3600 (ten turns) when **Rise** is not 0. | 360 | **Start** | torus | Start angle of the sweep, -360 to 360 degrees. | 0 | **Rise** | torus | Height gained over the whole sweep, -16384 to 16384 units (spiral ramps and pipes). | 0 | **Orient to view** | every primitive but the block | Shapes drawn in the Front or Side view (or on a wall in 3D) stand along the depth axis of that view: a cylinder drawn in the Front view lies along X. Saved as the setting `reorient_primitives`. | on | **Scale** | all | Texture scale of the new faces (world units per texel, 0.01 to 64). | **Default texture scale** setting (0.25) | Create as | all | **World brush**, **func_detail** or any brush entity class of the FGD (searchable list, a typed class name is accepted). With a class, every solid of the primitive goes into one new brush entity with the FGD default keyvalues. World primitives made of several solids are grouped. | World brush | Current material | all | Thumbnail and name of the current material used for every face (the default material when none is chosen). Click it to show the texture browser. | `dev/dev_measuregeneric01b` | Pin (keep active) | all | Keep the block tool active after creating an object. When off, the selection tool comes back after each creation. | on | **Create** | all | Create the pending object (`Enter`). |
 
 Each face also gets the **Default lightmap scale** of the settings (16).
 
@@ -81,12 +56,7 @@ For round primitives a small thumbnail next to the parameters shows the shape se
 
 ## Related settings
 
-| Setting | Where | Default |
-|---|---|---|
-| **Orient primitives to the drawing view** (`[brush] reorient_primitives`) | Settings > **Brushes** | on |
-| **Default material** (`[edit] default_material`) | Settings > **Editing** | `dev/dev_measuregeneric01b` |
-| **Default texture scale** (`[edit] default_texture_scale`) | Settings > **Editing** | 0.25 |
-| **Default lightmap scale** (`[edit] default_lightmap_scale`) | Settings > **Editing** | 16 |
+| Setting | Where | Default |---|---|---| **Orient primitives to the drawing view** (`[brush] reorient_primitives`) | Settings > **Brushes** | on | **Default material** (`[edit] default_material`) | Settings > **Editing** | `dev/dev_measuregeneric01b` | **Default texture scale** (`[edit] default_texture_scale`) | Settings > **Editing** | 0.25 | **Default lightmap scale** (`[edit] default_lightmap_scale`) | Settings > **Editing** | 16 |
 
 The Settings window opens with **Tools > Options...** (`Ctrl+,`).
 

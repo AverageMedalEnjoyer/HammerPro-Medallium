@@ -6,13 +6,9 @@ Every edit in Hammer Pro is an undo step with a name: tool edits, menu commands,
 
 ## Opening it
 
-| Action | Menu | Default shortcut |
-| --- | --- | --- |
-| **Undo** | **Edit > Undo** | `Ctrl+Z` |
-| **Redo** | **Edit > Redo** | `Ctrl+Y` |
-| **Undo history** | **View > Panels > Undo history** | none |
+| Action | Menu | Default shortcut | --- | --- | --- | **Undo** | **Edit > Undo** | `Ctrl+Z` | **Redo** | **Edit > Redo** | `Ctrl+Y` | **Undo history** | **View > Panels > Undo history** | none |
 
-The toolbar has **Undo** and **Redo** buttons. The Edit menu names the step: **Undo Carve**, **Redo Move**... (in French "Annuler : ...").
+The toolbar has **Undo** and **Redo** buttons. The Edit menu names the step: **Undo Carve**, **Redo Move**... (in "Annuler : ...").
 
 ## Undo steps
 
@@ -39,10 +35,7 @@ Click a row to go back or forward to it ("Click a step to go back or forward to 
 
 ## Limits
 
-| Option | Where | What it does | Default |
-| --- | --- | --- | --- |
-| **Undo levels** (`edit.undo_levels`) | **Tools > Options... > Editing** | Most undo steps kept, 10 to 10000. | 500 |
-| **Undo restores the selection** (`edit.undo_restores_selection`) | **Tools > Options... > Editing** | Selection changes are undo steps. | On |
+| Option | Where | What it does | Default | --- | --- | --- | --- | **Undo levels** (`edit.undo_levels`) | **Tools > Options... > Editing** | Most undo steps kept, 10 to 10000. | 500 | **Undo restores the selection** (`edit.undo_restores_selection`) | **Tools > Options... > Editing** | Selection changes are undo steps. | On |
 
 The history also keeps its memory under about 512 MB: the oldest steps are dropped first, the most recent step is always kept.
 

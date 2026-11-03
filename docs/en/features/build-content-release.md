@@ -8,41 +8,21 @@ It is a Garry's Mod feature. For a map of another game the window says so: compi
 
 ## Opening it
 
-| Command | Opens |
-| --- | --- |
-| **File > Build and save as content...** | The release window on the **Build** tab. |
-| **File > Publish on the Workshop...** | The release window on the **Publish** tab. |
+| Command | Opens | --- | --- | **File > Build and save as content...** | The release window on the **Build** tab. | **File > Publish on the Workshop...** | The release window on the **Publish** tab. |
 
 The release is built from the saved file: when the map has unsaved changes, the window asks you to save first (**Save the map...**). The window has five tabs: **Build**, **Checklist**, **Addon**, **Publish** and **Report**.
 
 ## Build tab
 
-| Control | What it does | Default |
-| --- | --- | --- |
-| **Map** | The map being released. | |
-| **Output folder** | Where the release is written. **Default** is `<map folder>/<map>_content`; **Change...** picks another folder; **Open folder** opens it. Remembered per map. | `<map>_content` |
-| **Produce** | The release mode (below). | **Workshop addon** |
-| **Final compile first (geometry, visibility, LDR and HDR lighting)** | Compiles the map with the Final preset before packing. | on |
-| **Compress the pakfile (LZMA)** | Smaller BSP file. Garry's Mod reads it but prints a console warning for every compressed file it loads, and Workshop and FastDL downloads are compressed anyway: leave it off unless you need a smaller file. Sounds always stay uncompressed. | off |
-| **Keep the built cubemaps of the previous BSP** | Copies the cubemaps already built into the new BSP. | on |
-| **Write the .gma** | Writes the addon file. | on |
-| **Ship content from Workshop items** | Off: the Workshop items are listed as Required Items instead (players subscribe to them). | on |
-| **Ship content from mounted games** | Content of games mounted through `mount.cfg` (CS:S, HL2 episodes...). Players without them see errors; redistributing it is your responsibility. | off |
-| **Build cubemaps and navigation in game** | Starts Garry's Mod, after a confirmation, to build the cubemaps and generate the navigation mesh, then closes it. | off |
-| **Open the output folder when done** | | off |
-| **BSP Protection Pro** | Ships a protected copy and keeps the full map for your server. See [BSP Protection Pro](bsp-protection.md). | off |
-| **Build** | Runs the release. **Cancel** stops it. | |
-| **Analyze** | Lists every file the map needs, without compiling or writing anything (fills the Report tab). | |
+| Control | What it does | Default | --- | --- | --- | **Map** | The map being released. |
+| **Output folder** | Where the release is written. **Default** is `<map folder>/<map>_content`; **Change...** picks another folder; **Open folder** opens it. Remembered per map. | `<map>_content` | **Produce** | The release mode (below). | **Workshop addon** | **Final compile first (geometry, visibility, LDR and HDR lighting)** | Compiles the map with the Final preset before packing. | on | **Compress the pakfile (LZMA)** | Smaller BSP file. Garry's Mod reads it but prints a console warning for every compressed file it loads, and Workshop and FastDL downloads are compressed anyway: leave it off unless you need a smaller file. Sounds always stay uncompressed. | off | **Keep the built cubemaps of the previous BSP** | Copies the cubemaps already built into the new BSP. | on | **Write the .gma** | Writes the addon file. | on | **Ship content from Workshop items** | Off: the Workshop items are listed as Required Items instead (players subscribe to them). | on | **Ship content from mounted games** | Content of games mounted through `mount.cfg` (CS:S, HL2 episodes...). Players without them see errors; redistributing it is your responsibility. | off | **Build cubemaps and navigation in game** | Starts Garry's Mod, after a confirmation, to build the cubemaps and generate the navigation mesh, then closes it. | off | **Open the output folder when done** | off | **BSP Protection Pro** | Ships a protected copy and keeps the full map for your server. See [BSP Protection Pro](bsp-protection.md). | off | **Build** | Runs the release. **Cancel** stops it. |
+| **Analyze** | Lists every file the map needs, without compiling or writing anything (fills the Report tab). |
 
 These options are stored in the `[content]` table of settings.toml (see the [Settings reference](../reference/settings.md)).
 
 ### Release modes
 
-| Mode | What it produces |
-| --- | --- |
-| **Workshop addon** | The BSP, a content folder and a `.gma`. Files gmad refuses (soundscapes, particle manifest) travel inside the BSP pakfile. |
-| **Self-contained BSP** | One BSP with every needed file inside its pakfile. |
-| **Server kit** | A self-contained BSP plus a `fastdl` folder (the BSP and its `.nav`) and `lua/autorun/server/<map>_resources.lua`, which adds the Workshop item (`resource.AddWorkshop`, once published) or the map (`resource.AddFile`) to the downloads. |
+| Mode | What it produces | --- | --- | **Workshop addon** | The BSP, a content folder and a `.gma`. Files gmad refuses (soundscapes, particle manifest) travel inside the BSP pakfile. | **Self-contained BSP** | One BSP with every needed file inside its pakfile. | **Server kit** | A self-contained BSP plus a `fastdl` folder (the BSP and its `.nav`) and `lua/autorun/server/<map>_resources.lua`, which adds the Workshop item (`resource.AddWorkshop`, once published) or the map (`resource.AddFile`) to the downloads. |
 
 ### What a build does
 
@@ -79,45 +59,17 @@ Your video settings and `cfg/config.cfg`, which the game rewrites when it quits,
 
 Every row should be green before publishing (**Refresh** reads everything again). Rows are green, red, orange or unknown, with a fix button when there is one:
 
-| Row | Checks | Fix button |
-| --- | --- | --- |
-| **Map name** | Lowercase letters, digits, `_` and `-` only; no other addon has a map with this name. | |
-| **Full compile** | Saved, compiled, up to date with the map, with visibility. | **Build** |
-| **Final lighting** | LDR and HDR lighting, not fullbright. | **Build** |
-| **No leak** | The map is sealed. | **Build** |
-| **Cubemaps** | Built cubemaps against `env_cubemap` count. | **Build in game** |
-| **Navigation mesh** | Present and current, missing, or built for other geometry. | **Build in game** |
-| **Dependencies** | Every file found, or the number missing. | **Show** (Report tab) |
-| **Map thumbnail** | `maps/thumb/<map>.png` exists. | **Capture** |
-| **Workshop icon** | The icon exists (written by the next build from the thumbnail). | **Capture** |
-| **addon.json** | Title, type and tags valid. | **Edit** (Addon tab) |
-| **Engine limits** | Highest limit and its percentage. | |
-| **Gamemode** | What the map prefix promises (below). | |
+| Row | Checks | Fix button | --- | --- | --- | **Map name** | Lowercase letters, digits, `_` and `-` only; no other addon has a map with this name. |
+| **Full compile** | Saved, compiled, up to date with the map, with visibility. | **Build** | **Final lighting** | LDR and HDR lighting, not fullbright. | **Build** | **No leak** | The map is sealed. | **Build** | **Cubemaps** | Built cubemaps against `env_cubemap` count. | **Build in game** | **Navigation mesh** | Present and current, missing, or built for other geometry. | **Build in game** | **Dependencies** | Every file found, or the number missing. | **Show** (Report tab) | **Map thumbnail** | `maps/thumb/<map>.png` exists. | **Capture** | **Workshop icon** | The icon exists (written by the next build from the thumbnail). | **Capture** | **addon.json** | Title, type and tags valid. | **Edit** (Addon tab) | **Engine limits** | Highest limit and its percentage. |
+| **Gamemode** | What the map prefix promises (below). |
 
 Gamemode profiles, chosen from the map name prefix:
 
-| Prefix | Gamemode | Needs |
-| --- | --- | --- |
-| `gm_` | Sandbox | a player spawn (`info_player_start`, `info_player_deathmatch`, `info_player_combine` or `info_player_rebel`) |
-| `ttt_` | Trouble in Terrorist Town | `info_player_*`, and weapons or ammo (`weapon_*`, `item_*`, `ttt_random_weapon`, `ttt_random_ammo`) |
-| `ph_` | Prop Hunt | `info_player_terrorist` and `info_player_counterterrorist` |
-| `rp_` | DarkRP | a player spawn |
-| `zs_` | Zombie Survival | `info_player_*` and a navigation mesh |
-| `mu_` | Murder | `info_player_*` |
-| `deathrun_` | Deathrun | `info_player_terrorist` and `info_player_counterterrorist` |
-| `jb_` | Jailbreak | `info_player_terrorist` and `info_player_counterterrorist` |
-| `bhop_` | Bunny Hop | `info_player_*` |
-| `surf_` | Surf | `info_player_*` |
+| Prefix | Gamemode | Needs | --- | --- | --- | `gm_` | Sandbox | a player spawn (`info_player_start`, `info_player_deathmatch`, `info_player_combine` or `info_player_rebel`) | `ttt_` | Trouble in Terrorist Town | `info_player_*`, and weapons or ammo (`weapon_*`, `item_*`, `ttt_random_weapon`, `ttt_random_ammo`) | `ph_` | Prop Hunt | `info_player_terrorist` and `info_player_counterterrorist` | `rp_` | DarkRP | a player spawn | `zs_` | Zombie Survival | `info_player_*` and a navigation mesh | `mu_` | Murder | `info_player_*` | `deathrun_` | Deathrun | `info_player_terrorist` and `info_player_counterterrorist` | `jb_` | Jailbreak | `info_player_terrorist` and `info_player_counterterrorist` | `bhop_` | Bunny Hop | `info_player_*` | `surf_` | Surf | `info_player_*` |
 
 ## Addon tab
 
-| Field | Notes |
-| --- | --- |
-| **Title** | Plain ASCII, 128 characters at most. Empty: the map name. |
-| **Type** | Always `map`. |
-| **Tags (2 at most)** | `fun`, `roleplay`, `scenic`, `movie`, `realism`, `cartoon`, `water`, `comic`, `build`. |
-| **Ignore** | One gmad wildcard per line, for example `*.psd`. |
-| **Description** | Text of the addon. |
+| Field | Notes | --- | --- | **Title** | Plain ASCII, 128 characters at most. Empty: the map name. | **Type** | Always `map`. | **Tags (2 at most)** | `fun`, `roleplay`, `scenic`, `movie`, `realism`, `cartoon`, `water`, `comic`, `build`. | **Ignore** | One gmad wildcard per line, for example `*.psd`. | **Description** | Text of the addon. |
 
 **Thumbnail and Workshop icon**: written as `maps/thumb/<map>.png` (256 x 256) and as the 512 x 512 JPEG icon of the Workshop. **Capture the 3D view** uses the center square of the 3D view (frame the map first; the frame shows the safe area), **Choose an image...** loads a file, **Clear** removes it.
 

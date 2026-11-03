@@ -22,11 +22,7 @@ Typical causes: a gap between two walls, a brush turned into `func_detail` on th
 
 A checkerboard in game means the game cannot find a material.
 
-| Cause | Fix |
-|---|---|
-| The material does not exist in the game or in your custom folders. | **Map > Check for problems** lists "missing material"; the **Map assets** tab shows what is missing. Replace the material (**Tools > Find and replace textures...**) or add its folder in **Settings > Game**. |
-| A custom material was not packed. By default, custom content is packed into the map for **Final** compiles and releases only; test builds copy it to the development addon `garrysmod/addons/hammerpro_dev` instead. | After the first copy to the development addon, restart the game once. For a map you share, use **File > Build and save as content...** or set **Pack custom content** to **Always** in the compile window. |
-| The material comes from a game mounted through `mount.cfg`, from a Workshop addon or from downloaded server content. | Players without that content see checkerboards too. Ship the files with the map, or replace them with base game content. See [Collect content for a release](../guides/collect-content-for-release.md). |
+| Cause | Fix |---|---| The material does not exist in the game or in your custom folders. | **Map > Check for problems** lists "missing material"; the **Map assets** tab shows what is missing. Replace the material (**Tools > Find and replace textures...**) or add its folder in **Settings > Game**. | A custom material was not packed. By default, custom content is packed into the map for **Final** compiles and releases only; test builds copy it to the development addon `garrysmod/addons/hammerpro_dev` instead. | After the first copy to the development addon, restart the game once. For a map you share, use **File > Build and save as content...** or set **Pack custom content** to **Always** in the compile window. | The material comes from a game mounted through `mount.cfg`, from a Workshop addon or from downloaded server content. | Players without that content see checkerboards too. Ship the files with the map, or replace them with base game content. See [Collect content for a release](../guides/collect-content-for-release.md). |
 
 Entities and models have the same issue: "missing model" (the prop is left out of the map) and "missing sound" are also listed by Check for problems.
 
@@ -34,16 +30,7 @@ Entities and models have the same issue: "missing model" (the prop is left out o
 
 **What you see:** "A hard engine limit was exceeded" in the log, or the limits gauge of the status bar close to its maximum. **Map > Map information** shows every limit with the amount used.
 
-| Limit | What to do |
-|---|---|
-| Brushes | Merge brushes, turn decorative ones into props, delete hidden ones. |
-| Planes | Keep brushes on the grid and simplify off-grid or rotated geometry. |
-| Portals | Turn small or detailed brushes into `func_detail`. |
-| Brush models (4096, the world included) | Turn brush entities that do not move into world brushes or `func_detail`. |
-| Lightmaps | Raise the lightmap scale of large or unseen faces (32 or more), use nodraw where players never look. |
-| Overlays (8192) | Remove some, or merge decals into fewer overlays. An overlay must cover fewer than 64 faces. |
-| Named lights (96) | Give lights that switch together the same name, or remove the name of lights that never switch. |
-| Leaf brushes | Turn small brushes in the area into `func_detail`. |
+| Limit | What to do |---|---| Brushes | Merge brushes, turn decorative ones into props, delete hidden ones. | Planes | Keep brushes on the grid and simplify off-grid or rotated geometry. | Portals | Turn small or detailed brushes into `func_detail`. | Brush models (4096, the world included) | Turn brush entities that do not move into world brushes or `func_detail`. | Lightmaps | Raise the lightmap scale of large or unseen faces (32 or more), use nodraw where players never look. | Overlays (8192) | Remove some, or merge decals into fewer overlays. An overlay must cover fewer than 64 faces. | Named lights (96) | Give lights that switch together the same name, or remove the name of lights that never switch. | Leaf brushes | Turn small brushes in the area into `func_detail`. |
 
 ### "Exceeded max t-junctions fixup limit" (primindices)
 
@@ -53,30 +40,13 @@ Limits differ between games and Source builds; **Settings > Map health > Limits 
 
 ## Other compile errors
 
-| Message (meaning) | Fix |
-|---|---|
-| An entity is inside a solid brush | Move it into open space: lighting and the sky camera break otherwise. |
-| A brush is too small or too thin | Delete it or make it at least 1 unit thick on the grid. |
-| A brush has a face of zero area | Delete it or rebuild it with the block tool. |
-| A brush has faces with materials of different contents | Use one kind of material (water, clip, nodraw...) on every face of the brush. |
-| A face's texture is projected along the face itself | Reset the face alignment; Check for problems fixes it. |
-| Displacements cannot be part of a brush entity | Move the displacement brush back to the world. |
-| A model cannot be a `prop_static` | Use `prop_dynamic` or `prop_physics` for that model. |
-| A static prop is in the void | Move it inside the world. |
-| The file of a `func_instance` cannot be found | Check its path (relative to the map or the maps folder). |
-| The compiler ran out of memory | Close other programs, lower the number of threads, or split very large maps. |
-| The compiler does not know this option | Check the spelling of extra arguments in the compile settings. |
+| Message (meaning) | Fix |---|---| An entity is inside a solid brush | Move it into open space: lighting and the sky camera break otherwise. | A brush is too small or too thin | Delete it or make it at least 1 unit thick on the grid. | A brush has a face of zero area | Delete it or rebuild it with the block tool. | A brush has faces with materials of different contents | Use one kind of material (water, clip, nodraw...) on every face of the brush. | A face's texture is projected along the face itself | Reset the face alignment; Check for problems fixes it. | Displacements cannot be part of a brush entity | Move the displacement brush back to the world. | A model cannot be a `prop_static` | Use `prop_dynamic` or `prop_physics` for that model. | A static prop is in the void | Move it inside the world. | The file of a `func_instance` cannot be found | Check its path (relative to the map or the maps folder). | The compiler ran out of memory | Close other programs, lower the number of threads, or split very large maps. | The compiler does not know this option | Check the spelling of extra arguments in the compile settings. |
 
 Most of these are also found before compiling by **Map > Check for problems** (`Alt+P`), which can fix several of them for you.
 
 ## The game is not found
 
-| Message | Fix |
-|---|---|
-| "Garry's Mod was not found: choose its folder in Settings > Game" | Set the Garry's Mod folder (**Detect** or **Browse...**), see [Game setup](../getting-started/game-setup.md). |
-| "The game of this map is not installed" | The map targets another game: install it, choose its folder in **Settings > Game**, or change the **Target game** in the compile window. |
-| "The game executable was not found" | Check the game folder in **Settings > Game** (for a game other than Garry's Mod, the executable found is listed under the game). |
-| "Save and compile the map first" / "*name*.bsp is not in the maps folder of the game" | Save the map, then compile it with **Copy to the maps folder** on before **Run the map in game**. |
+| Message | Fix |---|---| "Garry's Mod was not found: choose its folder in Settings > Game" | Set the Garry's Mod folder (**Detect** or **Browse...**), see [Game setup](../getting-started/game-setup.md). | "The game of this map is not installed" | The map targets another game: install it, choose its folder in **Settings > Game**, or change the **Target game** in the compile window. | "The game executable was not found" | Check the game folder in **Settings > Game** (for a game other than Garry's Mod, the executable found is listed under the game). | "Save and compile the map first" / "*name*.bsp is not in the maps folder of the game" | Save the map, then compile it with **Copy to the maps folder** on before **Run the map in game**. |
 
 ## Related pages
 

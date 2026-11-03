@@ -8,11 +8,7 @@ Hammer Pro draws its own window frame: a title bar that holds the menus, rounded
 
 The main window has no system title bar. Its own title bar shows the menus, the title of the window (`<map> - Hammer Pro`) and three buttons: **Minimize**, **Maximize** (or **Restore**) and **Close**.
 
-| Gesture | What it does |
-| --- | --- |
-| Drag the title bar | Moves the window. Snapping to the screen edges keeps working (the system runs its own move loop). |
-| Double click the title bar | Maximizes or restores the window. |
-| Drag an edge or a corner | Resizes the window. |
+| Gesture | What it does | --- | --- | Drag the title bar | Moves the window. Snapping to the screen edges keeps working (the system runs its own move loop). | Double click the title bar | Maximizes or restores the window. | Drag an edge or a corner | Resizes the window. |
 
 A maximized window has square corners and no shadow. When the graphics card cannot draw a transparent window, the frame is square, without shadow.
 
@@ -24,11 +20,7 @@ A maximized window has square corners and no shadow. When the graphics card cann
 
 These windows can leave the main window and become windows of the system, which you can put on another screen and keep open while you work:
 
-| Window | How to detach it | Default |
-| --- | --- | --- |
-| **Compile and run** | **Separate window** button of the window ("Show this window as a window of its own... Remembered for the next times"). Setting `compile.separate_window`. | separate window |
-| **UV editor** | **Open as a separate window** in the UV editor. | inside the panel |
-| **Portals and visibility** | **Detach window** in the window. | inside the main window |
+| Window | How to detach it | Default | --- | --- | --- | **Compile and run** | **Separate window** button of the window ("Show this window as a window of its own... Remembered for the next times"). Setting `compile.separate_window`. | separate window | **UV editor** | **Open as a separate window** in the UV editor. | inside the panel | **Portals and visibility** | **Detach window** in the window. | inside the main window |
 
 A separate window wears the Hammer Pro frame with the Hammer Pro mark, its title and three buttons: **Put back in Hammer Pro** (back inside the main window), **Maximize** and **Close**. The Compile and run and Portals windows also have a **Put back in the main window** button in their content.
 

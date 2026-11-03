@@ -20,11 +20,7 @@ Propper turns brushes (and displacements) into a static prop: a real `.mdl` mode
 
 Open **Tools > Static prop options (Propper)...**. These options are used by **Convert brushes to a static prop** and by the model import (FBX, OBJ, glTF):
 
-| Option | What it does | Default |
-|---|---|---|
-| **Levels of detail (LOD)** | Simplified versions of the model that the game draws far away (fewer triangles, same look). | on |
-| **Levels** | Levels below the full model, 3 to 6 (big models get one or two more). | 4 |
-| **Each keeps** | Part of the triangles of the level above that each level keeps, 0.2 to 0.9 (small models are reduced more gently). | 0.5 |
+| Option | What it does | Default |---|---|---| **Levels of detail (LOD)** | Simplified versions of the model that the game draws far away (fewer triangles, same look). | on | **Levels** | Levels below the full model, 3 to 6 (big models get one or two more). | 4 | **Each keeps** | Part of the triangles of the level above that each level keeps, 0.2 to 0.9 (small models are reduced more gently). | 0.5 |
 
 The window also reminds you how the model is built:
 
@@ -48,11 +44,7 @@ To edit a prop as brushes (yours or any model of the game):
 2. Choose **Tools > Convert prop to brushes...**. The window shows the model, its number of render triangles and its collision model.
 3. Choose the options and click **Convert** (`Enter`):
 
-| Option | Choices | Default |
-|---|---|---|
-| **Shape from** | **Automatic**: the collision model when the model has one (the exact brushes of a prop made by Hammer Pro), else the render mesh. **Collision model**: one brush per convex piece of the collision model. **Render mesh (convex pieces)**: brushes grown from the convex parts of the visible mesh, close to the model but approximate on curved or hollow shapes. | Automatic |
-| **Put the brushes in** | `func_detail` or **The world**. | `func_detail` |
-| **Keep the prop** | Keep the prop next to the new brushes. | off |
+| Option | Choices | Default |---|---|---| **Shape from** | **Automatic**: the collision model when the model has one (the exact brushes of a prop made by Hammer Pro), else the render mesh. **Collision model**: one brush per convex piece of the collision model. **Render mesh (convex pieces)**: brushes grown from the convex parts of the visible mesh, close to the model but approximate on curved or hollow shapes. | Automatic | **Put the brushes in** | `func_detail` or **The world**. | `func_detail` | **Keep the prop** | Keep the prop next to the new brushes. | off |
 
 The faces take the materials and texture mapping of the model. The conversion is one undo step. Very detailed models are refused (too many triangles or pieces).
 

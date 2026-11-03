@@ -8,11 +8,7 @@ Hammer Pro reads textures, models and entity definitions from a game folder and 
 
 The **Hammer Pro setup** assistant opens on the first start (when no settings file exists). Run it again at any time with **Help > Setup assistant...**. It has 3 steps; `Enter` goes to the next step, **Back** returns, **Skip** (or `Escape`) closes it and keeps the current settings.
 
-| Step | What you choose |
-|---|---|
-| 1. Welcome | The interface language (English or French), and **Coming from Hammer or Hammer++?**: **No, Hammer Pro defaults**, **Hammer** or **Hammer++**. This sets the keyboard shortcut preset and the camera controls together; shortcuts you changed yourself stay. |
-| 2. Which game do you map for? | The game (see below). For Garry's Mod, its folder is searched in your Steam libraries the first time this step shows; "Everything needed was found." confirms it. |
-| 3. Content | **Mount addons**, **Mount Workshop downloads**, **Use mount.cfg games** (Garry's Mod only) and your **Custom texture folders**. |
+| Step | What you choose |---|---| 1. Welcome | The interface language (English or), and **Coming from Hammer or Hammer++?**: **No, Hammer Pro defaults**, **Hammer** or **Hammer++**. This sets the keyboard shortcut preset and the camera controls together; shortcuts you changed yourself stay. | 2. Which game do you map for? | The game (see below). For Garry's Mod, its folder is searched in your Steam libraries the first time this step shows; "Everything needed was found." confirms it. | 3. Content | **Mount addons**, **Mount Workshop downloads**, **Use mount.cfg games** (Garry's Mod only) and your **Custom texture folders**. |
 
 **Start mapping** on the last step saves the choices, mounts the content again and loads the entity definitions ("Setup complete. Loading game content...").
 
@@ -24,31 +20,20 @@ Open **Tools > Options...** (`Ctrl+,`), page **Game**. Every change is saved at 
 
 ### Game
 
-| Option | What it does | Default |
-|---|---|---|
-| Game list | The game maps are made for: its content is mounted, its entity definitions loaded, and maps compile in its format and limits. Games found in the Steam libraries come first; games that are not installed are listed too (maps still compile in their format). Mods of `steamapps/sourcemods` are listed as well. | Garry's Mod |
-| **Search again** | Searches the Steam libraries again (after installing or removing a game). | |
+| Option | What it does | Default |---|---|---| Game list | The game maps are made for: its content is mounted, its entity definitions loaded, and maps compile in its format and limits. Games found in the Steam libraries come first; games that are not installed are listed too (maps still compile in their format). Mods of `steamapps/sourcemods` are listed as well. | Garry's Mod | **Search again** | Searches the Steam libraries again (after installing or removing a game). |
 | **Game folder** (not Garry's Mod) | The folder holding `gameinfo.txt`. Empty: found in Steam. A summary below shows the folder found, the format ("Format: ..., BSP version ..., static props ..., limits"), the FGDs found and the game executable. | Empty |
 
 A map can also have its own game, different from this default: the **Target game** of the compile window, kept with the map (see [Target games](../compiler/target-games.md)). Addons, the Workshop, `mount.cfg`, the Lua skybox switch, testing in game with the bridge addon and Workshop publishing are Garry's Mod features: they are off for other games.
 
 ### Garry's Mod folder
 
-| Option | What it does | Default |
-|---|---|---|
-| **Garry's Mod folder** | The install folder (the one holding `garrysmod` and `bin`). Empty: detected at startup from Steam. Set it to use another install. | Empty (auto) |
-| **Detect** | Searches your Steam libraries now. | |
-| **Browse...** | Picks the folder by hand. | |
-| Check result | "VPK archives: N" and "Addons: N", with **Check again**. A folder without `garrysmod/gameinfo.txt` is reported as not a Garry's Mod install. | |
+| Option | What it does | Default |---|---|---| **Garry's Mod folder** | The install folder (the one holding `garrysmod` and `bin`). Empty: detected at startup from Steam. Set it to use another install. | Empty (auto) | **Detect** | Searches your Steam libraries now. |
+| **Browse...** | Picks the folder by hand. |
+| Check result | "VPK archives: N" and "Addons: N", with **Check again**. A folder without `garrysmod/gameinfo.txt` is reported as not a Garry's Mod install. |
 
 ### Content (Garry's Mod)
 
-| Option | What it does | Default |
-|---|---|---|
-| **Mount addons** | Loads materials and models from `garrysmod/addons` (folder addons and `.gma` files). | On |
-| **Mount Workshop downloads** | Loads the content of your subscribed Workshop addons, `.gma` and legacy `.bin` (slower startup). | Off |
-| **Use mount.cfg games** | Mounts the other Source games listed in `garrysmod/cfg/mount.cfg`. | On |
-| **Mount the content downloaded from servers** | Loads `garrysmod/download` and `garrysmod/cache/workshop`. Players may not have these files: the release checks pack what the map uses. | On |
+| Option | What it does | Default |---|---|---| **Mount addons** | Loads materials and models from `garrysmod/addons` (folder addons and `.gma` files). | On | **Mount Workshop downloads** | Loads the content of your subscribed Workshop addons, `.gma` and legacy `.bin` (slower startup). | Off | **Use mount.cfg games** | Mounts the other Source games listed in `garrysmod/cfg/mount.cfg`. | On | **Mount the content downloaded from servers** | Loads `garrysmod/download` and `garrysmod/cache/workshop`. Players may not have these files: the release checks pack what the map uses. | On |
 
 Workshop and downloaded content open after the rest, in the background: the status bar shows "Workshop N / M" until they are ready.
 
@@ -64,18 +49,13 @@ Mod folders (with a `gameinfo.txt` or loose content) to mount too. Add with **Ad
 
 ### Entity definitions (FGD)
 
-| Option | What it does | Default |
-|---|---|---|
-| **Main FGD** | Replaces the game FGD (`bin/garrysmod.fgd` for Garry's Mod, the FGD of the game otherwise). | Empty (game FGD) |
-| **Extra FGD files (loaded after the main one)** | Gamemode FGDs, Mapbase, your own. | None |
+| Option | What it does | Default |---|---|---| **Main FGD** | Replaces the game FGD (`bin/garrysmod.fgd` for Garry's Mod, the FGD of the game otherwise). | Empty (game FGD) | **Extra FGD files (loaded after the main one)** | Gamemode FGDs, Mapbase, your own. | None |
 
 Load order: the main FGD (or the game's own), then the Hammer++ FGD (`hammerplusplus_fgd.fgd`) when Hammer++ is installed in the game's `bin/win64/hammerplusplus` or `bin/hammerplusplus` folder, then the extra files. `@include`, `@mapsize`, material exclusions and auto visgroups are supported, and an FGD edited on disk is reloaded within seconds. A missing file is reported in the console.
 
 ### Maps
 
-| Option | What it does | Default |
-|---|---|---|
-| **Map folder** | Start folder of **Open** and **Save as**. | Empty |
+| Option | What it does | Default |---|---|---| **Map folder** | Start folder of **Open** and **Save as**. | Empty |
 
 ### Testing in game (Garry's Mod)
 

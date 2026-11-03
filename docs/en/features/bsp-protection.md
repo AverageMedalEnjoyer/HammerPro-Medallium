@@ -12,15 +12,7 @@ The protection is part of the release build. Open **File > Build and save as con
 
 ## Options
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **BSP Protection Pro** | Ship a protected copy of the map: gameplay logic, entity wiring and decompile data removed, watermarked. Keeps the full map for your server. Key `content.protect`. | off |
-| **Watermark** | Text written into the protected map (your name or server), traceable in a stolen copy. Stored on the world entity as `hammerpro_protected`; control characters are removed and the text is cut at 120 characters. Key `content.protect_watermark`. | empty |
-| **Break decompilers (empty original faces)** | Empties the original faces lump: decompilers use it, the game does not. Leave on. Key `content.protect_strip_original_faces`. | on |
-| **Material randomizer (break decompilers like bsp_iidefeat)** | Renames the map's materials to garbage names in the shipped copy, patched so it renders the same, so a recovered map has unusable material names. Leave on. Key `content.protect_randomize`. | on |
-| **Server lock** | The map plays normally only on a server that sets `hammerpro_key` to your key. Elsewhere the shipped guard shows a watermark (and blocks play when asked). A deterrent, not unbreakable. Key `content.protect_lock`. | off |
-| **Server key** | Your secret key for the lock (hidden field). The key itself is never written into the map, only its hash. Key `content.protect_lock_key`. | empty |
-| **Block play on an unauthorized server (not just a watermark)** | Freezes the local player and shows a notice when the server key is missing or wrong. Key `content.protect_lock_block`. | off |
+| Option | What it does | Default | --- | --- | --- | **BSP Protection Pro** | Ship a protected copy of the map: gameplay logic, entity wiring and decompile data removed, watermarked. Keeps the full map for your server. Key `content.protect`. | off | **Watermark** | Text written into the protected map (your name or server), traceable in a stolen copy. Stored on the world entity as `hammerpro_protected`; control characters are removed and the text is cut at 120 characters. Key `content.protect_watermark`. | empty | **Break decompilers (empty original faces)** | Empties the original faces lump: decompilers use it, the game does not. Leave on. Key `content.protect_strip_original_faces`. | on | **Material randomizer (break decompilers like bsp_iidefeat)** | Renames the map's materials to garbage names in the shipped copy, patched so it renders the same, so a recovered map has unusable material names. Leave on. Key `content.protect_randomize`. | on | **Server lock** | The map plays normally only on a server that sets `hammerpro_key` to your key. Elsewhere the shipped guard shows a watermark (and blocks play when asked). A deterrent, not unbreakable. Key `content.protect_lock`. | off | **Server key** | Your secret key for the lock (hidden field). The key itself is never written into the map, only its hash. Key `content.protect_lock_key`. | empty | **Block play on an unauthorized server (not just a watermark)** | Freezes the local player and shows a notice when the server key is missing or wrong. Key `content.protect_lock_block`. | off |
 
 Without a key, the lock does nothing and the window says *Set a key: you put the same value in your server.cfg (hammerpro_key).*
 

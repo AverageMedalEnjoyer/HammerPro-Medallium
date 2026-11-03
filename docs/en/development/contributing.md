@@ -22,23 +22,13 @@ CI runs the same commands on Windows and Linux.
 
 ## Code guidelines
 
-| Rule | Why |
-|---|---|
-| Read [ARCHITECTURE.md](../../ARCHITECTURE.md) first; keep crates focused and dependencies flowing in one direction. | See [Architecture](architecture.md). |
-| Libraries never panic on bad input: they return errors. | Maps and game files come from anywhere. |
-| Keep the UI thread free: heavy work runs on worker threads and reports back through channels. | The editor must stay smooth on huge maps. |
-| Every user visible string goes through `hp_app::i18n`, with an English and a French text in the crate's `TR` table. The crate tests check for missing translations. | The interface switches language at runtime. |
-| No em dash or en dash characters anywhere (code, comments, UI text, docs). CI rejects them. | Project style. |
-| Take every UI color from the `hp_app::theme` tokens. Color is for content only (views, thumbnails, entity colors). | The interface is black and white. |
-| Write "Hammer Pro" in everything users read; crate, binary, folder and file names stay `hammerpro`. | One product name. |
-| Add tests for new behaviour. Tests that need game files skip themselves when the files are missing. | CI has no game installed. |
-| Actions and settings reach the MCP server without new code (`run_action`, `set_setting`); an operation that deserves its own MCP tool gets one, and the tool list of MCP.md is regenerated. | AI apps drive the whole editor (see [MCP.md](../../MCP.md) and the "MCP tools" section of [EXTENDING.md](../../EXTENDING.md)). |
+| Rule | Why |---|---| Read [ARCHITECTURE.md](../../ARCHITECTURE.md) first; keep crates focused and dependencies flowing in one direction. | See [Architecture](architecture.md). | Libraries never panic on bad input: they return errors. | Maps and game files come from anywhere. | Keep the UI thread free: heavy work runs on worker threads and reports back through channels. | The editor must stay smooth on huge maps. | Every user visible string goes through `hp_app::i18n`, with an English and a text in the crate's `TR` table. The crate tests check for missing translations. | The interface switches language at runtime. | No em dash or en dash characters anywhere (code, comments, UI text, docs). CI rejects them. | Project style. | Take every UI color from the `hp_app::theme` tokens. Color is for content only (views, thumbnails, entity colors). | The interface is black and white. | Write "Hammer Pro" in everything users read; crate, binary, folder and file names stay `hammerpro`. | One product name. | Add tests for new behaviour. Tests that need game files skip themselves when the files are missing. | CI has no game installed. | Actions and settings reach the MCP server without new code (`run_action`, `set_setting`); an operation that deserves its own MCP tool gets one, and the tool list of MCP.md is regenerated. | AI apps drive the whole editor (see [MCP.md](../../MCP.md) and the "MCP tools" section of [EXTENDING.md](../../EXTENDING.md)). |
 
 New features plug into the registries of `hp-app` (actions, settings, menus, settings pages, status bar, overlays, sidecar data): see [Extending Hammer Pro](extending.md) and [EXTENDING.md](../../EXTENDING.md).
 
 ## Translations
 
-Each UI crate has a `TR` table of `(key, English, French)` entries. To improve a translation, edit the text in that table. To add a language, add a variant to `hp_app::i18n::Lang` and a column to the tables.
+Each UI crate has a `TR` table of `(key, English)` entries. To improve a translation, edit the text in that table. To add a language, add a variant to `hp_app::i18n::Lang` and a column to the tables.
 
 ## Reporting bugs
 

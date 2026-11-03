@@ -28,15 +28,7 @@ helpers, entity names, portals...) is an overlay layer.
 
 Files, in `crates/hp-ui-viewports/src/layers/`:
 
-| File | Owner |
-|---|---|
-| `mod.rs` | trait `OverlayLayer` and `default_layers()` (foundation) |
-| `pointfile.rs` | compile (12): the leak path (moved from `overlay.rs`) |
-| `cordon.rs` | visibility (5) |
-| `portals.rs` | health (16) |
-| `instances.rs` | instances (4) |
-| `helpers.rs`, `labels.rs` | helpers (6) |
-| `render.rs` | render (9) |
+| File | Owner |---|---| `mod.rs` | trait `OverlayLayer` and `default_layers()` (foundation) | `pointfile.rs` | compile (12): the leak path (moved from `overlay.rs`) | `cordon.rs` | visibility (5) | `portals.rs` | health (16) | `instances.rs` | instances (4) | `helpers.rs`, `labels.rs` | helpers (6) | `render.rs` | render (9) |
 
 Every file has a function `pub(crate) fn layers() -> Vec<Box<dyn OverlayLayer>>`
 already collected by `default_layers()` (drawing order: pointfile, cordon,
@@ -128,15 +120,7 @@ package edits `scene.rs`.
 
 Files, in `crates/hp-assets/src/`:
 
-| File | Content / owner |
-|---|---|
-| `producer.rs` | trait `DerivedProducer`, `DerivedObject`, `DerivedBuild`, `ProducerChanges`, `ProducerCx`, the registry (foundation) |
-| `scene.rs` | `producers()`: decals first, then `helpers::producers()`, `instances::producers()`, `render::producers()`, `lights::producers()` (render, 9 owns `scene.rs`) |
-| `decals.rs` | `DecalProducer`, the first producer: read it as the reference implementation |
-| `helpers.rs` | helpers (6): overlays, helper geometry, connections, ropes, visualizers |
-| `instances.rs` | instances (4): instance cache and contents |
-| `render.rs` | render (9): detail sprites, sky data |
-| `lights.rs` | lighting (10): `parse_light`, `parse_light_value`, `light_direction` (moved from `entities.rs`); the texlight producer (`lights.rad` and the map's `.rad` light the Lit mode, with VRAD's falloff) |
+| File | Content / owner |---|---| `producer.rs` | trait `DerivedProducer`, `DerivedObject`, `DerivedBuild`, `ProducerChanges`, `ProducerCx`, the registry (foundation) | `scene.rs` | `producers()`: decals first, then `helpers::producers()`, `instances::producers()`, `render::producers()`, `lights::producers()` (render, 9 owns `scene.rs`) | `decals.rs` | `DecalProducer`, the first producer: read it as the reference implementation | `helpers.rs` | helpers (6): overlays, helper geometry, connections, ropes, visualizers | `instances.rs` | instances (4): instance cache and contents | `render.rs` | render (9): detail sprites, sky data | `lights.rs` | lighting (10): `parse_light`, `parse_light_value`, `light_direction` (moved from `entities.rs`); the texlight producer (`lights.rad` and the map's `.rad` light the Lit mode, with VRAD's falloff) |
 
 A package needing several files declares them as submodules of its own file
 (`mod overlays;` in `helpers.rs` is `src/helpers/overlays.rs`) and adds their
@@ -224,7 +208,7 @@ impl DerivedProducer for OverlayProducer {
     }
 
     fn changed(&mut self, ch: &ProducerChanges<'_>, cx: &ProducerCx<'_>) -> bool {
-        if ch.full || ch.entities {
+        if ch.full | ch.entities {
             self.dirty.extend(cx.doc.scene().entities().keys().copied());
         } else {
             self.dirty.extend(ch.doc.entities_changed.iter().chain(&ch.doc.entities_removed).copied());
@@ -294,7 +278,7 @@ While a pick request is pending (next section) the tool gets no
 // `Action::MoveToFloor` are added by the selection package.
 impl Tool for SelectTool {
     fn wheel(&mut self, state: &mut AppState, view: &ViewInfo, notches: f32, mods: egui::Modifiers) -> ToolFlow {
-        if !mods.alt || state.doc.selection().is_empty() {
+        if !mods.alt | state.doc.selection().is_empty() {
             return ToolFlow::Ignored;
         }
         self.scale_props(state, 1.1f64.powf(f64::from(notches)));
@@ -397,20 +381,7 @@ Editing operations are `impl Document` blocks in the package's own module of
 `crates/hp-editor/src/`. These modules are already declared (empty, with a
 header naming the owner), so no package edits `lib.rs` or `ops/mod.rs`:
 
-| Module | Owner |
-|---|---|
-| `ops/path_nodes.rs`, `ops/origins.rs` | selection (1) |
-| `describe.rs` | workflow (3) |
-| `instances.rs`, `ops/instance.rs` | instances (4) |
-| `ops/visgroup.rs` | visibility (5) |
-| `side_index.rs` | helpers (6) |
-| `ops/find_replace.rs` | entities (8) |
-| `luxels.rs` | lighting (10) |
-| `prefab.rs` | placement (11) |
-| `compile_export.rs`, `fingerprint.rs` | compile (12) |
-| `deps_roots.rs` | content (15) |
-| `limits.rs`, `edicts.rs` | health (16) |
-| `diff.rs`, `gallery.rs` | lab (17) |
+| Module | Owner |---|---| `ops/path_nodes.rs`, `ops/origins.rs` | selection (1) | `describe.rs` | workflow (3) | `instances.rs`, `ops/instance.rs` | instances (4) | `ops/visgroup.rs` | visibility (5) | `side_index.rs` | helpers (6) | `ops/find_replace.rs` | entities (8) | `luxels.rs` | lighting (10) | `prefab.rs` | placement (11) | `compile_export.rs`, `fingerprint.rs` | compile (12) | `deps_roots.rs` | content (15) | `limits.rs`, `edicts.rs` | health (16) | `diff.rs`, `gallery.rs` | lab (17) |
 
 Existing files keep their owners from the backlog (`ops/transform.rs`
 selection, `ops/csg.rs` and `ops/create.rs` brush, `ops/disp.rs` mesh,
@@ -471,7 +442,7 @@ unknown blocks) are read and written with (`crates/hp-editor/src/extra.rs`):
 - `doc.remove_extra_block(name) -> EditResult<Option<Block>>`
 
 ```rust
-let mut block = doc.extra_block("light_plus").cloned().unwrap_or_else(|| hp_kv::Block::new("light_plus"));
+let mut block = doc.extra_block("light_plus").cloned().unwrap_or_else(| hp_kv::Block::new("light_plus"));
 block.set("samples_sun", "12");
 doc.set_extra_block("light_plus", block)?;
 ```
@@ -505,16 +476,7 @@ state, enabled)` is already called by the compile dialog under its settings
 
 New modules are declared empty, each with its translation table:
 
-| Module | Owner | Table (`src/tr/`) and key prefix |
-|---|---|---|
-| `cordons.rs` | visibility (5) | `cordons.rs`, `cordons.` |
-| `portals.rs`, `areaportals.rs` | health (16) | `portals.rs` / `areaportals.rs` |
-| `release/mod.rs`, `inspector.rs` | content (15) | `release.rs` / `inspector.rs` |
-| `lighting.rs` | lighting (10) | `lighting.rs`, `lighting.` |
-| `prefabs.rs` | placement (11) | `prefabs.rs`, `prefabs.` |
-| `propper.rs` | lab (17) | `propper.rs`, `propper.` |
-| `dialogs/instance.rs` | instances (4) | `instancing.rs`, `instancing.` |
-| `compile/launch.rs` | launch (14) | `launch.rs`, `launch.` |
+| Module | Owner | Table (`src/tr/`) and key prefix |---|---|---| `cordons.rs` | visibility (5) | `cordons.rs`, `cordons.` | `portals.rs`, `areaportals.rs` | health (16) | `portals.rs` / `areaportals.rs` | `release/mod.rs`, `inspector.rs` | content (15) | `release.rs` / `inspector.rs` | `lighting.rs` | lighting (10) | `lighting.rs`, `lighting.` | `prefabs.rs` | placement (11) | `prefabs.rs`, `prefabs.` | `propper.rs` | lab (17) | `propper.rs`, `propper.` | `dialogs/instance.rs` | instances (4) | `instancing.rs`, `instancing.` | `compile/launch.rs` | launch (14) | `launch.rs`, `launch.` |
 
 Floating windows implement the crate private trait `dialogs::MapDialog`
 (`fn show(&mut self, ctx: &egui::Context, state: &mut AppState)`) and are
@@ -556,7 +518,7 @@ compile, `problems.rs` and `mapinfo.rs` health, `transform.rs` and
 and `autovis.rs` visibility, `outliner.rs`, plus the new modules above).
 `tr/mod.rs` lists `TABLES: &[(prefix, table)]`, registered by
 `register_translations()`. Every key of a table starts with its prefix and
-a dot (tested), keys are unique across tables, and English and French
+a dot (tested), keys are unique across tables, and English
 texts are required. Before choosing a new prefix, search the workspace for
 it (`rg '"myprefix\.'`): tables of different crates share one registry.
 
@@ -570,36 +532,12 @@ invocation of `actions/mod.rs`.
 
 Files, in `crates/hp-app/src/actions/`:
 
-| File | Content / owner |
-|---|---|
-| `mod.rs` | the macros, `Action::{ALL, DECLARED}`, `Category`, `ActionStatus`, `Check`, the per-package lookups (foundation) |
-| `groups.rs` | `MenuGroup` (menu placement) and the titles of new submenus (shared, see [Menus](#menus)) |
-| `keys.rs` | `KeyBindings`, shortcut parsing, formatting and localized labels (foundation) |
-| `shell.rs` | the 91 core actions; their ids, shortcuts and order never change (tested) |
-| `selection.rs` ... `lab.rs` | one file per package (all 17 exist) |
+| File | Content / owner |---|---| `mod.rs` | the macros, `Action::{ALL, DECLARED}`, `Category`, `ActionStatus`, `Check`, the per-package lookups (foundation) | `groups.rs` | `MenuGroup` (menu placement) and the titles of new submenus (shared, see [Menus](#menus)) | `keys.rs` | `KeyBindings`, shortcut parsing, formatting and localized labels (foundation) | `shell.rs` | the 91 core actions; their ids, shortcuts and order never change (tested) | `selection.rs` ... `lab.rs` | one file per package (all 17 exist) |
 
 Every action the backlog plans is already declared in its package file, with
 the status `Planned`:
 
-| Package | Pre-declared actions (default shortcut) |
-|---|---|
-| selection (1) | MoveToFloor (Alt+N), MoveToCeiling (Alt+U), SnapToGridIndividually (Ctrl+Shift+B), CenterOrigins, TogglePivot, FlipHorizontal (Ctrl+L), FlipVertical, AlignCenterHorizontal, AlignCenterVertical, ToggleGizmoLocal (Ctrl+J) |
-| brush (2) | ToolPolygon (Shift+N), MergeBrushes (Ctrl+Shift+M), MakeHintBrush, NodrawHiddenFaces, TieEachToEntity (Ctrl+Shift+T), ConvertToDetail |
-| workflow (3) | CloseMap (Ctrl+F4), ToggleIgnoreGroups (Ctrl+W), Zoom2dIn (+), Zoom2dOut (-), ResetViewSplits, ViewTop (F2), ViewSide (F3), ViewFront (F4), View3dTextured (F5), View3dFlat (Shift+F5), CycleView2d (Tab), ToggleViewInfo (O), ToggleBoundsOverlay (I), ShowHistory, ShowToolbar, ShowToolPalette, ShowStatusBar, SaveLayout, ResetLayout |
-| instances (4) | CreateInstance (Alt+S), EditInstance, CollapseInstances, CollapseAllInstances, InstancesHidden, InstancesTinted, InstancesNormal |
-| visibility (5) | ToolCordon, ToggleCordon, MoveToVisgroup, HiddenToVisgroup |
-| helpers (6) | ToggleOverlays, ToggleConnections, ToggleEditorObjects, TogglePointEntities, ToggleEntityNames, SimulateRopes |
-| mesh (7) | VertexSplitFace (Ctrl+F), VertexScale (Alt+E), DispSubdivide, DispInvertAlpha, DispNoise |
-| entities (8) | CopyKeyvalues, PasteKeyvalues, FindReplaceText (Ctrl+Alt+R), EditColor (C), EditSoundscapes, ShowSoundBrowser, ShowParticleBrowser, EntityHelp, ToolPath, PathInsertPoint, PathRemovePoint |
-| render (9) | ToggleGrid3d (P), FarPlaneCloser, FarPlaneFarther, RenderUnshaded (Alt+6), RenderSmoothingGroups (Alt+7), ToggleRenderEffects, ToggleSkyPreview, ToggleSkybox3d (Alt+V), ToggleCollisionModels, ToggleFogPreview, ToggleAnimatedMaterials, ToggleModelFade, ToggleOpaqueMaterials, ToggleWalkable, ToggleDisplacements, BackgroundImages |
-| lighting (10) | RenderLightmapGrid (Alt+8), RenderBaked (Ctrl+F5), BakeLighting, BakeAroundCamera, StopBake, SelectTinyLightmapFaces, ShowLighting |
-| placement (11) | ToolSprinkle, CreatePrefab (Ctrl+R), InsertOriginalPrefab (Alt+Shift+C), ShowPrefabs |
-| compile (12) | CompileNow, CancelCompile, BatchCompile |
-| startup (13) | ExportCopy, ExportAgain (Alt+B), ExportObj, ReloadContent |
-| launch (14) | LaunchGame, ReloadInGame, ImportFromGame |
-| content (15) | SaveAsNewVersion, OpenArchive, BuildContent, PublishWorkshop |
-| health (16) | CheckLeaks, SealAreaportal, LoadPortalFile, UnloadPortalFile, TogglePvs |
-| lab (17) | OpenBsp, CompareMaps, EntityGallery, ShowLogicalView, ToggleNavMesh, PhysicsPlacement, BrushesToProp, GenerateNavMesh |
+| Package | Pre-declared actions (default shortcut) |---|---| selection (1) | MoveToFloor (Alt+N), MoveToCeiling (Alt+U), SnapToGridIndividually (Ctrl+Shift+B), CenterOrigins, TogglePivot, FlipHorizontal (Ctrl+L), FlipVertical, AlignCenterHorizontal, AlignCenterVertical, ToggleGizmoLocal (Ctrl+J) | brush (2) | ToolPolygon (Shift+N), MergeBrushes (Ctrl+Shift+M), MakeHintBrush, NodrawHiddenFaces, TieEachToEntity (Ctrl+Shift+T), ConvertToDetail | workflow (3) | CloseMap (Ctrl+F4), ToggleIgnoreGroups (Ctrl+W), Zoom2dIn (+), Zoom2dOut (-), ResetViewSplits, ViewTop (F2), ViewSide (F3), ViewFront (F4), View3dTextured (F5), View3dFlat (Shift+F5), CycleView2d (Tab), ToggleViewInfo (O), ToggleBoundsOverlay (I), ShowHistory, ShowToolbar, ShowToolPalette, ShowStatusBar, SaveLayout, ResetLayout | instances (4) | CreateInstance (Alt+S), EditInstance, CollapseInstances, CollapseAllInstances, InstancesHidden, InstancesTinted, InstancesNormal | visibility (5) | ToolCordon, ToggleCordon, MoveToVisgroup, HiddenToVisgroup | helpers (6) | ToggleOverlays, ToggleConnections, ToggleEditorObjects, TogglePointEntities, ToggleEntityNames, SimulateRopes | mesh (7) | VertexSplitFace (Ctrl+F), VertexScale (Alt+E), DispSubdivide, DispInvertAlpha, DispNoise | entities (8) | CopyKeyvalues, PasteKeyvalues, FindReplaceText (Ctrl+Alt+R), EditColor (C), EditSoundscapes, ShowSoundBrowser, ShowParticleBrowser, EntityHelp, ToolPath, PathInsertPoint, PathRemovePoint | render (9) | ToggleGrid3d (P), FarPlaneCloser, FarPlaneFarther, RenderUnshaded (Alt+6), RenderSmoothingGroups (Alt+7), ToggleRenderEffects, ToggleSkyPreview, ToggleSkybox3d (Alt+V), ToggleCollisionModels, ToggleFogPreview, ToggleAnimatedMaterials, ToggleModelFade, ToggleOpaqueMaterials, ToggleWalkable, ToggleDisplacements, BackgroundImages | lighting (10) | RenderLightmapGrid (Alt+8), RenderBaked (Ctrl+F5), BakeLighting, BakeAroundCamera, StopBake, SelectTinyLightmapFaces, ShowLighting | placement (11) | ToolSprinkle, CreatePrefab (Ctrl+R), InsertOriginalPrefab (Alt+Shift+C), ShowPrefabs | compile (12) | CompileNow, CancelCompile, BatchCompile | startup (13) | ExportCopy, ExportAgain (Alt+B), ExportObj, ReloadContent | launch (14) | LaunchGame, ReloadInGame, ImportFromGame | content (15) | SaveAsNewVersion, OpenArchive, BuildContent, PublishWorkshop | health (16) | CheckLeaks, SealAreaportal, LoadPortalFile, UnloadPortalFile, TogglePvs | lab (17) | OpenBsp, CompareMaps, EntityGallery, ShowLogicalView, ToggleNavMesh, PhysicsPlacement, BrushesToProp, GenerateNavMesh |
 
 An entry is one line:
 
@@ -690,14 +628,7 @@ own file and saved as its own TOML table in `settings.toml`
 
 Files, in `crates/hp-app/src/settings/`:
 
-| File | Content / owner |
-|---|---|
-| `mod.rs` | `Settings`, paths (`config_dir`, `cache_dir`, `autosave_dir`...), load and atomic save (foundation) |
-| `shell.rs` | `[view]` `ViewSettings`, `[edit]` `EditSettings`, `[ui]` `UiSettings` and their enums: core, shared, do not add fields |
-| `startup.rs` | `[game]` `GameSettings` and `[startup]` `StartupSettings`: startup (13) |
-| `compile.rs` | `[compile]` `CompileSettings`: compile (12) |
-| `entities.rs` | `[browser]` `BrowserSettings` and `[entities]` `EntitiesSettings`: entities (8) |
-| `<package>.rs` | `[selection]` `SelectionSettings`, `[brush]` `BrushSettings`, `[workflow]` `WorkflowSettings`, `[instances]`, `[visibility]`, `[helpers]`, `[mesh]`, `[render]`, `[lighting]`, `[placement]`, `[launch]`, `[content]`, `[health]`, `[lab]` |
+| File | Content / owner |---|---| `mod.rs` | `Settings`, paths (`config_dir`, `cache_dir`, `autosave_dir`...), load and atomic save (foundation) | `shell.rs` | `[view]` `ViewSettings`, `[edit]` `EditSettings`, `[ui]` `UiSettings` and their enums: core, shared, do not add fields | `startup.rs` | `[game]` `GameSettings` and `[startup]` `StartupSettings`: startup (13) | `compile.rs` | `[compile]` `CompileSettings`: compile (12) | `entities.rs` | `[browser]` `BrowserSettings` and `[entities]` `EntitiesSettings`: entities (8) | `<package>.rs` | `[selection]` `SelectionSettings`, `[brush]` `BrushSettings`, `[workflow]` `WorkflowSettings`, `[instances]`, `[visibility]`, `[helpers]`, `[mesh]`, `[render]`, `[lighting]`, `[placement]`, `[launch]`, `[content]`, `[health]`, `[lab]` |
 
 The backlog often says "add `EditSettings.x`" or "`ViewSettings.x`": put
 `x` in your own struct instead and read it as `state.settings.<package>.x`.
@@ -762,19 +693,7 @@ crate) at the end of the frame. One module per package in
 `crates/hammerpro-medallium/src/dispatch/` holds that package's handlers and the other
 application hooks.
 
-| File | Content / owner |
-|---|---|
-| `mod.rs` | trait `Package`, the `PACKAGES` list, `HammerProApp::execute`, the "not implemented yet" notice, helpers, `Packages` (state of every package) (foundation) |
-| `shell.rs` | core: file, edit, grid, view toggles, panels, groups, go to, map properties, help |
-| `selection.rs` | paste special, snap to grid, transform, flip, align (moved) |
-| `brush.rs` | tie to entity, move to world, carve, make hollow, merge (moved) |
-| `visibility.rs` | hide selected, hide unselected, unhide all (moved) |
-| `helpers.rs` | show helpers (moved) |
-| `entities.rs` | find entities, replace textures, entity report (moved) |
-| `render.rs` | 3D render modes, show models, show tool textures (moved) |
-| `compile.rs` | compile and run dialog, leak pointfiles and their file picker (moved) |
-| `health.rs` | check for problems, map information (moved) |
-| `workflow.rs`, `instances.rs`, `mesh.rs`, `lighting.rs`, `placement.rs`, `startup.rs`, `launch.rs`, `content.rs`, `lab.rs` | empty, ready for their package |
+| File | Content / owner |---|---| `mod.rs` | trait `Package`, the `PACKAGES` list, `HammerProApp::execute`, the "not implemented yet" notice, helpers, `Packages` (state of every package) (foundation) | `shell.rs` | core: file, edit, grid, view toggles, panels, groups, go to, map properties, help | `selection.rs` | paste special, snap to grid, transform, flip, align (moved) | `brush.rs` | tie to entity, move to world, carve, make hollow, merge (moved) | `visibility.rs` | hide selected, hide unselected, unhide all (moved) | `helpers.rs` | show helpers (moved) | `entities.rs` | find entities, replace textures, entity report (moved) | `render.rs` | 3D render modes, show models, show tool textures (moved) | `compile.rs` | compile and run dialog, leak pointfiles and their file picker (moved) | `health.rs` | check for problems, map information (moved) | `workflow.rs`, `instances.rs`, `mesh.rs`, `lighting.rs`, `placement.rs`, `startup.rs`, `launch.rs`, `content.rs`, `lab.rs` | empty, ready for their package |
 
 `execute(action)` runs, in order: a tool switch (when the tool exists), the
 active tool's `Tool::action`, then each package's `handle` in the order of
@@ -786,17 +705,7 @@ it once, so a menu entry never silently does nothing.
 Each module is a unit struct implementing `dispatch::Package`; every method
 has a do-nothing default:
 
-| Hook | When |
-|---|---|
-| `handled(&self) -> &'static [Action]` | the actions `handle` runs; must match it exactly (debug assertion in `execute`, test `every_ready_action_has_one_handler`) |
-| `handle(&self, app, ctx, action) -> bool` | run the action; true when handled |
-| `tick(&self, app, ctx)` | every frame, before the UI pass (poll workers, file dialogs, timers) |
-| `init(&self, app)` | once at startup (register settings pages, status segments, menu extensions, overlay layers with `app.viewports`) |
-| `map_loaded(&self, app)` | after a map was opened or created, its sidecar loaded |
-| `dialogs(&self, app, ctx)` | every frame, after the built-in windows |
-| `dock_tabs(&self, app, tabs)` / `dock_ui(&self, app, ui, id) -> bool` | right dock tabs, shown as `RightTab::Package(id)` after the built-in tabs |
-| `tools(&self, out)` | editing tools of the package, added when the tool list is built |
-| `translations(&self) -> TrTable` | the module's table, registered at startup |
+| Hook | When |---|---| `handled(&self) -> &'static [Action]` | the actions `handle` runs; must match it exactly (debug assertion in `execute`, test `every_ready_action_has_one_handler`) | `handle(&self, app, ctx, action) -> bool` | run the action; true when handled | `tick(&self, app, ctx)` | every frame, before the UI pass (poll workers, file dialogs, timers) | `init(&self, app)` | once at startup (register settings pages, status segments, menu extensions, overlay layers with `app.viewports`) | `map_loaded(&self, app)` | after a map was opened or created, its sidecar loaded | `dialogs(&self, app, ctx)` | every frame, after the built-in windows | `dock_tabs(&self, app, tabs)` / `dock_ui(&self, app, ui, id) -> bool` | right dock tabs, shown as `RightTab::Package(id)` after the built-in tabs | `tools(&self, out)` | editing tools of the package, added when the tool list is built | `translations(&self) -> TrTable` | the module's table, registered at startup |
 
 State the package keeps in the application goes in the module's `State`
 struct (`#[derive(Default)]`), reachable as `app.pkg.<package>` (UI
@@ -865,15 +774,7 @@ and width. A menu shows its groups sorted by (section, order) with a
 separator between sections; inside a group, entries keep the registry order
 (core first, then the package files in `PACKAGES` order, then line order).
 
-| Menu | Groups: section/order |
-|---|---|
-| File | `FileNew` 10/0, `FileClose` 10/20, `FileSave` 20, `FileImport` 30, `FileRun` 40, recent maps (shell) 80, `FileExit` 90 |
-| Edit | `EditHistory` 10, `EditFind` 20, `EditClipboard` 30, `EditSelect` 40/0, `EditSelectMode` 40/10 (submenu), `EditProperties` 50 |
-| Map | `MapGrid` 10/0, `MapGrids` 10/10 (submenu: grid modes, custom grids), `MapInfo` 20, `MapPointfile` 30, `MapProperties` 40, `MapLighting` 50 (submenu) |
-| View | `ViewType` 10/0, `ViewRender` 10/10 (submenu), `ViewShow` 30/10, `ViewDisplay` 30/20 (submenu), `ViewHide` 35, `ViewNav` 40, `ViewPanels` 50/0 (submenu), language (shell) 50/10 |
-| Tools | `ToolsBrush` 10/0, `ToolsAlign` 10/10, `ToolsFlip` 10/20 (submenus), `ToolsPlacement` 20/0, `ToolsInstancing` 20/10 (submenu), `ToolsSwitch` 30, `ToolsMesh` 40, `ToolsContent` 50, `ToolsApp` 90 |
-| Window | `WindowLayout` 10 (submenu), `WindowMessages` 20, `WindowMaps` 30 |
-| Help | `HelpDocs` 10/0, setup assistant (shell) 10/10, `HelpAbout` 90 |
+| Menu | Groups: section/order |---|---| File | `FileNew` 10/0, `FileClose` 10/20, `FileSave` 20, `FileImport` 30, `FileRun` 40, recent maps (shell) 80, `FileExit` 90 | Edit | `EditHistory` 10, `EditFind` 20, `EditClipboard` 30, `EditSelect` 40/0, `EditSelectMode` 40/10 (submenu), `EditProperties` 50 | Map | `MapGrid` 10/0, `MapGrids` 10/10 (submenu: grid modes, custom grids), `MapInfo` 20, `MapPointfile` 30, `MapProperties` 40, `MapLighting` 50 (submenu) | View | `ViewType` 10/0, `ViewRender` 10/10 (submenu), `ViewShow` 30/10, `ViewDisplay` 30/20 (submenu), `ViewHide` 35, `ViewNav` 40, `ViewPanels` 50/0 (submenu), language (shell) 50/10 | Tools | `ToolsBrush` 10/0, `ToolsAlign` 10/10, `ToolsFlip` 10/20 (submenus), `ToolsPlacement` 20/0, `ToolsInstancing` 20/10 (submenu), `ToolsSwitch` 30, `ToolsMesh` 40, `ToolsContent` 50, `ToolsApp` 90 | Window | `WindowLayout` 10 (submenu), `WindowMessages` 20, `WindowMaps` 30 | Help | `HelpDocs` 10/0, setup assistant (shell) 10/10, `HelpAbout` 90 |
 
 The menus follow Valve Hammer (File, Edit, Map, View, Tools, Window, Help)
 so a mapper coming from Hammer or Hammer++ finds the entries where they
@@ -923,16 +824,7 @@ owned by hp-ui-viewports (see Tool hooks).
 The settings window (`crates/hp-ui-shell/src/settings_dialog/`) has one file
 per page:
 
-| File | Page / owner |
-|---|---|
-| `mod.rs` | window, page list, footer ("Restore defaults", "Apply and reload content"), `SettingsTab` (foundation) |
-| `general.rs` | General: language, theme, scale, autosave (workflow 3) |
-| `game.rs` | Game (startup 13) |
-| `viewport.rs` | Viewport: camera, rendering, colors (workflow 3) |
-| `editing.rs` | Editing (core) |
-| `compile.rs` | Compile (compile 12) |
-| `keyboard.rs` | Keyboard (workflow 3) |
-| `selection.rs`, `brush.rs`, `workflow.rs`, `instances.rs`, `visibility.rs`, `helpers.rs`, `mesh.rs`, `entities.rs`, `render.rs`, `lighting.rs`, `placement.rs`, `startup.rs`, `launch.rs`, `content.rs`, `health.rs`, `lab.rs` | `pages()` of each package (empty) |
+| File | Page / owner |---|---| `mod.rs` | window, page list, footer ("Restore defaults", "Apply and reload content"), `SettingsTab` (foundation) | `general.rs` | General: language, theme, scale, autosave (workflow 3) | `game.rs` | Game (startup 13) | `viewport.rs` | Viewport: camera, rendering, colors (workflow 3) | `editing.rs` | Editing (core) | `compile.rs` | Compile (compile 12) | `keyboard.rs` | Keyboard (workflow 3) | `selection.rs`, `brush.rs`, `workflow.rs`, `instances.rs`, `visibility.rs`, `helpers.rs`, `mesh.rs`, `entities.rs`, `render.rs`, `lighting.rs`, `placement.rs`, `startup.rs`, `launch.rs`, `content.rs`, `health.rs`, `lab.rs` | `pages()` of each package (empty) |
 
 A package page implements `hp_app::extend::SettingsPage` and is returned by
 `pages()` in the package's file, or written in any crate and registered with
@@ -997,12 +889,7 @@ compile package registers them from its `init` hook with
 The status bar (`crates/hp-ui-shell/src/status/`) is a list of
 `hp_app::extend::StatusSegment`s:
 
-| File | Segments / owner |
-|---|---|
-| `mod.rs` | `StatusBar`: layout and registration (foundation) |
-| `shell.rs` | tool hint, selection summary, cursor position (left); fps, texture lock, snap, grid (right; the last three only while the toolbar is hidden, the toolbar shows them otherwise); `fmt_size`, `fmt_point` (core, workflow 3 extends it) |
-| `startup.rs` | game content indicator: mounting, not configured, failed (startup 13) |
-| `compile.rs`, `health.rs`, `launch.rs`, `lighting.rs` | empty `segments()` for compile progress, problem and limit badges, game ready, lightmap budget |
+| File | Segments / owner |---|---| `mod.rs` | `StatusBar`: layout and registration (foundation) | `shell.rs` | tool hint, selection summary, cursor position (left); fps, texture lock, snap, grid (right; the last three only while the toolbar is hidden, the toolbar shows them otherwise); `fmt_size`, `fmt_point` (core, workflow 3 extends it) | `startup.rs` | game content indicator: mounting, not configured, failed (startup 13) | `compile.rs`, `health.rs`, `launch.rs`, `lighting.rs` | empty `segments()` for compile progress, problem and limit badges, game ready, lightmap budget |
 
 Layout: right side segments are drawn from the right edge toward the middle,
 sorted by `order()`; each draws its own separator before its content (when it
@@ -1149,18 +1036,7 @@ gray levels, weight, icons and inverted fills, never from hue. Color stays
 in content only: the 3D and 2D views, thumbnails and previews, entity
 colors, visgroup colors and color pickers.
 
-| Need | Use |
-|---|---|
-| highlight, active item, focus, mark | `theme::accent()` |
-| background of a selected item | `theme::accent_bg()` |
-| text on an `accent()` fill (inverted buttons, pills) | `theme::on_accent()` |
-| primary / secondary text, hairlines | `theme::text()`, `theme::text_weak()`, `theme::border()` |
-| severities | `theme::info()`, `success()`, `warning()`, `error()` with the icon (`Severity::icon`) |
-| every gray level of the theme | `theme::palette()` (`bg0` deepest to `bg4` hovered, `selection`, `strong`, `inverse`) |
-| main action of a row or dialog | `widgets::primary_button` |
-| on/off switch, state badge | `widgets::toggle`, `widgets::pill` |
-| the Hammer Pro mark | `widgets::logo`, `widgets::paint_hammer` |
-| tools drawing inside the views | `theme::VIEW_ACCENT`, `VIEW_SUCCESS`, `VIEW_WARNING`, `VIEW_ERROR`, `AXIS_*` |
+| Need | Use |---|---| highlight, active item, focus, mark | `theme::accent()` | background of a selected item | `theme::accent_bg()` | text on an `accent()` fill (inverted buttons, pills) | `theme::on_accent()` | primary / secondary text, hairlines | `theme::text()`, `theme::text_weak()`, `theme::border()` | severities | `theme::info()`, `success()`, `warning()`, `error()` with the icon (`Severity::icon`) | every gray level of the theme | `theme::palette()` (`bg0` deepest to `bg4` hovered, `selection`, `strong`, `inverse`) | main action of a row or dialog | `widgets::primary_button` | on/off switch, state badge | `widgets::toggle`, `widgets::pill` | the Hammer Pro mark | `widgets::logo`, `widgets::paint_hammer` | tools drawing inside the views | `theme::VIEW_ACCENT`, `VIEW_SUCCESS`, `VIEW_WARNING`, `VIEW_ERROR`, `AXIS_*` |
 
 The token functions follow the applied theme; the `ACCENT` and `COLOR_*`
 constants are the dark theme values, only for surfaces that stay dark in
@@ -1171,23 +1047,17 @@ color outside the view crates, or a dark only constant in a panel fails it.
 
 ## Translations
 
-Every text of the UI is a translation key with English and French texts,
-`(key, english, french)` rows in a `TrTable` (`hp_app::i18n`). Tables are
+Every text of the UI is a translation key with English texts,
+`(key, English)` rows in a `TrTable` (`hp_app::i18n`). Tables are
 registered at startup; `t!("key")` translates, `tf!("key", a, b)` fills
 `{0}`, `{1}`. Rules (tested by `i18n::lint_table` in each crate): no empty
 text, no duplicate key, never the em dash or en dash characters; sentence
-case, "..." for entries that open a dialog, French uses a space before `:`,
+case, "..." for entries that open a dialog uses a space before `:`,
 `?` and `!`.
 
 Where each package puts its texts:
 
-| Texts | Table |
-|---|---|
-| action labels `action.<id>`, tool names `tool.<x>`, submenu titles `menu.<x>` | `TR` of `crates/hp-app/src/actions/<package>.rs` |
-| undo step names of new editing operations, `shell.undo.<label in snake case>` (the label "Move to floor" gives `shell.undo.move_to_floor`) | the same `TR` of `crates/hp-app/src/actions/<package>.rs` |
-| shell texts (pages, segments, menu extensions in hp-ui-shell) | the `TR` of the module that uses them, keys `shell.<area>.`; module tables are listed in `tr.rs` `TABLES`, `settings_dialog::TABLES` and `status::TABLES` |
-| binary texts of a dispatch module | the module's table, returned by `Package::translations` |
-| other crates | that crate's own tables (see their sections) |
+| Texts | Table |---|---| action labels `action.<id>`, tool names `tool.<x>`, submenu titles `menu.<x>` | `TR` of `crates/hp-app/src/actions/<package>.rs` | undo step names of new editing operations, `shell.undo.<label in snake case>` (the label "Move to floor" gives `shell.undo.move_to_floor`) | the same `TR` of `crates/hp-app/src/actions/<package>.rs` | shell texts (pages, segments, menu extensions in hp-ui-shell) | the `TR` of the module that uses them, keys `shell.<area>.`; module tables are listed in `tr.rs` `TABLES`, `settings_dialog::TABLES` and `status::TABLES` | binary texts of a dispatch module | the module's table, returned by `Package::translations` | other crates | that crate's own tables (see their sections) |
 
 The hp-app tables (`strings::TR`, `actions::TABLES`) are loaded with the
 registry itself, so every crate's tests see them without registering
@@ -1237,7 +1107,6 @@ Actions that close the app, publish, start the game or a program, or show
 a file dialog are listed in `NEEDS_CONFIRM` of `tools_actions.rs`: add new
 ones there. Settings holding paths, programs or command lines are read only
 for MCP (`read_only` in `tools_settings.rs`, by name).
-
 
 ## Lighting preview and lightmaps
 

@@ -16,11 +16,7 @@ Adding a folder that is already in the list enables it again instead of adding i
 
 Hammer Pro reads the folder with these rules:
 
-| Folder | Material names | Prefix field |
-|---|---|---|
-| It has a `materials` sub folder (a game style folder) | Taken from that `materials` folder, like a game folder; its `models`, `sound`... are mounted too. | Shown as `materials/`, not used. |
-| It is itself inside a `.../materials/...` tree | The part of its path after `materials/` (`C:/art/materials/custom/bricks` gives `custom/bricks/...`). | Shown, not used. |
-| Any other folder | `<prefix>/<path inside the folder>`. | Editable. |
+| Folder | Material names | Prefix field |---|---|---| It has a `materials` sub folder (a game style folder) | Taken from that `materials` folder, like a game folder; its `models`, `sound`... are mounted too. | Shown as `materials/`, not used. | It is itself inside a `.../materials/...` tree | The part of its path after `materials/` (`C:/art/materials/custom/bricks` gives `custom/bricks/...`). | Shown, not used. | Any other folder | `<prefix>/<path inside the folder>`. | Editable. |
 
 For the last case the prefix is, in this order:
 
@@ -34,15 +30,7 @@ A typed prefix is cleaned: lowercase ASCII, forward slashes, accents folded, spa
 
 Each folder of **Custom folders (n)** in the texture browser has:
 
-| Control | What it does |
-|---|---|
-| Check box (**Use this folder**) | Enables or disables the folder. |
-| Name | The folder name (hover for the full path). |
-| Count | **N material(s)**, **Disabled**, or **not loaded yet** while the content reloads. |
-| Filter button (**Show only this folder**) | Selects the folder's source chip so the grid shows only its materials. |
-| Folder button (**Open in the file explorer**) | Opens the folder. |
-| Bin button (**Remove this folder from the list (files are kept)**) | Removes the folder from the list. Nothing is deleted on disk. |
-| **Prefix** | See above. |
+| Control | What it does |---|---| Check box (**Use this folder**) | Enables or disables the folder. | Name | The folder name (hover for the full path). | Count | **N material(s)**, **Disabled**, or **not loaded yet** while the content reloads. | Filter button (**Show only this folder**) | Selects the folder's source chip so the grid shows only its materials. | Folder button (**Open in the file explorer**) | Opens the folder. | Bin button (**Remove this folder from the list (files are kept)**) | Removes the folder from the list. Nothing is deleted on disk. | **Prefix** | See above. |
 
 Warnings appear under a folder when needed:
 
@@ -51,11 +39,7 @@ Warnings appear under a folder when needed:
 
 Below the list:
 
-| Button | What it does |
-|---|---|
-| **Add folder...** | Adds a folder of VMT/VTF files or plain images. |
-| **Rescan** | Reloads the game content and the custom folders, to pick up new or changed files. |
-| **Import images...** | Converts images into VTF and VMT files in a custom folder (see below). |
+| Button | What it does |---|---| **Add folder...** | Adds a folder of VMT/VTF files or plain images. | **Rescan** | Reloads the game content and the custom folders, to pick up new or changed files. | **Import images...** | Converts images into VTF and VMT files in a custom folder (see below). |
 
 The same folders are listed in **Settings > Game > Custom texture folders**, with **Enabled**, **Path** and **Prefix** columns and a remove button.
 
@@ -71,15 +55,9 @@ In every kind of folder, a PNG, JPG, JPEG, TGA or BMP image below the material r
 
 **Import images...** asks for image files, then opens the **Import images** window:
 
-| Option | What it does | Default |
-|---|---|---|
-| List | The images to convert (**N image(s)**). | |
-| **Destination** | The custom folder that receives the files. **New folder...** adds a custom folder. **No custom folder yet** when there is none. | first folder |
-| **Surface property** | `$surfaceprop` written in the VMTs (**None**, or a common value such as `concrete`, `brick`, `metal`...). | **None** |
-| **Generate mipmaps** | Writes mipmaps in the VTFs. | on |
-| **Overwrite existing files** | Replaces VTF and VMT files that already exist (else those images fail). | off |
-| **Import** | Starts (also `Enter`). The line above tells **Materials will be named prefix/<image name> in folder**. | |
-| **Cancel** | Closes the window; during the conversion it stops after the current file. | |
+| Option | What it does | Default |---|---|---| List | The images to convert (**N image(s)**). |
+| **Destination** | The custom folder that receives the files. **New folder...** adds a custom folder. **No custom folder yet** when there is none. | first folder | **Surface property** | `$surfaceprop` written in the VMTs (**None**, or a common value such as `concrete`, `brick`, `metal`...). | **None** | **Generate mipmaps** | Writes mipmaps in the VTFs. | on | **Overwrite existing files** | Replaces VTF and VMT files that already exist (else those images fail). | off | **Import** | Starts (also `Enter`). The line above tells **Materials will be named prefix/<image name> in folder**. |
+| **Cancel** | Closes the window; during the conversion it stops after the current file. |
 
 The conversion runs in the background with a progress bar (**Importing N of M...**). Each image gives a `.vtf` (format chosen from its content) and a `.vmt` with the same alpha rule as above. Files go to `materials/<suggested prefix>` of a game style folder, or to the root of any other folder, under its prefix. The image name is cleaned the same way; two images with the same cleaned name: the later ones fail. The result is **N image(s) imported, M failed**.
 

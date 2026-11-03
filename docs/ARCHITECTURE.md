@@ -9,7 +9,7 @@ Hammer and Hammer++.
 - Open anything fast. Big VMFs load in well under a second; assets stream in
   the background so the UI never blocks.
 - Everything Hammer++ does, with a cleaner UI and more power tools.
-- English and French UI, switchable live.
+- English UI, switchable live.
 - Pure Rust, GPU rendering through wgpu, UI through egui.
 
 ## Crates
@@ -75,7 +75,7 @@ hp-vmf, hp-fs <- hp-light <- hp-bspc, hp-assets, hammerpro
 - Never use the em dash or en dash characters anywhere (code, comments, UI
   strings, docs). Use a hyphen, a colon or parentheses.
 - All UI text goes through the i18n layer (`hammerpro::i18n`), with English
-  and French translations.
+  translations.
 
 ## Data flow
 

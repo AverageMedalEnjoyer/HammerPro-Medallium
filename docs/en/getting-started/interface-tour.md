@@ -12,15 +12,7 @@ If the frame misbehaves (remote desktop, some window managers), turn on **Settin
 
 ## Menu bar
 
-| Menu | What is in it |
-|---|---|
-| **File** | New map, Open map..., Recent maps, Save, Save as..., Save as new version..., Close, Close other maps, import and export (Import map into current..., Export selection as VMF..., Export a copy..., Export again, Export OBJ..., Open compiled map (BSP)..., Open archive..., Import a model (FBX, OBJ, glTF)..., Import props from the game), compile and run (Compile and run..., Compile now, Cancel compile, Batch compile..., Run the map in game, Reload the map in game, Build and save as content..., Publish on the Workshop...), Exit. |
-| **Edit** | Undo, Redo, clipboard (Cut, Copy, Paste, Paste special..., Delete, Duplicate, Copy keyvalues, Paste keyvalues), selection (Select all, Clear selection, Invert selection, previous and next face selection), **Selection mode** (Groups, Objects, Solids, Ignore groups), Find entities..., Find and replace in entities..., Properties, Edit color..., Set maximum distance... |
-| **Map** | Grid (Show grid, Snap to grid, Smaller grid, Larger grid, 3D grid on faces), **Grids** (global, per view, custom grids, grid manager), Map properties..., Map information, Check for problems, Entity report, Map assets, Check for leaks, Go to brush or entity id..., Soundscapes..., comparisons and suggestions, pointfiles, portal files, nav mesh, and **Lighting** (bake, cubemaps). |
-| **View** | Hide selected, Hide unselected, Unhide all, cordons and visgroups, centering and zoom of the views, Maximize view, **View type** (Top, Side, Front, 3D, logical views), **3D render mode**, **Display options**, Player view, **Panels** (which panels and bars are shown), **Language**. |
-| **Tools** | The tools (Selection, Camera, Entity, Block, Polygon, Texture application, Decal, Overlay, Clipping, Vertex, Displacement, Path, Cordon, Sprinkle), brush operations (Group, Ungroup, Carve, Make hollow, Merge, Tie to entity, Move to world...), **Align**, **Flip**, **Instancing**, Transform..., prefabs, placement and props, Find and replace textures..., Reload content from disk, the MCP server, Command palette..., Options... |
-| **Window** | Console, **Layout** (Save layout..., Reset layout), Next map, Previous map. |
-| **Help** | Keyboard shortcuts, Documentation, Entity help, Report an issue, Setup assistant..., About Hammer Pro. |
+| Menu | What is in it |---|---| **File** | New map, Open map..., Recent maps, Save, Save as..., Save as new version..., Close, Close other maps, import and export (Import map into current..., Export selection as VMF..., Export a copy..., Export again, Export OBJ..., Open compiled map (BSP)..., Open archive..., Import a model (FBX, OBJ, glTF)..., Import props from the game), compile and run (Compile and run..., Compile now, Cancel compile, Batch compile..., Run the map in game, Reload the map in game, Build and save as content..., Publish on the Workshop...), Exit. | **Edit** | Undo, Redo, clipboard (Cut, Copy, Paste, Paste special..., Delete, Duplicate, Copy keyvalues, Paste keyvalues), selection (Select all, Clear selection, Invert selection, previous and next face selection), **Selection mode** (Groups, Objects, Solids, Ignore groups), Find entities..., Find and replace in entities..., Properties, Edit color..., Set maximum distance... | **Map** | Grid (Show grid, Snap to grid, Smaller grid, Larger grid, 3D grid on faces), **Grids** (global, per view, custom grids, grid manager), Map properties..., Map information, Check for problems, Entity report, Map assets, Check for leaks, Go to brush or entity id..., Soundscapes..., comparisons and suggestions, pointfiles, portal files, nav mesh, and **Lighting** (bake, cubemaps). | **View** | Hide selected, Hide unselected, Unhide all, cordons and visgroups, centering and zoom of the views, Maximize view, **View type** (Top, Side, Front, 3D, logical views), **3D render mode**, **Display options**, Player view, **Panels** (which panels and bars are shown), **Language**. | **Tools** | The tools (Selection, Camera, Entity, Block, Polygon, Texture application, Decal, Overlay, Clipping, Vertex, Displacement, Path, Cordon, Sprinkle), brush operations (Group, Ungroup, Carve, Make hollow, Merge, Tie to entity, Move to world...), **Align**, **Flip**, **Instancing**, Transform..., prefabs, placement and props, Find and replace textures..., Reload content from disk, the MCP server, Command palette..., Options... | **Window** | Console, **Layout** (Save layout..., Reset layout), Next map, Previous map. | **Help** | Keyboard shortcuts, Documentation, Entity help, Report an issue, Setup assistant..., About Hammer Pro. |
 
 Every command, with its default shortcut, is listed in [Actions and shortcuts](../reference/actions-shortcuts.md). The [command palette](../features/command-palette.md) (`Ctrl+P`) finds any of them by name.
 
@@ -60,15 +52,7 @@ Above the views, one tab per open map. A `*` after the name marks unsaved change
 
 The panel on the right starts with the **selection bar** (as in Hammer's right bar): the selection mode (**Groups**, **Objects**, **Solids**) and **Move selected:** with **To world** and **To entity**. Below it, tabs:
 
-| Tab | Content |
-|---|---|
-| Tool | Options of the active tool, when it uses the side panel. |
-| **Textures** | The [texture browser](../features/texture-browser.md). |
-| **Entity** | [Entity properties](../features/entity-properties.md) of the selection. |
-| **Models** | The [model browser](../features/model-browser.md). |
-| **Visgroups** | [Visgroups](../features/visgroups.md). |
-| **Outliner** | The [outliner](../features/outliner.md). |
-| **Prefabs**, **Instance**, **Lighting**, **Map assets**, **History**, **Sounds**, **Particles** | Panels of the feature packages: [prefabs](../features/prefabs.md), [instances](../features/instances.md), [lighting](../features/lighting-preview.md), [map assets](../features/map-assets.md), [undo history](../features/undo-history.md), [sounds](../features/sound-browser.md), [particles](../features/particles.md). |
+| Tab | Content |---|---| Tool | Options of the active tool, when it uses the side panel. | **Textures** | The [texture browser](../features/texture-browser.md). | **Entity** | [Entity properties](../features/entity-properties.md) of the selection. | **Models** | The [model browser](../features/model-browser.md). | **Visgroups** | [Visgroups](../features/visgroups.md). | **Outliner** | The [outliner](../features/outliner.md). | **Prefabs**, **Instance**, **Lighting**, **Map assets**, **History**, **Sounds**, **Particles** | Panels of the feature packages: [prefabs](../features/prefabs.md), [instances](../features/instances.md), [lighting](../features/lighting-preview.md), [map assets](../features/map-assets.md), [undo history](../features/undo-history.md), [sounds](../features/sound-browser.md), [particles](../features/particles.md). |
 
 Which tabs are present depends on **View > Panels**. By default the texture browser, entity properties, visgroups and console are shown; the outliner and model browser are not.
 
@@ -76,18 +60,7 @@ Which tabs are present depends on **View > Panels**. By default the texture brow
 
 The bar at the bottom (hide it with **View > Panels > Status bar**) is made of segments.
 
-| Segment | What it shows |
-|---|---|
-| Tool hint (left) | What the active tool expects, or the step of a running compile, or what a pending "pick in the views" request wants. |
-| Selection | "No selection", the number of selected objects, or a description of a single object or group ("Solid n° 42, 6 faces", "Group n° 7 of 5 objects") with its size and center. Click to copy the id. |
-| Cursor | The world position under the mouse. |
-| Game content | Shown while the Workshop and downloaded addons still open ("Workshop N / M"), when no game content is set ("No game content", click to open the Game settings) or when content failed to load. |
-| Map health | Problem counts of the live checks (click to open Check for problems), the instant **Leak** badge (click to go to the leak and show its path), and the gauge of the engine limit closest to its maximum (click to open Map information). |
-| Compile | The step, progress and a Cancel button while compiling, the background compile, and a badge when the last compile leaked or failed. Click to open the compile window. |
-| Game | "Game ready" while Garry's Mod runs and can take a map, "Game starting" while it boots. |
-| Lighting | Bake progress with a Stop button, or the lightmap budget when enabled. Click to open the Lighting tab. |
-| MCP | Shown while the MCP server of this window is on. |
-| Right side | Frame rate (when **Show frame rate** is on), and the texture lock, snap and grid size when the toolbar is hidden. |
+| Segment | What it shows |---|---| Tool hint (left) | What the active tool expects, or the step of a running compile, or what a pending "pick in the views" request wants. | Selection | "No selection", the number of selected objects, or a description of a single object or group ("Solid n° 42, 6 faces", "Group n° 7 of 5 objects") with its size and center. Click to copy the id. | Cursor | The world position under the mouse. | Game content | Shown while the Workshop and downloaded addons still open ("Workshop N / M"), when no game content is set ("No game content", click to open the Game settings) or when content failed to load. | Map health | Problem counts of the live checks (click to open Check for problems), the instant **Leak** badge (click to go to the leak and show its path), and the gauge of the engine limit closest to its maximum (click to open Map information). | Compile | The step, progress and a Cancel button while compiling, the background compile, and a badge when the last compile leaked or failed. Click to open the compile window. | Game | "Game ready" while Garry's Mod runs and can take a map, "Game starting" while it boots. | Lighting | Bake progress with a Stop button, or the lightmap budget when enabled. Click to open the Lighting tab. | MCP | Shown while the MCP server of this window is on. | Right side | Frame rate (when **Show frame rate** is on), and the texture lock, snap and grid size when the toolbar is hidden. |
 
 ## Console
 

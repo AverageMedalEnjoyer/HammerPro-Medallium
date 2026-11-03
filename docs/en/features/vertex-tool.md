@@ -21,35 +21,13 @@ The options of the tool are shown in the options bar above the views.
 
 ## Handle modes
 
-| Mode | What can be picked | Edge midpoint drag |
-| --- | --- | --- |
-| **Vertices and edges** (default) | Vertices and edge midpoints | Splits the edge: a new vertex is created at the midpoint and follows the mouse |
-| **Vertices** | Vertices only | No edge handles |
-| **Edges** | Edge midpoints only | Moves the whole edge (both of its vertices) |
+| Mode | What can be picked | Edge midpoint drag | --- | --- | --- | **Vertices and edges** (default) | Vertices and edge midpoints | Splits the edge: a new vertex is created at the midpoint and follows the mouse | **Vertices** | Vertices only | No edge handles | **Edges** | Edge midpoints only | Moves the whole edge (both of its vertices) |
 
 Pick the mode with the three buttons of the options bar, or press `Shift+V` (selecting the tool again) to cycle them.
 
 ## Mouse and keys
 
-| Gesture | Effect |
-| --- | --- |
-| Click a handle | Selects that vertex or edge (and replaces the vertex selection) |
-| `Ctrl`+click a handle | Adds it to, or removes it from, the vertex selection |
-| Click a solid that is not edited | Edits that solid instead (`Ctrl`+click adds or removes it), unless **Selected solids only** is on |
-| Click empty space | Clears the vertex selection |
-| Drag from empty space | Rectangle selection of the vertices (and edge midpoints) inside it; hold `Ctrl` to add to the selection |
-| Drag a vertex | Moves the selected vertices (the dragged one joins the selection if it was not selected) |
-| Drag a gizmo arm (3D view) | Moves the selected vertices along that world axis |
-| Drag in the 3D view | Moves on the plane facing the camera; hold `Shift` to move along Z only |
-| Hold `Alt` while dragging | No grid snapping |
-| Arrow keys | Nudge the selected vertices by one grid step, in the axes of the view under the mouse |
-| `Alt`+arrow or `Shift`+arrow | Nudge by one unit |
-| `Page Up` / `Page Down` | Nudge along the depth axis (toward the viewer in 2D views, up and down in the 3D view) |
-| `Ctrl+A` | Selects every vertex of the edited solids (the binding of **Select all**) |
-| `Ctrl+B` | Snaps the selected vertices to the grid (the binding of **Snap selection to grid**) |
-| `Ctrl+F` | **Split face** |
-| `Alt+E` | **Scale vertices...** (press again to apply) |
-| `Esc` | Cancels the current drag or scale; otherwise deselects the vertices; otherwise removes pending face splits |
+| Gesture | Effect | --- | --- | Click a handle | Selects that vertex or edge (and replaces the vertex selection) | `Ctrl`+click a handle | Adds it to, or removes it from, the vertex selection | Click a solid that is not edited | Edits that solid instead (`Ctrl`+click adds or removes it), unless **Selected solids only** is on | Click empty space | Clears the vertex selection | Drag from empty space | Rectangle selection of the vertices (and edge midpoints) inside it; hold `Ctrl` to add to the selection | Drag a vertex | Moves the selected vertices (the dragged one joins the selection if it was not selected) | Drag a gizmo arm (3D view) | Moves the selected vertices along that world axis | Drag in the 3D view | Moves on the plane facing the camera; hold `Shift` to move along Z only | Hold `Alt` while dragging | No grid snapping | Arrow keys | Nudge the selected vertices by one grid step, in the axes of the view under the mouse | `Alt`+arrow or `Shift`+arrow | Nudge by one unit | `Page Up` / `Page Down` | Nudge along the depth axis (toward the viewer in 2D views, up and down in the 3D view) | `Ctrl+A` | Selects every vertex of the edited solids (the binding of **Select all**) | `Ctrl+B` | Snaps the selected vertices to the grid (the binding of **Snap selection to grid**) | `Ctrl+F` | **Split face** | `Alt+E` | **Scale vertices...** (press again to apply) | `Esc` | Cancels the current drag or scale; otherwise deselects the vertices; otherwise removes pending face splits |
 
 Arrow key nudges follow the **Nudge with arrow keys** option of the **Editing** settings page (on by default). Grid snapping follows the **Snap to grid** toggle of the toolbar (`Shift+W`). When the edited solids have a custom grid attached, vertex drags use that grid (see [Grids](grids.md)).
 
@@ -64,20 +42,14 @@ The right-click menu of the views also offers **Split face**, **Scale vertices..
 
 ## Options bar
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Vertices and edges** / **Vertices** / **Edges** | Handle mode (see above) | Vertices and edges |
-| **UV lock** | Textures follow the moved vertices (they may be skewed) instead of staying fixed in the world. Same setting as the **UV lock (vertex tool)** action of the **Tools** menu and the Settings page | Off |
-| **Selected solids only** | Clicking another solid does not change the edited solids (only vertices are picked) | Off |
-| **Merge distance** | A vertex dropped closer than this to another vertex merges with it (0 to 16 units) | 1 |
-| Counter | "N of M vertices selected"; the tooltip gives the number of edited solids | |
-| **N split(s)** | Face splits waiting for a vertex move; `Esc` removes them | |
-| **All vertices** | Selects every vertex of the edited solids (`Ctrl+A`) | |
-| **Split face** | Splits the face between the two selected vertices or edges (`Ctrl+F`) | |
-| **Deselect** | Deselects all vertices (`Esc`) | |
-| **Position** | X, Y, Z of the center of the selected vertices: type a value to move them precisely (one undo step) | |
-| **Snap vertices** | Moves the selected vertices onto the nearest grid points (`Ctrl+B`) | |
-| **Scale vertices...** | Opens the vertex scale (`Alt+E`) | |
+| Option | What it does | Default | --- | --- | --- | **Vertices and edges** / **Vertices** / **Edges** | Handle mode (see above) | Vertices and edges | **UV lock** | Textures follow the moved vertices (they may be skewed) instead of staying fixed in the world. Same setting as the **UV lock (vertex tool)** action of the **Tools** menu and the Settings page | Off | **Selected solids only** | Clicking another solid does not change the edited solids (only vertices are picked) | Off | **Merge distance** | A vertex dropped closer than this to another vertex merges with it (0 to 16 units) | 1 | Counter | "N of M vertices selected"; the tooltip gives the number of edited solids |
+| **N split(s)** | Face splits waiting for a vertex move; `Esc` removes them |
+| **All vertices** | Selects every vertex of the edited solids (`Ctrl+A`) |
+| **Split face** | Splits the face between the two selected vertices or edges (`Ctrl+F`) |
+| **Deselect** | Deselects all vertices (`Esc`) |
+| **Position** | X, Y, Z of the center of the selected vertices: type a value to move them precisely (one undo step) |
+| **Snap vertices** | Moves the selected vertices onto the nearest grid points (`Ctrl+B`) |
+| **Scale vertices...** | Opens the vertex scale (`Alt+E`) |
 
 The last four appear when vertices are selected.
 
@@ -91,12 +63,8 @@ The split is kept by the tool until you move a vertex: the two halves become two
 
 `Alt+E` (**Tools > Scale vertices...**) scales the selected vertices around a center, with a live preview. The options bar shows:
 
-| Option | What it does | Default |
-| --- | --- | --- |
-| **Factor** | 1 keeps the size, 2 doubles the distances to the center, 0.5 halves them (0 to 100). The `-` and `+` buttons step by 0.1 | 1 |
-| **Center** | Point the vertices move toward or away from. You can also drag its round handle in the views (it snaps to the grid like vertices, `Alt` for no snap) | Center of the box around the selected vertices |
-| **Apply** | Applies the scale in one undo step (`Enter`, or `Alt+E` again) | |
-| **Cancel** | Closes the scale without change (`Esc`) | |
+| Option | What it does | Default | --- | --- | --- | **Factor** | 1 keeps the size, 2 doubles the distances to the center, 0.5 halves them (0 to 100). The `-` and `+` buttons step by 0.1 | 1 | **Center** | Point the vertices move toward or away from. You can also drag its round handle in the views (it snaps to the grid like vertices, `Alt` for no snap) | Center of the box around the selected vertices | **Apply** | Applies the scale in one undo step (`Enter`, or `Alt+E` again) |
+| **Cancel** | Closes the scale without change (`Esc`) |
 
 Over a view, `Alt` + mouse wheel changes the factor by 0.1 per notch, `Ctrl+Alt` + wheel by 0.01. An invalid result (a concave or flat solid) keeps the scale open with a message.
 
@@ -104,10 +72,7 @@ Over a view, `Alt` + mouse wheel changes the factor by 0.1 per notch, `Ctrl+Alt`
 
 **Tools > Options...** (`Ctrl+,`), page **Vertices and displacements**, section **Vertex tool**:
 
-| Setting | What it does | Default |
-| --- | --- | --- |
-| **Live preview while dragging** (`mesh.live_preview`) | Dragged solids show their new shape with their textures while the mouse button is held (up to 64 solids at once; larger drags only show the edges) | On |
-| **UV lock** (`mesh.uv_lock`) | Same as the option of the options bar | Off |
+| Setting | What it does | Default | --- | --- | --- | **Live preview while dragging** (`mesh.live_preview`) | Dragged solids show their new shape with their textures while the mouse button is held (up to 64 solids at once; larger drags only show the edges) | On | **UV lock** (`mesh.uv_lock`) | Same as the option of the options bar | Off |
 
 ## Tips
 

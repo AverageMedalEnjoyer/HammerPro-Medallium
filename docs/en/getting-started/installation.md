@@ -6,11 +6,7 @@ Hammer Pro 1.0.0 is a single program, `hammerpro-medallium.exe`, with no install
 
 ## Requirements
 
-| What | Needed |
-|---|---|
-| System | Windows 10 or 11, 64-bit. Linux builds compile from source too. |
-| Graphics card | Vulkan, DirectX 12 or Metal support. |
-| Game | Garry's Mod installed through Steam (found automatically). Other Source games are supported as compile targets, see [Game setup](game-setup.md). |
+| What | Needed |---|---| System | Windows 10 or 11, 64-bit. Linux builds compile from source too. | Graphics card | Vulkan, DirectX 12 or Metal support. | Game | Garry's Mod installed through Steam (found automatically). Other Source games are supported as compile targets, see [Game setup](game-setup.md). |
 
 ## Download and install
 
@@ -21,7 +17,7 @@ Hammer Pro 1.0.0 is a single program, `hammerpro-medallium.exe`, with no install
 ## First start
 
 - With no settings file yet, Hammer Pro opens the **Hammer Pro setup** assistant: language, the editor you come from (Hammer, Hammer++ or the Hammer Pro defaults), the game folder and the content to load. See [Game setup](game-setup.md).
-- The interface language starts as the language of your system (English or French). You can force it for one run with `hammerpro --lang en` or `--lang fr` (see [Command line reference](../reference/command-line.md)).
+- The interface language starts as the language of your system (English or). You can force it for one run with `hammerpro --lang en` or `--lang fr` (see [Command line reference](../reference/command-line.md)).
 - The game content (VPKs, addons, Workshop) mounts in the background: the editor is usable while it loads, and a card over the views shows the progress.
 - You can open a map directly: `hammerpro path\to\map.vmf`, or drag a `.vmf` onto the window.
 
@@ -31,13 +27,7 @@ Replace `hammerpro-medallium.exe` with the new one. Your settings, autosaves and
 
 ## Where files go
 
-| What | Windows location |
-|---|---|
-| Settings (`settings.toml`) | `%APPDATA%\HammerPro\` |
-| Crash reports | `%APPDATA%\HammerPro\crash\` |
-| Log file (`hammerpro.log`, previous run `hammerpro.old.log`) | `%LOCALAPPDATA%\HammerPro\logs\` |
-| Autosaves and emergency saves | `%LOCALAPPDATA%\HammerPro\autosave\` |
-| Caches (thumbnails, per map editor data in `maps\`) | `%LOCALAPPDATA%\HammerPro\` |
+| What | Windows location |---|---| Settings (`settings.toml`) | `%APPDATA%\HammerPro\` | Crash reports | `%APPDATA%\HammerPro\crash\` | Log file (`hammerpro.log`, previous run `hammerpro.old.log`) | `%LOCALAPPDATA%\HammerPro\logs\` | Autosaves and emergency saves | `%LOCALAPPDATA%\HammerPro\autosave\` | Caches (thumbnails, per map editor data in `maps\`) | `%LOCALAPPDATA%\HammerPro\` |
 
 Hammer Pro may also write into the game: compiled maps go to `garrysmod/maps` (option **Copy to the maps folder** of the compile window), custom materials of test builds to the `garrysmod/addons/hammerpro_dev` addon, and the optional bridge addon to `garrysmod/addons/hammerpro_bridge`. The full list is in [Files and folders](../reference/files-and-folders.md).
 
