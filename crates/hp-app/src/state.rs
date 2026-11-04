@@ -264,6 +264,17 @@ pub trait AssetsApi {
     fn collision_triangles(&mut self, _path: &str) -> Option<Option<CollisionTriangles>> {
         Some(None)
     }
+    /// Ray test against the collision mesh of a model entity (world space ray).
+    /// `None`: no collision information, use the bounding box. `Some(None)`: the ray misses the
+    /// collision mesh. `Some(Some(t))`: hit at ray parameter `t`.
+    fn entity_collision_ray(
+        &self,
+        _entity: &hp_vmf::Entity,
+        _origin: glam::DVec3,
+        _dir: glam::DVec3,
+    ) -> Option<Option<f64>> {
+        None
+    }
     fn model_thumbnail(&mut self, _ctx: &egui::Context, _path: &str) -> ThumbState {
         ThumbState::Missing
     }

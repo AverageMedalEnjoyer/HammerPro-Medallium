@@ -36,6 +36,7 @@ pub fn entity_render_object(id: hp_vmf::Id) -> u32 {
 mod helpers;
 mod instances;
 mod render;
+mod collision_pick;
 
 use std::collections::VecDeque;
 use std::path::PathBuf;
@@ -376,6 +377,15 @@ impl hp_app::AssetsApi for AssetManager {
 
     fn collision_triangles(&mut self, path: &str) -> Option<Option<hp_app::state::CollisionTriangles>> {
         self.collision_triangles_impl(path)
+    }
+
+    fn entity_collision_ray(
+        &self,
+        entity: &hp_vmf::Entity,
+        origin: glam::DVec3,
+        dir: glam::DVec3,
+    ) -> Option<Option<f64>> {
+        self.entity_collision_ray_impl(entity, origin, dir)
     }
 
     fn set_play_world(

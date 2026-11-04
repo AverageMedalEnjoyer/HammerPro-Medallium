@@ -21,7 +21,7 @@ use crate::values::{
 use crate::view::{Agg, EntityView, PropRow, Target};
 use crate::widgets::{
     CLICK, CommitAction, CompleteMode, FieldOpts, PickerItem, PickerOpts, TextBuffers, autocomplete_keys,
-    autocomplete_popup, empty_note, fit_scroll_content, icon, picker_popup, picker_popup_with, search_box, side_button,
+    autocomplete_open, autocomplete_popup, empty_note, fit_scroll_content, icon, picker_popup, picker_popup_with, search_box, side_button,
     thumbnail, yaw_dial,
 };
 
@@ -935,7 +935,7 @@ impl SmartEdit {
         } else {
             resp
         };
-        if resp.has_focus() || resp.lost_focus() {
+        if resp.has_focus() || resp.lost_focus() || autocomplete_open(ui, resp.id) {
             let typed = self.buffers.live_text(id).unwrap_or(display).to_owned();
             let candidates: Vec<&str> = list.iter().map(String::as_str).collect();
             if let Some(pick) = autocomplete_popup(ui, &resp, &typed, &candidates, keys, opts.mode) {

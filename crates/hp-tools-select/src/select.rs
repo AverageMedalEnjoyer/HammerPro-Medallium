@@ -538,7 +538,7 @@ impl SelectTool {
         }
         self.hover.key = Some(key);
         let (o, d) = view.ray(pos);
-        let hit = state.doc.pick_ray(&Ray::new(o, d), &PickOptions::default(), &|e| state.entity_bounds(e));
+        let hit = pick_hit(state, &Ray::new(o, d));
         self.hover.objects = hit.map(|h| state.doc.resolve(h.obj, state.select_mode())).unwrap_or_default();
     }
 
@@ -855,8 +855,7 @@ impl SelectTool {
         d.mods = mods;
         let DragOp::Paint { remove, done } = &mut d.op else { return };
         let (o, dir) = view.ray(pos);
-        let Some(hit) = state.doc.pick_ray(&Ray::new(o, dir), &PickOptions::default(), &|e| state.entity_bounds(e))
-        else {
+        let Some(hit) = pick_hit(state, &Ray::new(o, dir)) else {
             return;
         };
         if !done.insert(hit.obj) {
@@ -1331,9 +1330,7 @@ impl SelectTool {
                 Some(t) => t,
                 None => {
                     let (o, d) = view.ray(pos);
-                    state
-                        .doc
-                        .pick_ray(&Ray::new(o, d), &PickOptions::default(), &|e| state.entity_bounds(e))
+                    pick_hit(state, &Ray::new(o, d))
                         .map(|h| state.doc.resolve(h.obj, mode))
                         .unwrap_or_default()
                 }
@@ -1422,9 +1419,34 @@ pub(crate) fn click_select_3d(
     Pick3d::Replaced
 }
 
+/// Closest object under the ray. Model entities are tested against their collision mesh
+/// instead of their bounding box (see `AssetsApi::entity_collision_ray`).
+fn pick_hit(state: &AppState, ray: &Ray) -> Option<hp_editor::Hit> {
+    state.doc.pick_ray(
+        ray,
+        &PickOptions {
+            entity_ray: Some(&|e: &hp_vmf::Entity, r: &Ray| state.assets.entity_collision_ray(e, r.origin, r.dir)),
+            ..PickOptions::default()
+        },
+        &|e| state.entity_bounds(e),
+    )
+}
+
+/// Every object under the ray, nearest first (same collision based test as `pick_hit`).
+fn pick_hits(state: &AppState, ray: &Ray) -> Vec<hp_editor::Hit> {
+    state.doc.pick_ray_all(
+        ray,
+        &PickOptions {
+            entity_ray: Some(&|e: &hp_vmf::Entity, r: &Ray| state.assets.entity_collision_ray(e, r.origin, r.dir)),
+            ..PickOptions::default()
+        },
+        &|e| state.entity_bounds(e),
+    )
+}
+
 fn candidates_3d(state: &AppState, view: &ViewInfo, pos: Pos2) -> Vec<Vec<ObjRef>> {
     let (o, d) = view.ray(pos);
-    let hits = state.doc.pick_ray_all(&Ray::new(o, d), &PickOptions::default(), &|e| state.entity_bounds(e));
+    let hits = pick_hits(state, &Ray::new(o, d));
     let mode = state.select_mode();
     let mut cands: Vec<Vec<ObjRef>> = Vec::new();
     for h in hits {

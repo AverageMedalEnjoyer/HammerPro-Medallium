@@ -18,6 +18,10 @@ pub struct PickOptions<'a> {
     pub ignore_hidden: bool,
     pub max_distance: f64,
     pub filter: Option<&'a dyn Fn(ObjRef) -> bool>,
+    /// Exact ray test for entities that have real geometry (model collision). Returns `None` when
+    /// there is nothing better than the bounding box, `Some(None)` for a miss, `Some(Some(t))` for
+    /// a hit at ray parameter `t`.
+    pub entity_ray: Option<&'a dyn Fn(&Entity, &Ray) -> Option<Option<f64>>>,
 }
 
 impl Default for PickOptions<'_> {
@@ -28,6 +32,7 @@ impl Default for PickOptions<'_> {
             ignore_hidden: true,
             max_distance: f64::INFINITY,
             filter: None,
+            entity_ray: None,
         }
     }
 }
@@ -40,6 +45,7 @@ impl std::fmt::Debug for PickOptions<'_> {
             .field("ignore_hidden", &self.ignore_hidden)
             .field("max_distance", &self.max_distance)
             .field("filter", &self.filter.is_some())
+            .field("entity_ray", &self.entity_ray.is_some())
             .finish()
     }
 }
@@ -543,7 +549,13 @@ impl Document {
                     continue;
                 }
                 let limit = if closest_only { best } else { max_t };
-                if let Some(t) = rt.test(&b, limit) {
+                if let Some(box_t) = rt.test(&b, limit) {
+                    // The box only says "maybe". Models with a collision mesh are tested exactly.
+                    let t = match opts.entity_ray.and_then(|f| f(&node.entity, ray)) {
+                        Some(Some(t)) if t <= limit => t,
+                        Some(_) => continue,
+                        None => box_t,
+                    };
                     let point = ray.at(t);
                     let hit = Hit { obj, face: None, t, point, normal: box_normal(&b, point) };
                     if closest_only {

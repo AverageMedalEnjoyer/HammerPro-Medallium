@@ -583,6 +583,8 @@ struct CompleteState {
     highlight: Option<usize>,
     open: bool,
     shown: Vec<String>,
+    base: Vec<String>,
+    rect: Option<Rect>,
     query: String,
 }
 
@@ -627,6 +629,11 @@ pub(crate) fn autocomplete_keys(ui: &mut Ui, field_id: Id, mode: CompleteMode) -
     })
 }
 
+/// `true` while the suggestion popup of the field with this id is showing.
+pub(crate) fn autocomplete_open(ui: &Ui, field_id: Id) -> bool {
+    ui.data(|d| d.get_temp::<CompleteState>(field_id.with("complete"))).is_some_and(|st| st.open)
+}
+
 pub(crate) fn autocomplete_popup(
     ui: &Ui,
     field: &Response,
@@ -636,20 +643,32 @@ pub(crate) fn autocomplete_popup(
     mode: CompleteMode,
 ) -> Option<String> {
     let st_id = field.id.with("complete");
+    let search_id = field.id.with("complete_search");
     let mut st: CompleteState = ui.data(|d| d.get_temp(st_id)).unwrap_or_default();
-    // Keep the popup alive for one interaction after the field loses focus so a
-    // mouse click on a row is not swallowed by the early focus check.
     let was_open = st.open;
-    if !field.has_focus() && !was_open {
+    let field_focused = field.has_focus();
+    let search_focused = ui.memory(|m| m.has_focus(search_id));
+    // Pressing a row (or the Search box) takes the keyboard focus away from the text field
+    // BEFORE the click completes. The popup therefore has to survive the field losing focus
+    // while the pointer is pressing inside it, and while its own Search box has focus.
+    let pressing = ui.input(|i| i.pointer.any_down() || i.pointer.any_released());
+    let over_popup = st.rect.is_some_and(|r| ui.input(|i| i.pointer.interact_pos().is_some_and(|p| r.contains(p))));
+    let keep_alive = was_open && (search_focused || (pressing && over_popup));
+    if !field_focused && !keep_alive {
         let picked = st.key_pick(keys, mode, &st.shown);
         ui.data_mut(|d| d.insert_temp(st_id, CompleteState::default()));
         return picked;
     }
     let typed = text.trim();
-    let matches: Vec<usize> = suggest(typed, candidates.iter().copied(), 64);
-    let useful = !(matches.len() == 1 && candidates[matches[0]].eq_ignore_ascii_case(typed));
-    let base: Vec<String> =
-        if useful { matches.iter().map(|&i| candidates[i].to_owned()).collect() } else { Vec::new() };
+    // While the field is not focused the list is frozen: the typed text is no longer
+    // available (the edit buffer is gone), and the rows must not move under the pointer.
+    let base: Vec<String> = if field_focused {
+        let matches: Vec<usize> = suggest(typed, candidates.iter().copied(), 64);
+        let useful = !(matches.len() == 1 && candidates[matches[0]].eq_ignore_ascii_case(typed));
+        if useful { matches.iter().map(|&i| candidates[i].to_owned()).collect() } else { Vec::new() }
+    } else {
+        st.base.clone()
+    };
     if field.changed() {
         st.highlight = None;
         st.query.clear();
@@ -660,7 +679,7 @@ pub(crate) fn autocomplete_popup(
     } else {
         base.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).take(16).cloned().collect()
     };
-    st.open = field.has_focus() && (!shown.is_empty() || !base.is_empty() || was_open);
+    st.open = (field_focused || keep_alive) && (!base.is_empty() || was_open);
     let n = shown.len();
     if n == 0 {
         st.highlight = None;
@@ -674,6 +693,7 @@ pub(crate) fn autocomplete_popup(
         st.highlight = st.highlight.map(|h| h.min(n - 1));
     }
     let mut picked = st.key_pick(keys, mode, &shown);
+    let mut popup_rect: Option<Rect> = None;
     if st.open && picked.is_none() {
         let popup_id = field.id.with("complete_popup");
         Popup::new(popup_id, ui.ctx().clone(), field, field.layer_id)
@@ -683,6 +703,7 @@ pub(crate) fn autocomplete_popup(
                 ui.set_min_width(field.rect.width().max(220.0));
                 let search = ui.add(
                     TextEdit::singleline(&mut st.query)
+                        .id(search_id)
                         .hint_text(t!("common.search"))
                         .desired_width(f32::INFINITY),
                 );
@@ -695,12 +716,15 @@ pub(crate) fn autocomplete_popup(
                 } else {
                     shown.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).collect()
                 };
-                // Recompute keyboard highlight against the filtered list when search is active.
+                // Search is active but nothing in the short list matches: look in the full list.
                 let rows: Vec<&String> = if rows.is_empty() && !base.is_empty() && !q.is_empty() {
                     base.iter().filter(|n| n.to_ascii_lowercase().contains(&q)).take(16).collect()
                 } else {
                     rows
                 };
+                if search.lost_focus() && ui.input(|i| i.key_pressed(Key::Enter)) {
+                    picked = rows.first().map(|n| (*n).clone());
+                }
                 for (row, name) in rows.iter().enumerate() {
                     if list_row(ui, name, "", st.highlight == Some(row), false).clicked() {
                         picked = Some((*name).clone());
@@ -715,16 +739,22 @@ pub(crate) fn autocomplete_popup(
                     CompleteMode::Complete => tf!("entities.complete_hint_tab", key_label(Key::Tab), up, down, enter),
                 };
                 ui.label(RichText::new(hint).small().weak());
+                popup_rect = Some(ui.min_rect().expand(6.0));
             });
     }
     if picked.is_some() {
         st.open = false;
         st.highlight = None;
         st.shown.clear();
+        st.base.clear();
+        st.rect = None;
         st.query.clear();
+        ui.memory_mut(|m| m.surrender_focus(search_id));
     } else {
         st.shown = shown;
-        if st.open && (mode == CompleteMode::Complete || st.highlight.is_some()) {
+        st.base = base;
+        st.rect = if st.open { popup_rect.or(st.rect) } else { None };
+        if st.open && field_focused && (mode == CompleteMode::Complete || st.highlight.is_some()) {
             let filter = EventFilter { tab: true, horizontal_arrows: true, vertical_arrows: true, escape: false };
             ui.memory_mut(|m| m.set_focus_lock_filter(field.id, filter));
         }

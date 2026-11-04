@@ -354,7 +354,7 @@ impl Default for CollisionState {
     }
 }
 
-fn load_collision_triangles(fs: &hp_fs::GameFs, path: &str) -> Option<CollisionTriangles> {
+pub(crate) fn load_collision_triangles(fs: &hp_fs::GameFs, path: &str) -> Option<CollisionTriangles> {
     let phy = fs.read(&hp_mdl::phy_path(path))?;
     let model = match fs.read(path) {
         Some(mdl) => hp_mdl::parse_phy_for_model(&phy, &mdl, hp_mdl::Pose::FirstSequence),

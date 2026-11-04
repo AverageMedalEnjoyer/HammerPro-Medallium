@@ -202,9 +202,99 @@ fn height_from_mouse(view: &ViewInfo, d: &Draw3d, anchor: Pos2, pos: Pos2, base:
     if h.abs() < MIN_EXTENT { if raw < 0.0 { -step } else { step } } else { h }
 }
 
+/// Face of `b` that the ray enters first: (axis, outward sign, distance along the ray).
+fn ray_box_face(origin: DVec3, dir: DVec3, b: &Aabb) -> Option<(usize, f64, f64)> {
+    let mut t_near = f64::NEG_INFINITY;
+    let mut t_far = f64::INFINITY;
+    let mut face = None;
+    for a in 0..3 {
+        if dir[a].abs() < 1e-12 {
+            if origin[a] < b.min[a] || origin[a] > b.max[a] {
+                return None;
+            }
+            continue;
+        }
+        let t0 = (b.min[a] - origin[a]) / dir[a];
+        let t1 = (b.max[a] - origin[a]) / dir[a];
+        let (near, far) = if t0 <= t1 { (t0, t1) } else { (t1, t0) };
+        if near > t_near {
+            t_near = near;
+            face = Some((a, if dir[a] > 0.0 { -1.0 } else { 1.0 }));
+        }
+        t_far = t_far.min(far);
+        if t_near > t_far {
+            return None;
+        }
+    }
+    let (axis, sign) = face?;
+    (t_near > 0.0 && t_near.is_finite()).then_some((axis, sign, t_near))
+}
+
+fn face_center(b: &Aabb, axis: usize, sign: f64) -> DVec3 {
+    let mut c = b.center();
+    c[axis] = if sign > 0.0 { b.max[axis] } else { b.min[axis] };
+    c
+}
+
+fn face_quad(b: &Aabb, axis: usize, sign: f64) -> [DVec3; 4] {
+    let (i, j) = ((axis + 1) % 3, (axis + 2) % 3);
+    let level = if sign > 0.0 { b.max[axis] } else { b.min[axis] };
+    let corner = |u: f64, v: f64| {
+        let mut p = DVec3::ZERO;
+        p[axis] = level;
+        p[i] = u;
+        p[j] = v;
+        p
+    };
+    [corner(b.min[i], b.min[j]), corner(b.max[i], b.min[j]), corner(b.max[i], b.max[j]), corner(b.min[i], b.max[j])]
+}
+
+/// How far (in world units, along `dir`) a mouse movement of `delta` points moves a point at `from`.
+fn units_along(view: &ViewInfo, from: DVec3, dir: DVec3, delta: Vec2) -> f64 {
+    let probe = 16.0;
+    match (view.world_to_screen(from), view.world_to_screen(from + dir * probe)) {
+        (Some(a), Some(b)) if (b - a).length() > probe as f32 * 0.05 => {
+            let per_unit = (b - a) / probe as f32;
+            f64::from(delta.dot(per_unit) / per_unit.length_sq())
+        }
+        _ => {
+            let dist = (from - view.cam3d.pos).length().max(1.0);
+            let per_point =
+                2.0 * (view.cam3d.fov_y_deg.to_radians() * 0.5).tan() * dist / f64::from(view.rect.height().max(1.0));
+            -f64::from(delta.y) * per_point
+        }
+    }
+}
+
+/// Moves one face of a locked box by dragging it in the 3D view.
+fn drag_face(
+    view: &ViewInfo,
+    start: &Aabb,
+    axis: usize,
+    sign: f64,
+    anchor: Pos2,
+    pos: Pos2,
+    snap: &Snap,
+) -> Option<Aabb> {
+    let mut dir = DVec3::ZERO;
+    dir[axis] = sign;
+    let origin = face_center(start, axis, sign);
+    let units = units_along(view, origin, dir, pos - anchor);
+    let coord = snap.v(origin[axis] + sign * units, axis);
+    let mut out = *start;
+    if sign > 0.0 {
+        out.max[axis] = coord;
+    } else {
+        out.min[axis] = coord;
+    }
+    (out.size()[axis] > MIN_EXTENT).then_some(out)
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Drag {
     New { view: usize, kind: ViewKind, start: DVec2, depth: (f64, f64) },
+    /// Dragging a face of the locked box in a 3D view.
+    Edit3d { view: usize, axis: usize, sign: f64, start_box: Aabb, anchor: Pos2 },
     Edit { view: usize, kind: ViewKind, handle: BoxHandle, start_box: Aabb, from: DVec2 },
     Swallow,
 }
@@ -227,6 +317,7 @@ pub struct BlockTool {
     draw3d: Option<Draw3d>,
     hover: Option<(usize, BoxHandle, u64)>,
     hover_3d: Option<(DVec3, u64)>,
+    hover_face: Option<(usize, f64, u64)>,
     initialized: bool,
     seen_reorient: Option<bool>,
     picker: ClassPicker,
@@ -251,6 +342,7 @@ impl BlockTool {
             draw3d: None,
             hover: None,
             hover_3d: None,
+            hover_face: None,
             initialized: false,
             seen_reorient: None,
             picker: ClassPicker::default(),
@@ -397,6 +489,18 @@ impl BlockTool {
         self.draw3d.map(|d| d.bounds()).or(self.pending)
     }
 
+    /// Second click in the 3D view: freeze the box where it is. From now on it is the pending box, so
+    /// the mouse (and flying around) no longer changes its size; it can be moved or resized in the
+    /// 2D and 3D views, and Enter creates it.
+    fn lock_height(&mut self) {
+        let Some(d) = self.draw3d else { return };
+        let Some(b) = d.final_bounds() else { return };
+        self.pending = Some(b);
+        self.draw_up = d.axis;
+        self.draw3d = None;
+        self.hover = None;
+    }
+
     fn depth_range(&self, state: &AppState, d: usize) -> (f64, f64) {
         new_depth_range(state, state.runtime.brush.last_created.or(self.last_bounds), d)
     }
@@ -469,18 +573,26 @@ impl BlockTool {
         {
             let h = height_from_mouse(view, d, anchor, pos, base_height, &surface_snap(d.surface));
             d.phase = Phase3d::Height { anchor, base_height, height: h };
-            // Height is adjusted by moving the mouse. Creating requires Enter
-            // (same as the 2D path) so the user can review the box first.
+            // The height follows the mouse until the next click, which locks the box. Creating
+            // requires Enter (same as the 2D path) so the user can still review and adjust it.
             if m.activated() {
                 if m.drag_started {
                     self.drag = Some(Drag::Swallow);
                 }
+                self.lock_height();
                 return ToolFlow::Handled;
             }
             return if m.any_button() { ToolFlow::Handled } else { ToolFlow::Ignored };
         }
 
         if m.hovering() {
+            self.hover_face = None;
+            if self.draw3d.is_none()
+                && let Some(b) = self.pending
+            {
+                let (o, dir) = view.ray(pos);
+                self.hover_face = ray_box_face(o, dir, &b).map(|(a, s, _)| (a, s, state.frame.index));
+            }
             self.hover_3d = pick_surface(state, view, pos)
                 .map(|h| surface_snap(Some(ObjRef::Solid(h.solid))).on_plane(h.point, h.normal))
                 .or_else(|| ground_point(view, pos).map(|p| DVec3::new(snap.v(p.x, 0), snap.v(p.y, 1), 0.0)))
@@ -488,6 +600,31 @@ impl BlockTool {
             return ToolFlow::Ignored;
         }
 
+        if m.drag_started
+            && self.draw3d.is_none()
+            && let Some(b) = self.pending
+        {
+            let origin = m.origin().unwrap_or(pos);
+            let (o, dir) = view.ray(origin);
+            if let Some((axis, sign, _)) = ray_box_face(o, dir, &b) {
+                self.drag = Some(Drag::Edit3d { view: view.index, axis, sign, start_box: b, anchor: origin });
+                self.hover_3d = None;
+            }
+        }
+        if let Some(Drag::Edit3d { view: vi, axis, sign, start_box, anchor }) = self.drag
+            && vi == view.index
+        {
+            if m.dragging || m.drag_stopped {
+                if let Some(nb) = drag_face(view, &start_box, axis, sign, anchor, pos, &snap) {
+                    self.pending = Some(nb);
+                }
+                self.hover_face = Some((axis, sign, state.frame.index));
+            }
+            if m.drag_stopped {
+                self.drag = None;
+            }
+            return ToolFlow::Handled;
+        }
         if m.drag_started {
             let origin = m.origin().unwrap_or(pos);
             self.hover_3d = None;
@@ -826,6 +963,12 @@ impl Tool for BlockTool {
         };
         if !view.is_2d() {
             ov.box_faces(&b, rgba(COLOR_PENDING, 0.10));
+            if self.draw3d.is_none()
+                && let Some((axis, sign, frame)) = self.hover_face
+                && fresh(state, frame)
+            {
+                ov.polygon_fill(&face_quad(&b, axis, sign), rgba(COLOR_PENDING, 0.35));
+            }
         }
         ov.box_edges(&b, rgba(COLOR_PENDING, 1.0), true);
         if self.options.kind != Primitive::Block {
@@ -909,6 +1052,21 @@ impl Tool for BlockTool {
         if let Some(Drag::Edit { handle, .. }) = self.drag {
             return Some(handle.cursor());
         }
+        let face_cursor = |axis: usize| {
+            if axis == 2 { CursorIcon::ResizeVertical } else { CursorIcon::ResizeHorizontal }
+        };
+        if let Some(Drag::Edit3d { axis, .. }) = self.drag {
+            return Some(face_cursor(axis));
+        }
+        if !view.is_2d()
+            && self.draw3d.is_none()
+            && let Some(b) = self.pending
+        {
+            let (o, dir) = view.ray(pos);
+            if let Some((axis, _, _)) = ray_box_face(o, dir, &b) {
+                return Some(face_cursor(axis));
+            }
+        }
         Some(if self.draw3d.is_some_and(|d| d.phase != Phase3d::Base) {
             CursorIcon::ResizeVertical
         } else {
@@ -919,7 +1077,9 @@ impl Tool for BlockTool {
     fn status_hint(&self, _state: &AppState) -> Option<String> {
         let hint = match self.draw3d.map(|d| d.phase) {
             Some(Phase3d::Base) => t!("create.block.hint_base").to_owned(),
-            Some(Phase3d::Height { .. }) => tf!("create.block.hint_height", key_label(egui::Key::Escape)),
+            Some(Phase3d::Height { .. }) => {
+                tf!("create.block.hint_height", key_label(egui::Key::Escape), key_label(egui::Key::Enter))
+            }
             None if self.pending.is_some() => tf!(
                 "create.block.hint_pending",
                 t!(primitive_key(self.options.kind)),
@@ -938,6 +1098,7 @@ impl Tool for BlockTool {
         self.drag = None;
         self.hover = None;
         self.hover_3d = None;
+        self.hover_face = None;
         had
     }
 
@@ -1610,7 +1771,12 @@ mod tests {
         assert_eq!(h % 16.0, 0.0);
         let before = state.doc.stats().solids;
         tool.handle_mouse(&mut state, &view, &Mouse::click(up));
-        assert!(tool.draw3d.is_none());
+        assert!(tool.draw3d.is_none(), "the click locks the box");
+        assert_eq!(state.doc.stats().solids, before, "nothing is created before Enter");
+        let locked = tool.pending_box().expect("locked box");
+        tool.handle_mouse(&mut state, &view, &Mouse::hover(c));
+        assert_eq!(tool.pending_box(), Some(locked), "moving the mouse no longer resizes it");
+        assert!(tool.confirm(&mut state));
         assert_eq!(state.doc.stats().solids, before + 1);
         let last = tool.last_bounds().expect("last");
         assert_eq!(last.min, DVec3::new(-32.0, -32.0, 0.0));

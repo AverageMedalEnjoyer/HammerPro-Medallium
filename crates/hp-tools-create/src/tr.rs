@@ -116,8 +116,8 @@ pub const TR: TrTable = &[
     ),
     (
         "create.block.hint_pending",
-        "{1}: create ({0}). Drag the handles to resize, the inside to move. {2}: cancel.",
-        "{1} : créer ({0}). Glissez les poignées pour redimensionner, l'intérieur pour déplacer. {2} : annuler.",
+        "{1}: create ({0}). Drag the handles (2D) or the faces (3D) to resize, the inside to move. {2}: cancel.",
+        "{1} : créer ({0}). Glissez les poignées (2D) ou les faces (3D) pour redimensionner, l'intérieur pour déplacer. {2} : annuler.",
     ),
     (
         "create.block.hint_base",
@@ -126,8 +126,8 @@ pub const TR: TrTable = &[
     ),
     (
         "create.block.hint_height",
-        "Move the mouse up or down to set the height, click to create. {0}: cancel.",
-        "Déplacez la souris vers le haut ou le bas pour régler la hauteur, cliquez pour créer. {0} : annuler.",
+        "Move the mouse up or down to set the height, click to lock the box (then adjust it, {1} creates it). {0}: cancel.",
+        "Déplacez la souris vers le haut ou le bas pour régler la hauteur, cliquez pour verrouiller la boîte (puis ajustez-la, {1} la crée). {0} : annuler.",
     ),
     (
         "create.poly.hint_idle",

@@ -16,7 +16,7 @@ use crate::values::fmt_num_rounded;
 use crate::view::{Agg, ConnIssues, ConnRow, EntityView, Target};
 use crate::widgets::{
     CommitAction, CompleteMode, ConnText, FieldOpts, PickerItem, ROW_HEIGHT, TextBuffers, autocomplete_keys,
-    SIDE_BUTTON_W, autocomplete_popup, column_widths, empty_note, icon, picker_button, picker_popup, side_button,
+    SIDE_BUTTON_W, autocomplete_open, autocomplete_popup, column_widths, empty_note, icon, picker_button, picker_popup, side_button,
     table_header, table_row, table_row_styled,
 };
 
@@ -412,7 +412,7 @@ impl IoEditor {
             } else {
                 resp
             };
-            if resp.has_focus() || resp.lost_focus() {
+            if resp.has_focus() || resp.lost_focus() || autocomplete_open(ui, resp.id) {
                 let typed = self.buffers.live_text(id).unwrap_or(display).to_owned();
                 let mut candidates: Vec<&str> = SPECIAL_TARGETS.to_vec();
                 candidates.extend(names.names().iter().map(String::as_str));
