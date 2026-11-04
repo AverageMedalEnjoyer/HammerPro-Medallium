@@ -545,16 +545,27 @@ impl Document {
                     continue;
                 }
                 let Some(b) = point_entity_bounds(&node.entity, entity_bounds) else { continue };
-                if b.contains_point(ray.origin) {
-                    continue;
-                }
                 let limit = if closest_only { best } else { max_t };
-                if let Some(box_t) = rt.test(&b, limit) {
+                let inside = b.contains_point(ray.origin);
+                let box_t = if inside {
+                    // Camera is inside the bounding box. Still allow a hit so the
+                    // model can be selected; prefer exact geometry when available.
+                    Some(0.0)
+                } else {
+                    rt.test(&b, limit)
+                };
+                if let Some(box_t) = box_t {
                     // The box only says "maybe". Models with a collision mesh are tested exactly.
                     let t = match opts.entity_ray.and_then(|f| f(&node.entity, ray)) {
                         Some(Some(t)) if t <= limit => t,
-                        Some(_) => continue,
-                        None => box_t,
+                        Some(_) => continue, // exact test said miss
+                        None => {
+                            // No exact mesh: accept the box hit (including t=0 when inside).
+                            if box_t > limit {
+                                continue;
+                            }
+                            box_t
+                        }
                     };
                     let point = ray.at(t);
                     let hit = Hit { obj, face: None, t, point, normal: box_normal(&b, point) };
